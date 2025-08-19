@@ -1,135 +1,126 @@
-# Turborepo starter
+# Mumak WWW
 
-This Turborepo starter is maintained by the Turborepo core team.
+개인 프로젝트를 관리하는 Turborepo 모노레포입니다.
 
-## Using this example
+## 🚀 시작하기
 
-Run the following command:
+### 필수 요구사항
 
-```sh
-npx create-turbo@latest
+- Node.js 18+
+- pnpm 9.0.0+
+
+### 설치
+
+```bash
+pnpm install
 ```
 
-## What's inside?
+### 개발 서버 실행
 
-This Turborepo includes the following packages/apps:
+```bash
+# 모든 앱의 개발 서버 실행
+pnpm dev
 
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+# 특정 앱만 실행
+pnpm dev --filter=web
+pnpm dev --filter=docs
 ```
 
-You can build a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+## 📁 프로젝트 구조
 
 ```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+mumak-www/
+├── apps/          # 애플리케이션들
+│   ├── web/       # 메인 웹 애플리케이션
+│   └── docs/      # 문서 사이트
+├── packages/      # 공유 패키지들
+│   ├── ui/        # UI 컴포넌트 라이브러리
+│   ├── eslint-config/    # ESLint 설정
+│   └── typescript-config/ # TypeScript 설정
+└── turbo.json     # Turborepo 설정
 ```
 
-### Develop
+## 🛠️ 개발 도구
 
-To develop all apps and packages, run the following command:
+### 코드 품질
 
-```
-cd my-turborepo
+- **ESLint**: 코드 린팅
+- **Prettier**: 코드 포맷팅
+- **TypeScript**: 타입 체크
+- **Husky**: Git 훅
+- **lint-staged**: 스테이징된 파일만 린팅
 
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
+### 사용 가능한 스크립트
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
+```bash
+# 빌드
+pnpm build
 
-You can develop a specific package by using a [filter](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters):
+# 린팅
+pnpm lint
 
-```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
+# 타입 체크
+pnpm check-types
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
+# 코드 포맷팅
+pnpm format
 
-### Remote Caching
+# 포맷팅 체크
+pnpm format:check
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+# 개발 서버
+pnpm dev
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+### Pre-commit 훅
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+커밋 시 자동으로 다음 작업이 실행됩니다:
 
+- ESLint 검사 및 자동 수정
+- Prettier 포맷팅
+- TypeScript 타입 체크
+
+## 🔧 개발 환경 설정
+
+### VS Code 확장 프로그램
+
+프로젝트를 열면 다음 확장 프로그램이 권장됩니다:
+
+- Prettier
+- ESLint
+- TypeScript
+- Tailwind CSS IntelliSense
+
+### 자동 포맷팅
+
+저장 시 자동으로 코드가 포맷팅됩니다.
+
+## 📦 패키지 관리
+
+### 새 앱 추가
+
+```bash
+# apps 디렉토리에 새 Next.js 앱 생성
+pnpm create next-app apps/[app-name]
 ```
-# With [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
 
-# Without [global `turbo`](https://turborepo.com/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+### 새 패키지 추가
+
+```bash
+# packages 디렉토리에 새 패키지 생성
+mkdir packages/[package-name]
+cd packages/[package-name]
+pnpm init
 ```
 
-## Useful Links
+## 🚀 배포
 
-Learn more about the power of Turborepo:
+각 앱은 독립적으로 배포할 수 있습니다:
 
-- [Tasks](https://turborepo.com/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.com/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.com/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.com/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.com/docs/reference/configuration)
-- [CLI Usage](https://turborepo.com/docs/reference/command-line-reference)
+```bash
+# 특정 앱 빌드
+pnpm build --filter=web
+
+# 특정 앱 배포
+pnpm deploy --filter=web
+```
