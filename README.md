@@ -23,7 +23,6 @@ pnpm dev
 
 # 특정 앱만 실행
 pnpm dev --filter=web
-pnpm dev --filter=docs
 ```
 
 ## 📁 프로젝트 구조
@@ -31,10 +30,9 @@ pnpm dev --filter=docs
 ```
 mumak-www/
 ├── apps/          # 애플리케이션들
-│   ├── web/       # 메인 웹 애플리케이션
-│   └── docs/      # 문서 사이트
+│   └── web/       # 메인 웹 애플리케이션 (Next.js 15)
 ├── packages/      # 공유 패키지들
-│   ├── ui/        # UI 컴포넌트 라이브러리
+│   ├── ui/        # shadcn/ui 기반 UI 컴포넌트 라이브러리
 │   ├── eslint-config/    # ESLint 설정
 │   └── typescript-config/ # TypeScript 설정
 └── turbo.json     # Turborepo 설정
@@ -49,6 +47,13 @@ mumak-www/
 - **TypeScript**: 타입 체크
 - **Husky**: Git 훅
 - **lint-staged**: 스테이징된 파일만 린팅
+
+### UI 시스템
+
+- **shadcn/ui**: 재사용 가능한 UI 컴포넌트 라이브러리
+- **Tailwind CSS**: 유틸리티 기반 CSS 프레임워크
+- **Lucide React**: 아이콘 라이브러리
+- **next-themes**: 다크모드 지원
 
 ### 사용 가능한 스크립트
 
@@ -78,7 +83,6 @@ pnpm dev
 
 - ESLint 검사 및 자동 수정
 - Prettier 포맷팅
-- TypeScript 타입 체크
 
 ## 🔧 개발 환경 설정
 
@@ -113,6 +117,14 @@ cd packages/[package-name]
 pnpm init
 ```
 
+### shadcn/ui 컴포넌트 추가
+
+```bash
+# UI 패키지에 새 컴포넌트 추가
+cd packages/ui
+npx shadcn@latest add [component-name]
+```
+
 ## 🚀 배포
 
 각 앱은 독립적으로 배포할 수 있습니다:
@@ -123,4 +135,17 @@ pnpm build --filter=web
 
 # 특정 앱 배포
 pnpm deploy --filter=web
+```
+
+## 🎨 UI 컴포넌트 사용법
+
+```typescript
+// Button 컴포넌트 사용
+import { Button } from '@repo/ui/ui/button';
+
+// 다양한 variant 지원
+<Button variant="default">Default</Button>
+<Button variant="outline">Outline</Button>
+<Button variant="secondary">Secondary</Button>
+<Button variant="destructive">Destructive</Button>
 ```
