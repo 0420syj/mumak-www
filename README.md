@@ -22,7 +22,7 @@ pnpm install
 pnpm dev
 
 # 특정 앱만 실행
-pnpm dev --filter=web
+pnpm dev --filter=mumak-next
 ```
 
 ## 📁 프로젝트 구조
@@ -30,7 +30,7 @@ pnpm dev --filter=web
 ```
 mumak-www/
 ├── apps/          # 애플리케이션들
-│   └── web/       # 메인 웹 애플리케이션 (Next.js 15)
+│   └── mumak-next/ # Next.js boilerplate
 ├── packages/      # 공유 패키지들
 │   ├── ui/        # shadcn/ui 기반 UI 컴포넌트 라이브러리
 │   ├── eslint-config/    # ESLint 설정
@@ -106,7 +106,12 @@ pnpm dev
 ```bash
 # apps 디렉토리에 새 Next.js 앱 생성
 pnpm create next-app apps/[app-name]
+
+# 또는 기존 mumak-next를 복사해서 새 앱 생성
+cp -r apps/mumak-next apps/[app-name]
 ```
+
+````
 
 ### 새 패키지 추가
 
@@ -115,7 +120,7 @@ pnpm create next-app apps/[app-name]
 mkdir packages/[package-name]
 cd packages/[package-name]
 pnpm init
-```
+````
 
 ### shadcn/ui 컴포넌트 추가
 
@@ -131,17 +136,17 @@ npx shadcn@latest add [component-name]
 
 ```bash
 # 특정 앱 빌드
-pnpm build --filter=web
+pnpm build --filter=mumak-next
 
 # 특정 앱 배포
-pnpm deploy --filter=web
+pnpm deploy --filter=mumak-next
 ```
 
 ## 🎨 UI 컴포넌트 사용법
 
 ```typescript
 // Button 컴포넌트 사용
-import { Button } from '@repo/ui/ui/button';
+import { Button } from '@repo/ui/components/button';
 
 // 다양한 variant 지원
 <Button variant="default">Default</Button>
