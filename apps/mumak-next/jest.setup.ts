@@ -23,9 +23,12 @@ jest.mock('next/navigation', () => ({
 // Mock Next.js image component
 jest.mock('next/image', () => ({
   __esModule: true,
-  default: props => {
-    // eslint-disable-next-line @next/next/no-img-element
-    return <img {...props} />;
+  default: (props: any) => {
+    // Return a simple div instead of JSX
+    return {
+      type: 'div',
+      props: { ...props, 'data-testid': 'next-image' },
+    };
   },
 }));
 

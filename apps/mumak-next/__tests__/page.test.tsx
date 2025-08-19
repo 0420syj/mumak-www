@@ -4,7 +4,7 @@ import Page from '../app/page';
 
 // Mock the UI components
 jest.mock('@repo/ui/components/button', () => ({
-  Button: ({ children, onClick, ...props }: any) => (
+  Button: ({ children, onClick, ...props }: React.ComponentProps<'button'>) => (
     <button onClick={onClick} {...props}>
       {children}
     </button>

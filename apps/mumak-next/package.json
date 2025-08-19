@@ -40,7 +40,6 @@
     "eslint": "^9.33.0",
     "jest": "^30.0.5",
     "jest-environment-jsdom": "^30.0.5",
-    "msw": "^2.10.5",
     "typescript": "5.9.2"
   }
 }
