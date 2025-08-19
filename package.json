@@ -8,6 +8,10 @@
     "format": "prettier --write \"**/*.{ts,tsx,md,json,js,jsx}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,md,json,js,jsx}\"",
     "check-types": "turbo run check-types",
+    "test": "turbo run test",
+    "test:coverage": "turbo run test:coverage",
+    "test:ci": "turbo run test:ci",
+    "test:e2e": "turbo run test:e2e",
     "prepare": "husky"
   },
   "devDependencies": {
@@ -28,6 +32,6 @@
   },
   "packageManager": "pnpm@10.0.0",
   "engines": {
-    "node": ">=20"
+    "node": ">=20.19"
   }
 }

@@ -19,6 +19,26 @@
     "format:check": {
       "inputs": ["$TURBO_DEFAULT$"]
     },
+    "test": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "**/*.{ts,tsx,js,jsx}", "**/*.test.{ts,tsx,js,jsx}", "**/*.spec.{ts,tsx,js,jsx}"],
+      "outputs": ["coverage/**", "test-results/**", ".turbo/**"]
+    },
+    "test:coverage": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "**/*.{ts,tsx,js,jsx}", "**/*.test.{ts,tsx,js,jsx}", "**/*.spec.{ts,tsx,js,jsx}"],
+      "outputs": ["coverage/**", ".turbo/**"]
+    },
+    "test:ci": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "**/*.{ts,tsx,js,jsx}", "**/*.test.{ts,tsx,js,jsx}", "**/*.spec.{ts,tsx,js,jsx}"],
+      "outputs": ["coverage/**", ".turbo/**"]
+    },
+    "test:e2e": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "**/*.{ts,tsx,js,jsx}", "e2e/**/*"],
+      "outputs": ["test-results/**", ".turbo/**"]
+    },
     "dev": {
       "cache": false,
       "persistent": true
