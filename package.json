@@ -26,8 +26,8 @@
       "prettier --write"
     ]
   },
-  "packageManager": "pnpm@9.0.0",
+  "packageManager": "pnpm@10.0.0",
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   }
 }

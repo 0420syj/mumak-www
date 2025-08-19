@@ -6,8 +6,21 @@
 
 ### 필수 요구사항
 
-- Node.js 18+
-- pnpm 9.0.0+
+- Node.js 20+
+- pnpm 10.0.0+
+
+### 자동 Node.js 버전 전환
+
+프로젝트 디렉토리에 들어가면 자동으로 올바른 Node.js 버전으로 전환됩니다:
+
+```bash
+# 프로젝트 디렉토리로 이동하면 자동으로 Node.js 20으로 전환
+cd mumak-www
+nvm use  # 자동으로 .nvmrc 파일의 버전(20)을 사용
+
+# 버전 확인
+node --version  # v20.x.x가 출력되어야 함
+```
 
 ### 설치
 
@@ -27,15 +40,15 @@ pnpm dev --filter=mumak-next
 
 ## 📁 프로젝트 구조
 
-```
+```md
 mumak-www/
-├── apps/          # 애플리케이션들
-│   └── mumak-next/ # Next.js boilerplate
-├── packages/      # 공유 패키지들
-│   ├── ui/        # shadcn/ui 기반 UI 컴포넌트 라이브러리
-│   ├── eslint-config/    # ESLint 설정
-│   └── typescript-config/ # TypeScript 설정
-└── turbo.json     # Turborepo 설정
+├── apps/ # 애플리케이션들
+│ └── mumak-next/ # Next.js boilerplate
+├── packages/ # 공유 패키지들
+│ ├── ui/ # shadcn/ui 기반 UI 컴포넌트 라이브러리
+│ ├── eslint-config/ # ESLint 설정
+│ └── typescript-config/ # TypeScript 설정
+└── turbo.json # Turborepo 설정
 ```
 
 ## 🛠️ 개발 도구
@@ -111,8 +124,6 @@ pnpm create next-app apps/[app-name]
 cp -r apps/mumak-next apps/[app-name]
 ```
 
-````
-
 ### 새 패키지 추가
 
 ```bash
@@ -120,7 +131,7 @@ cp -r apps/mumak-next apps/[app-name]
 mkdir packages/[package-name]
 cd packages/[package-name]
 pnpm init
-````
+```
 
 ### shadcn/ui 컴포넌트 추가
 
