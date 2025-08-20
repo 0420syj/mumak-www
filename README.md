@@ -7,20 +7,7 @@
 ### 필수 요구사항
 
 - Node.js 22.12+
-- pnpm 10.0.0+
-
-### 자동 Node.js 버전 전환
-
-프로젝트 디렉토리에 들어가면 자동으로 올바른 Node.js 버전으로 전환됩니다:
-
-```bash
-# 프로젝트 디렉토리로 이동하면 자동으로 Node.js 20으로 전환
-cd mumak-www
-nvm use  # 자동으로 .nvmrc 파일의 버전(20)을 사용
-
-# 버전 확인
-node --version  # v20.x.x가 출력되어야 함
-```
+- pnpm 10.15.0+
 
 ### 설치
 
@@ -36,6 +23,7 @@ pnpm dev
 
 # 특정 앱만 실행
 pnpm dev --filter=mumak-next
+pnpm dev --filter=mumak-react
 ```
 
 ## 📁 프로젝트 구조
@@ -43,7 +31,8 @@ pnpm dev --filter=mumak-next
 ```md
 mumak-www/
 ├── apps/ # 애플리케이션들
-│ └── mumak-next/ # Next.js boilerplate
+│ ├── mumak-next/ # Next.js 애플리케이션
+│ └── mumak-react/ # Vite + React 애플리케이션
 ├── packages/ # 공유 패키지들
 │ ├── ui/ # shadcn/ui 기반 UI 컴포넌트 라이브러리
 │ ├── eslint-config/ # ESLint 설정
@@ -88,6 +77,18 @@ pnpm format:check
 
 # 개발 서버
 pnpm dev
+
+# 테스트
+pnpm test              # 모든 앱의 단위 테스트 실행
+pnpm test:coverage     # 커버리지 포함 테스트 실행
+pnpm test:ci          # CI 환경용 테스트 실행
+pnpm test:e2e         # 모든 앱의 E2E 테스트 실행
+
+# 개별 앱 테스트
+pnpm --filter=mumak-next test
+pnpm --filter=mumak-react test
+pnpm --filter=mumak-react test:ui    # Vitest UI 실행
+pnpm --filter=mumak-react test:e2e:ui # Playwright UI 실행
 ```
 
 ### Pre-commit 훅
@@ -122,6 +123,9 @@ pnpm create next-app apps/[app-name]
 
 # 또는 기존 mumak-next를 복사해서 새 앱 생성
 cp -r apps/mumak-next apps/[app-name]
+
+# Vite + React 앱 생성 (mumak-react 참고)
+cp -r apps/mumak-react apps/[app-name]
 ```
 
 ### 새 패키지 추가
