@@ -61,7 +61,7 @@ pnpm test:e2e:debug
 
 ## 테스트 파일 구조
 
-```
+```bash
 src/
 ├── __tests__/          # 단위 테스트 파일들
 │   └── counter.test.tsx
