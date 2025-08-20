@@ -9,5 +9,6 @@ export default defineConfig({
     globals: true,
     css: true,
     exclude: ['**/e2e/**', '**/node_modules/**'],
+    watch: false,
   },
 });
