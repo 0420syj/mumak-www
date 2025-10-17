@@ -11,7 +11,7 @@ const customJestConfig = {
   testEnvironment: 'jsdom',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
-    '^@repo/ui/(.*)$': '<rootDir>/../../packages/ui/src/$1',
+    '^@mumak/ui/(.*)$': '<rootDir>/../../packages/ui/src/$1',
   },
   testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/', '<rootDir>/e2e/'],
   collectCoverageFrom: [

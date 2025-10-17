@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@/components/theme-provider';
-import '@repo/ui/globals.css';
+import '@mumak/ui/globals.css';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 

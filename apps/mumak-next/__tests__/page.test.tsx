@@ -3,7 +3,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import Page from '../app/page';
 
 // Mock the UI components
-jest.mock('@repo/ui/components/button', () => ({
+jest.mock('@mumak/ui/components/button', () => ({
   Button: ({ children, onClick, ...props }: React.ComponentProps<'button'>) => (
     <button onClick={onClick} {...props}>
       {children}

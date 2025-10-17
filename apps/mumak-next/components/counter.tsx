@@ -1,8 +1,8 @@
 'use client';
 
-import { Badge } from '@repo/ui/components/badge';
-import { Button } from '@repo/ui/components/button';
-import { Card, CardContent } from '@repo/ui/components/card';
+import { Badge } from '@mumak/ui/components/badge';
+import { Button } from '@mumak/ui/components/button';
+import { Card, CardContent } from '@mumak/ui/components/card';
 import * as React from 'react';
 
 export function Counter() {

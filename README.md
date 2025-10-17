@@ -161,7 +161,7 @@ pnpm deploy --filter=mumak-next
 
 ```typescript
 // Button 컴포넌트 사용
-import { Button } from '@repo/ui/components/button';
+import { Button } from '@mumak/ui/components/button';
 
 // 다양한 variant 지원
 <Button variant="default">Default</Button>

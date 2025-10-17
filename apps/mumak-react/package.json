@@ -20,7 +20,7 @@
     "test:e2e:debug": "playwright test --debug"
   },
   "dependencies": {
-    "@repo/ui": "workspace:*",
+    "@mumak/ui": "workspace:*",
     "@tailwindcss/vite": "^4.1.12",
     "lucide-react": "^0.475.0",
     "react": "^19.1.1",
