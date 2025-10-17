@@ -3,10 +3,12 @@ updates:
   # Enable version updates for npm
   - package-ecosystem: 'npm'
     directory: '/'
+    target-branch: 'develop'
     schedule:
       interval: 'weekly'
-      day: 'monday'
+      day: 'wednesday'
       time: '09:00'
+      timezone: 'Asia/Seoul'
     open-pull-requests-limit: 10
     reviewers:
       - '0420syj'
@@ -19,10 +21,12 @@ updates:
   # Enable version updates for GitHub Actions
   - package-ecosystem: 'github-actions'
     directory: '/'
+    target-branch: 'develop'
     schedule:
       interval: 'weekly'
-      day: 'monday'
+      day: 'wednesday'
       time: '09:00'
+      timezone: 'Asia/Seoul'
     open-pull-requests-limit: 5
     reviewers:
       - '0420syj'
