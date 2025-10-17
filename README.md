@@ -169,3 +169,22 @@ import { Button } from '@mumak/ui/components/button';
 <Button variant="secondary">Secondary</Button>
 <Button variant="destructive">Destructive</Button>
 ```
+
+## 🔄 CI/CD 파이프라인
+
+### 워크플로우 구조
+
+프로젝트는 두 개의 독립적인 GitHub Actions 워크플로우로 구성되어 있습니다:
+
+1. **CI 워크플로우** (`.github/workflows/ci.yml`)
+   - 린팅, 타입 체크, 단위 테스트, 빌드
+   - 빠른 피드백을 위한 핵심 검증
+
+2. **E2E 워크플로우** (`.github/workflows/e2e.yml`)
+   - Playwright를 사용한 E2E 테스트
+   - Docker 컨테이너를 사용하여 브라우저 설치 시간 단축
+
+### 트리거 조건
+
+- **Pull Request**: 모든 브랜치에서 PR 생성 시 두 워크플로우 모두 실행
+- **Push**: `main`, `develop` 브랜치에 푸시 시 실행
