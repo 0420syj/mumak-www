@@ -11,17 +11,17 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  # TODO: Turborepo Remote Cache 설정 (선택사항)
-  # 더 빠른 캐싱을 위해 Vercel Remote Cache 사용 시 아래 주석 해제
-  # TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-  # TURBO_TEAM: ${{ vars.TURBO_TEAM }}
-  #
-  # 설정 방법:
-  # 1. Vercel 계정에서 Turborepo 팀 생성
-  # 2. GitHub Secrets에 TURBO_TOKEN 추가 (Vercel에서 생성)
-  # 3. GitHub Variables에 TURBO_TEAM 추가 (팀 이름)
-  # 4. 위 주석 해제하여 Remote Cache 활성화
+# TODO: Turborepo Remote Cache 설정 (선택사항)
+# 더 빠른 캐싱을 위해 Vercel Remote Cache 사용 시 아래 env 섹션 주석 해제
+# env:
+#   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+#   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+#
+# 설정 방법:
+# 1. Vercel 계정에서 Turborepo 팀 생성
+# 2. GitHub Secrets에 TURBO_TOKEN 추가 (Vercel에서 생성)
+# 3. GitHub Variables에 TURBO_TEAM 추가 (팀 이름)
+# 4. 위 주석 해제하여 Remote Cache 활성화
 
 jobs:
   # Turborepo 캐시를 위한 공통 설정
