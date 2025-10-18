@@ -40,4 +40,15 @@ export const config = [
       'react-refresh/only-export-components': 'off',
     },
   },
+  {
+    ignores: [
+      'dist/**',
+      'out/**',
+      'coverage/**',
+      'test-results/**',
+      'playwright-report/**',
+      'node_modules/**',
+      '*.tsbuildinfo',
+    ],
+  },
 ];
