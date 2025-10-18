@@ -7,7 +7,7 @@
 ### 필수 요구사항
 
 - Node.js 22.12+
-- pnpm 10.17.0
+- pnpm
 
 ### 설치
 
@@ -117,6 +117,8 @@ pnpm --filter=mumak-react test:e2e:ui # Playwright UI 실행
 
 ### 새 앱 추가
 
+가급적 `mumak-next`나 `mumak-react`를 보일러플레이트로서 사용합니다.
+
 ```bash
 # apps 디렉토리에 새 Next.js 앱 생성
 pnpm create next-app apps/[app-name]
@@ -127,6 +129,11 @@ cp -r apps/mumak-next apps/[app-name]
 # Vite + React 앱 생성 (mumak-react 참고)
 cp -r apps/mumak-react apps/[app-name]
 ```
+
+> 복사가 완료되면, 아래 요소를 수정합니다.
+>
+> - `package.json` 내 `name`
+> - 개발서버 & Playwright 포트 번호
 
 ### 새 패키지 추가
 

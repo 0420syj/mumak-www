@@ -1,6 +1,6 @@
-# Mumak React
+# Mumak Next
 
-Vite + React + TypeScript로 구성된 React 애플리케이션입니다.
+Next.js + TypeScript로 구성된 Next.js 애플리케이션입니다.
 
 ## 개발 환경
 
@@ -20,24 +20,18 @@ pnpm dev
 pnpm build
 
 # 미리보기
-pnpm preview
+pnpm start
 ```
 
 ## 테스트
 
-이 프로젝트는 Vitest와 Playwright를 사용하여 테스트를 구성했습니다.
+이 프로젝트는 Jest와 Playwright를 사용하여 테스트를 구성했습니다.
 
-### 단위 테스트 (Vitest)
+### 단위 테스트 (Jest)
 
 ```bash
 # 테스트 실행
 pnpm test
-
-# 테스트 UI 실행
-pnpm test:ui
-
-# 테스트 한 번 실행
-pnpm test:run
 
 # 커버리지 포함하여 실행
 pnpm test:coverage
@@ -63,20 +57,18 @@ pnpm test:e2e:debug
 
 ```bash
 src/
+├── app                 # App router
 ├── __tests__/          # 단위 테스트 파일들
 │   └── counter.test.tsx
-├── test/               # 테스트 설정
-│   └── setup.ts
+├── e2e                 # E2E 테스트 파일들
+│   └── counter.test.tsx
 └── components/         # 테스트 대상 컴포넌트들
     └── counter.tsx
-
-e2e/                    # E2E 테스트 파일들
-└── home.spec.ts
 ```
 
 ## 테스트 설정
 
-- **Vitest**: `vitest.config.ts`에서 설정
+- **Jest**: `jest.setup.ts`에서 설정
 - **Playwright**: `playwright.config.ts`에서 설정
 - **테스트 환경**: jsdom을 사용하여 브라우저 환경 시뮬레이션
 - **UI 라이브러리**: @testing-library/react 사용

@@ -63,23 +63,16 @@ mumak-www/
 
 ### 워크스페이스 패키지
 
-- `@mumak/ui`: 공유 UI 컴포넌트
+- `@mumak/ui`: 공유 UI 컴포넌트 (shadcn/ui 기반)
 - `@mumak/eslint-config`: ESLint 설정
 - `@mumak/typescript-config`: TypeScript 설정
-
-### 주요 의존성
-
-- **Next.js**: `next@^15.4.2`
-- **React**: `react@^19.1.0`
-- **TypeScript**: `typescript@5.9.2`
-- **Turborepo**: `turbo@^2.5.6`
 
 ## 개발 환경 설정
 
 ### 필수 요구사항
 
 - Node.js >= 22.12
-- pnpm 10.17.0
+- pnpm >= 10.0.0
 
 ### 스크립트 명령어
 
@@ -93,7 +86,7 @@ pnpm build
 # 린트
 pnpm lint
 
-# 테스트
+# 단위 테스트
 pnpm test
 
 # E2E 테스트

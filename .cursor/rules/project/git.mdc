@@ -97,7 +97,7 @@ git branch -d hotfix/critical-bug-fix
 
 ### 형식
 
-```
+```md
 <type>(<scope>): <subject>
 
 <body>
