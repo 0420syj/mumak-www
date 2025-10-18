@@ -5,6 +5,7 @@ import * as React from 'react';
 
 const pretendard = localFont({
   src: '../public/assets/fonts/PretendardVariable.woff2',
+  fallback: ['ui-sans-serif', 'system-ui', 'sans-serif'],
   display: 'swap',
   weight: '45 920',
 });
@@ -16,7 +17,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" suppressHydrationWarning>
-      <body className={`${pretendard.className} font-sans antialiased `}>
+      <body className={`${pretendard.className} antialiased `}>
         <Providers>{children}</Providers>
       </body>
     </html>
