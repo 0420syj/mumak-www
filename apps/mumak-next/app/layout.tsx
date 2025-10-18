@@ -1,16 +1,12 @@
 import { Providers } from '@/components/providers';
 import '@mumak/ui/globals.css';
-import { Geist, Geist_Mono } from 'next/font/google';
+import localFont from 'next/font/local';
 import * as React from 'react';
 
-const fontSans = Geist({
-  subsets: ['latin'],
-  variable: '--font-sans',
-});
-
-const fontMono = Geist_Mono({
-  subsets: ['latin'],
-  variable: '--font-mono',
+const pretendard = localFont({
+  src: '../public/assets/fonts/PretendardVariable.woff2',
+  display: 'swap',
+  weight: '45 920',
 });
 
 export default function RootLayout({
@@ -20,7 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" suppressHydrationWarning>
-      <body className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased `}>
+      <body className={`${pretendard.className} font-sans antialiased `}>
         <Providers>{children}</Providers>
       </body>
     </html>
