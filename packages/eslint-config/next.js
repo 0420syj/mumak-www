@@ -44,6 +44,8 @@ export const nextJsConfig = [
       ...pluginReactHooks.configs.recommended.rules,
       // React scope no longer necessary with new JSX transform.
       'react/react-in-jsx-scope': 'off',
+      // Disable triple-slash reference for next-env.d.ts
+      '@typescript-eslint/triple-slash-reference': 'off',
     },
   },
   {
