@@ -36,7 +36,7 @@
     },
     "test:e2e": {
       "dependsOn": ["^build"],
-      "passThroughEnv": ["PLAYWRIGHT_*"],
+      "passThroughEnv": ["PLAYWRIGHT_*", "CI"],
       "inputs": ["$TURBO_DEFAULT$", "**/*.{ts,tsx,js,jsx}", "e2e/**/*"],
       "outputs": ["test-results/**", ".turbo/**"]
     },
