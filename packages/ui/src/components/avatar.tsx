@@ -1,7 +1,7 @@
 'use client';
 
-import * as AvatarPrimitive from '@radix-ui/react-avatar';
 import * as React from 'react';
+import * as AvatarPrimitive from '@radix-ui/react-avatar';
 
 import { cn } from '@mumak/ui/lib/utils';
 
@@ -31,4 +31,4 @@ function AvatarFallback({ className, ...props }: React.ComponentProps<typeof Ava
   );
 }
 
-export { Avatar, AvatarFallback, AvatarImage };
+export { Avatar, AvatarImage, AvatarFallback };

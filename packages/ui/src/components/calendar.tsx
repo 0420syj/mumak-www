@@ -1,11 +1,11 @@
 'use client';
 
-import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import * as React from 'react';
+import { ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { DayButton, DayPicker, getDefaultClassNames } from 'react-day-picker';
 
-import { Button, buttonVariants } from '@mumak/ui/components/button';
 import { cn } from '@mumak/ui/lib/utils';
+import { Button, buttonVariants } from '@mumak/ui/components/button';
 
 function Calendar({
   className,
@@ -97,9 +97,7 @@ function Calendar({
       }}
       components={{
         Root: ({ className, rootRef, ...props }) => {
-          return (
-            <div data-slot="calendar" ref={rootRef as React.Ref<HTMLDivElement>} className={cn(className)} {...props} />
-          );
+          return <div data-slot="calendar" ref={rootRef} className={cn(className)} {...props} />;
         },
         Chevron: ({ className, orientation, ...props }) => {
           if (orientation === 'left') {
