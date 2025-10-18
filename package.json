@@ -30,7 +30,7 @@
       "turbo run format --"
     ]
   },
-  "packageManager": "pnpm",
+  "packageManager": "pnpm@10.18.3",
   "engines": {
     "node": ">=22.12"
   }
