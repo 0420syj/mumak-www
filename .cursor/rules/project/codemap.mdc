@@ -7,7 +7,7 @@ alwaysApply: true
 
 ## 프로젝트 구조
 
-```
+```bash
 mumak-www/
 ├── apps/                    # 애플리케이션들
 │   ├── mumak-next/         # Next.js 애플리케이션
