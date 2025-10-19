@@ -33,29 +33,37 @@ export async function GET() {
       });
     }
 
-    // 첫 3개 행만 상세하게 보여주기
-    const sampleRows = rows.slice(1, 4).map((row, idx) => {
-      const rowObj: Record<string, string | undefined> = {};
+    // 첫 3개 행의 데이터 상세히 확인
+    const sampleRows = rows.slice(0, 3).map((row, idx) => {
+      // row 객체의 모든 키 확인
+      const rowKeys = Object.keys(row).filter(key => !key.startsWith('_'));
 
-      // 모든 컬럼을 순회하면서 데이터 추출 (A~H)
-      for (let i = 0; i < 8; i++) {
-        const col = String.fromCharCode(65 + i); // A=65
-        const value = row.get(col);
-        rowObj[col] = value;
-      }
+      // 직접 JSON으로 변환 시도
+      const rowJson: Record<string, unknown> = {};
+      rowKeys.forEach(key => {
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          rowJson[key] = (row as any)[key];
+        } catch {
+          // skip
+        }
+      });
 
-      // 직접 알려진 필드명으로도 시도
       return {
         index: idx,
-        allColumns: rowObj,
-        knownFields: {
-          date: row.get('date'),
-          content: row.get('content'),
-          amount: row.get('amount'),
-          category: row.get('category'),
-          paymentMethod: row.get('paymentMethod'),
-          location: row.get('location'),
-          description: row.get('description'),
+        rowNumber: row.rowNumber,
+        availableKeys: rowKeys,
+        rowData: rowJson,
+        // 각 행의 전체 내용 시도
+        fullRow: {
+          A: row.get('A') || row.get('1'),
+          B: row.get('B') || row.get('2'),
+          C: row.get('C') || row.get('3'),
+          D: row.get('D') || row.get('4'),
+          E: row.get('E') || row.get('5'),
+          F: row.get('F') || row.get('6'),
+          G: row.get('G') || row.get('7'),
+          H: row.get('H') || row.get('8'),
         },
       };
     });
@@ -64,8 +72,9 @@ export async function GET() {
       totalRows: rows.length,
       sheetName: sheet.title,
       headerRowIndex: SHEET_CONFIG.HEADER_ROW,
+      dataRange: SHEET_CONFIG.DATA_RANGE,
       sampleRows,
-      hint: '각 row의 컬럼 데이터를 확인하세요. allColumns은 A~H 컬럼의 실제 값입니다.',
+      hint: 'availableKeys에서 실제 컬럼명을 확인하고, fullRow에서 데이터 위치를 확인하세요.',
     });
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : String(error);
@@ -74,6 +83,7 @@ export async function GET() {
       {
         error: 'Debug failed',
         details: errorMsg,
+        stack: error instanceof Error ? error.stack : undefined,
       },
       { status: 500 }
     );
