@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 /**
  * 인증 및 거래 데이터 E2E 테스트
@@ -19,10 +19,10 @@ test.describe('Moomin Money - Authentication & Transactions', () => {
 
     test('should display login page with Google button', async ({ page }) => {
       await page.goto(`${BASE_URL}/auth`);
-      
+
       // 로그인 페이지 제목 확인
       await expect(page.locator('h1')).toContainText('Moomin Money');
-      
+
       // Google 로그인 버튼 확인
       const googleButton = page.locator('button:has-text("Google로 로그인")');
       await expect(googleButton).toBeVisible();
