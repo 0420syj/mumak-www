@@ -50,7 +50,7 @@ export default function TransactionsPage() {
     <div className="space-y-6">
       {/* 헤더 */}
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-slate-900">거래 내역</h1>
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">거래 내역</h1>
       </div>
 
       {/* 사용자 선택 */}
@@ -65,60 +65,73 @@ export default function TransactionsPage() {
 
       {/* 통계 */}
       <div className="grid grid-cols-3 gap-4">
-        <Card className="p-6">
-          <p className="text-sm text-slate-600 mb-2">총 지출</p>
-          <p className="text-2xl font-bold text-red-600">{isLoading ? '...' : formatCurrency(totalExpense)}</p>
+        <Card className="p-6 bg-white dark:bg-slate-900">
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">총 지출</p>
+          <p className="text-2xl font-bold text-red-600 dark:text-red-400">
+            {isLoading ? '...' : formatCurrency(totalExpense)}
+          </p>
         </Card>
-        <Card className="p-6">
-          <p className="text-sm text-slate-600 mb-2">거래 건수</p>
-          <p className="text-2xl font-bold text-slate-900">{isLoading ? '...' : transactions.length}건</p>
+        <Card className="p-6 bg-white dark:bg-slate-900">
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">거래 건수</p>
+          <p className="text-2xl font-bold text-slate-900 dark:text-white">
+            {isLoading ? '...' : transactions.length}건
+          </p>
         </Card>
-        <Card className="p-6">
-          <p className="text-sm text-slate-600 mb-2">평균 거래액</p>
-          <p className="text-2xl font-bold text-slate-900">
+        <Card className="p-6 bg-white dark:bg-slate-900">
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">평균 거래액</p>
+          <p className="text-2xl font-bold text-slate-900 dark:text-white">
             {isLoading ? '...' : formatCurrency(transactions.length > 0 ? totalExpense / transactions.length : 0)}
           </p>
         </Card>
       </div>
 
       {/* 거래 목록 */}
-      <Card>
+      <Card className="bg-white dark:bg-slate-900">
         {isLoading ? (
           <div className="p-8 text-center">
-            <p className="text-slate-600">데이터 로딩 중...</p>
+            <p className="text-slate-600 dark:text-slate-400">데이터 로딩 중...</p>
           </div>
         ) : error ? (
           <div className="p-8 text-center">
-            <p className="text-red-600">데이터를 불러올 수 없습니다</p>
-            <p className="text-sm text-slate-600 mt-2">{error?.message}</p>
+            <p className="text-red-600 dark:text-red-400">데이터를 불러올 수 없습니다</p>
+            <p className="text-sm text-slate-600 dark:text-slate-400 mt-2">{error?.message}</p>
           </div>
         ) : transactions.length === 0 ? (
           <div className="p-8 text-center">
-            <p className="text-slate-600">거래 내역이 없습니다</p>
+            <p className="text-slate-600 dark:text-slate-400">거래 내역이 없습니다</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead>날짜</TableHead>
-                  <TableHead>카테고리</TableHead>
-                  <TableHead>설명</TableHead>
-                  <TableHead>결제수단</TableHead>
-                  <TableHead>구매처</TableHead>
-                  <TableHead className="text-right">금액</TableHead>
+                <TableRow className="border-b border-slate-200 dark:border-slate-800">
+                  <TableHead className="text-slate-900 dark:text-white">날짜</TableHead>
+                  <TableHead className="text-slate-900 dark:text-white">카테고리</TableHead>
+                  <TableHead className="text-slate-900 dark:text-white">설명</TableHead>
+                  <TableHead className="text-slate-900 dark:text-white">결제수단</TableHead>
+                  <TableHead className="text-slate-900 dark:text-white">구매처</TableHead>
+                  <TableHead className="text-right text-slate-900 dark:text-white">금액</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {transactions.map(transaction => (
-                  <TableRow key={transaction.id}>
-                    <TableCell className="font-medium">{formatDate(transaction.date)}</TableCell>
-                    <TableCell>{transaction.category}</TableCell>
-                    <TableCell className="text-slate-600 max-w-xs truncate">{transaction.description}</TableCell>
-                    <TableCell className="text-slate-600">{transaction.paymentMethod || '-'}</TableCell>
-                    <TableCell className="text-slate-600">{transaction.location || '-'}</TableCell>
+                  <TableRow
+                    key={transaction.id}
+                    className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                  >
+                    <TableCell className="font-medium text-slate-900 dark:text-white">
+                      {formatDate(transaction.date)}
+                    </TableCell>
+                    <TableCell className="text-slate-900 dark:text-white">{transaction.category}</TableCell>
+                    <TableCell className="text-slate-600 dark:text-slate-300 max-w-xs truncate">
+                      {transaction.description}
+                    </TableCell>
+                    <TableCell className="text-slate-600 dark:text-slate-300">
+                      {transaction.paymentMethod || '-'}
+                    </TableCell>
+                    <TableCell className="text-slate-600 dark:text-slate-300">{transaction.location || '-'}</TableCell>
                     <TableCell className="text-right font-medium">
-                      <span className="text-red-600">-{formatCurrency(transaction.amount)}</span>
+                      <span className="text-red-600 dark:text-red-400">-{formatCurrency(transaction.amount)}</span>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -128,7 +141,7 @@ export default function TransactionsPage() {
         )}
 
         {/* 하단 정보 */}
-        <div className="p-4 border-t text-sm text-slate-600 bg-slate-50">
+        <div className="p-4 border-t border-slate-200 dark:border-slate-800 text-sm text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-950">
           총 {transactions.length}건의 거래 • 마지막 업데이트:{' '}
           {data?.fetchedAt ? new Date(data.fetchedAt).toLocaleTimeString('ko-KR') : '-'}
         </div>
