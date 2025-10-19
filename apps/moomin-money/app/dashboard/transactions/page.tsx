@@ -1,0 +1,186 @@
+'use client';
+
+import { Button } from '@mumak/ui/components/button';
+import { Card } from '@mumak/ui/components/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@mumak/ui/components/table';
+import { useSession } from 'next-auth/react';
+import { useState } from 'react';
+import useSWR from 'swr';
+import type { TransactionsResponse } from '@/types/transaction';
+
+const fetcher = (url: string) => fetch(url).then((r) => r.json());
+
+export default function TransactionsPage() {
+  const { data: session } = useSession();
+  const [viewUser, setViewUser] = useState<'User1' | 'User2'>('User1');
+
+  // SWR을 사용한 데이터 조회
+  const { data, error, isLoading } = useSWR<TransactionsResponse>(
+    session ? `/api/transactions?user=${viewUser}` : null,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+      dedupingInterval: 60000, // 1분 동안 중복 요청 방지
+    }
+  );
+
+  const transactions = data?.transactions || [];
+
+  // 수량 계산
+  const totalIncome = transactions
+    .filter((t) => t.type === 'income')
+    .reduce((sum, t) => sum + t.amount, 0);
+
+  const totalExpense = transactions
+    .filter((t) => t.type === 'expense')
+    .reduce((sum, t) => sum + t.amount, 0);
+
+  const netAmount = totalIncome - totalExpense;
+
+  // 형식화 함수
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('ko-KR', {
+      style: 'currency',
+      currency: 'KRW',
+      minimumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  const formatDate = (dateString: string) => {
+    try {
+      return new Date(dateString).toLocaleDateString('ko-KR');
+    } catch {
+      return dateString;
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* 헤더 */}
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold text-slate-900">거래 내역</h1>
+      </div>
+
+      {/* 사용자 선택 */}
+      <div className="flex gap-2">
+        <Button
+          onClick={() => setViewUser('User1')}
+          variant={viewUser === 'User1' ? 'default' : 'outline'}
+        >
+          User1
+        </Button>
+        <Button
+          onClick={() => setViewUser('User2')}
+          variant={viewUser === 'User2' ? 'default' : 'outline'}
+        >
+          User2
+        </Button>
+      </div>
+
+      {/* 통계 */}
+      <div className="grid grid-cols-3 gap-4">
+        <Card className="p-6">
+          <p className="text-sm text-slate-600 mb-2">수입</p>
+          <p className="text-2xl font-bold text-green-600">
+            {isLoading ? '...' : formatCurrency(totalIncome)}
+          </p>
+        </Card>
+        <Card className="p-6">
+          <p className="text-sm text-slate-600 mb-2">지출</p>
+          <p className="text-2xl font-bold text-red-600">
+            {isLoading ? '...' : formatCurrency(totalExpense)}
+          </p>
+        </Card>
+        <Card className="p-6">
+          <p className="text-sm text-slate-600 mb-2">순액</p>
+          <p className={`text-2xl font-bold ${netAmount >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            {isLoading ? '...' : formatCurrency(netAmount)}
+          </p>
+        </Card>
+      </div>
+
+      {/* 거래 목록 */}
+      <Card>
+        {isLoading ? (
+          <div className="p-8 text-center">
+            <p className="text-slate-600">데이터 로딩 중...</p>
+          </div>
+        ) : error ? (
+          <div className="p-8 text-center">
+            <p className="text-red-600">데이터를 불러올 수 없습니다</p>
+            <p className="text-sm text-slate-600 mt-2">{error?.message}</p>
+          </div>
+        ) : transactions.length === 0 ? (
+          <div className="p-8 text-center">
+            <p className="text-slate-600">거래 내역이 없습니다</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>날짜</TableHead>
+                  <TableHead>카테고리</TableHead>
+                  <TableHead>설명</TableHead>
+                  <TableHead className="text-right">금액</TableHead>
+                  <TableHead>타입</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {transactions.map((transaction) => (
+                  <TableRow key={transaction.id}>
+                    <TableCell className="font-medium">
+                      {formatDate(transaction.date)}
+                    </TableCell>
+                    <TableCell>{transaction.category}</TableCell>
+                    <TableCell className="text-slate-600">
+                      {transaction.description}
+                    </TableCell>
+                    <TableCell className="text-right font-medium">
+                      <span
+                        className={
+                          transaction.type === 'income'
+                            ? 'text-green-600'
+                            : 'text-red-600'
+                        }
+                      >
+                        {transaction.type === 'income' ? '+' : '-'}
+                        {formatCurrency(transaction.amount)}
+                      </span>
+                    </TableCell>
+                    <TableCell>
+                      <span
+                        className={`px-2 py-1 rounded text-xs font-medium ${
+                          transaction.type === 'income'
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                        }`}
+                      >
+                        {transaction.type === 'income' ? '수입' : '지출'}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        )}
+
+        {/* 하단 정보 */}
+        <div className="p-4 border-t text-sm text-slate-600 bg-slate-50">
+          총 {transactions.length}건의 거래 • 마지막 업데이트:{' '}
+          {data?.fetchedAt
+            ? new Date(data.fetchedAt).toLocaleTimeString('ko-KR')
+            : '-'}
+        </div>
+      </Card>
+    </div>
+  );
+}
