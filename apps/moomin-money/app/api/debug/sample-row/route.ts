@@ -1,4 +1,3 @@
-import { auth } from '@/lib/auth';
 import { getUserSheet } from '@/lib/google-sheets';
 import { NextResponse } from 'next/server';
 
@@ -15,12 +14,7 @@ const SHEET_CONFIG = {
  */
 export async function GET() {
   try {
-    const session = await auth();
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // User1 시트에서 샘플 데이터 조회
+    // User1 시트에서 샘플 데이터 조회 (인증 제거)
     const sheet = await getUserSheet('User1');
     console.log('[DEBUG] Getting sample rows...');
 
@@ -33,38 +27,34 @@ export async function GET() {
       });
     }
 
+    console.log('[DEBUG] Total rows:', rows.length);
+    console.log('[DEBUG] First row type:', typeof rows[0]);
+    console.log('[DEBUG] First row constructor:', rows[0]?.constructor?.name);
+    console.log('[DEBUG] First row:', JSON.stringify(rows[0], null, 2));
+
     // 첫 3개 행의 데이터 상세히 확인
     const sampleRows = rows.slice(0, 3).map((row, idx) => {
-      // row 객체의 모든 키 확인
-      const rowKeys = Object.keys(row).filter(key => !key.startsWith('_'));
+      console.log(`[DEBUG] Row ${idx}:`, row);
 
-      // 직접 JSON으로 변환 시도
-      const rowJson: Record<string, unknown> = {};
-      rowKeys.forEach(key => {
+      // row.get() 메서드로 각 컬럼 조회
+      const columns: Record<string, string | undefined> = {};
+      for (let i = 0; i < 10; i++) {
+        const col = String.fromCharCode(65 + i); // A=65
         try {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          rowJson[key] = (row as any)[key];
-        } catch {
-          // skip
+          columns[col] = row.get(col);
+        } catch (e) {
+          columns[col] = `[ERROR: ${e instanceof Error ? e.message : String(e)}]`;
         }
-      });
+      }
 
       return {
         index: idx,
         rowNumber: row.rowNumber,
-        availableKeys: rowKeys,
-        rowData: rowJson,
-        // 각 행의 전체 내용 시도
-        fullRow: {
-          A: row.get('A') || row.get('1'),
-          B: row.get('B') || row.get('2'),
-          C: row.get('C') || row.get('3'),
-          D: row.get('D') || row.get('4'),
-          E: row.get('E') || row.get('5'),
-          F: row.get('F') || row.get('6'),
-          G: row.get('G') || row.get('7'),
-          H: row.get('H') || row.get('8'),
-        },
+        rowType: row?.constructor?.name,
+        columns,
+        rowDirect: Object.entries(row)
+          .filter(([key]) => !key.startsWith('_'))
+          .slice(0, 10),
       };
     });
 
@@ -74,11 +64,11 @@ export async function GET() {
       headerRowIndex: SHEET_CONFIG.HEADER_ROW,
       dataRange: SHEET_CONFIG.DATA_RANGE,
       sampleRows,
-      hint: 'availableKeys에서 실제 컬럼명을 확인하고, fullRow에서 데이터 위치를 확인하세요.',
     });
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : String(error);
     console.error('[ERROR] Debug endpoint error:', errorMsg);
+    console.error('[ERROR] Stack:', error instanceof Error ? error.stack : '');
     return NextResponse.json(
       {
         error: 'Debug failed',
