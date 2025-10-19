@@ -1,7 +1,7 @@
 {
   "name": "mumak-react",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite --port 3001",
@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@mumak/eslint-config": "workspace:*",
+    "@mumak/typescript-config": "workspace:*",
     "@playwright/test": "^1.54.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",

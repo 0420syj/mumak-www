@@ -7,4 +7,4 @@
 	release = release/
 	hotfix = hotfix/
 	support = support/
-	versiontag = v
+	versiontag =
