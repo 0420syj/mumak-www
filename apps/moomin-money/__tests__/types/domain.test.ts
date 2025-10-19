@@ -2,12 +2,7 @@
  * 도메인 모델 및 검증 테스트
  */
 
-import {
-  DomainConfig,
-  PaymentMethod,
-  TransactionType,
-  TransactionValidator,
-} from '@/types/domain';
+import { DomainConfig, PaymentMethod, TransactionType, TransactionValidator } from '@/types/domain';
 
 describe('Domain Models', () => {
   describe('TransactionType enum', () => {
