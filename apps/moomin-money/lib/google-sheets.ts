@@ -290,26 +290,27 @@ function cleanCategory(categoryStr: string): string {
 /**
  * Spreadsheet 행을 Transaction 객체로 변환
  *
- * 컬럼 매핑:
- * - B: date
- * - C: description (내용)
- * - D: amount (금액)
- * - E: category
- * - F: paymentMethod (결제수단)
- * - G: location (비고/구매처)
- * - H: description (참고사항) - 우선순위
+ * 컬럼 매핑 (한글 헤더):
+ * - A: 날짜
+ * - B: 내용
+ * - C: 금액
+ * - D: 카테고리
+ * - E: 결제수단
+ * - F: 비고 (구매처)
+ * - G: 참고사항
  */
 function rowToTransaction(
   row: { get: (field: string) => string | undefined },
   index: number,
   user: 'User1' | 'User2'
 ): Transaction {
-  const dateStr = row.get('date')?.trim() || '';
-  const categoryStr = row.get('category')?.trim() || '';
-  const amountStr = row.get('amount')?.trim() || '0';
-  const paymentMethodStr = row.get('paymentMethod')?.trim() || '';
-  const locationStr = row.get('location')?.trim() || '';
-  const descriptionStr = row.get('description')?.trim() || '';
+  const dateStr = row.get('날짜')?.trim() || '';
+  const contentStr = row.get('내용')?.trim() || ''; // 내용 (미사용, B열)
+  const amountStr = row.get('금액')?.trim() || '0';
+  const categoryStr = row.get('카테고리')?.trim() || '';
+  const paymentMethodStr = row.get('결제수단')?.trim() || '';
+  const locationStr = row.get('비고')?.trim() || '';
+  const descriptionStr = row.get('참고사항')?.trim() || '';
 
   const id = `${user}-${dateStr}-${index}`;
   const normalizedDate = normalizeDateString(dateStr);
