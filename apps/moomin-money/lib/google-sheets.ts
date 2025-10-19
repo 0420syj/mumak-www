@@ -114,9 +114,16 @@ async function getUserSheet(user: 'User1' | 'User2') {
 export async function getUserTransactions(user: 'User1' | 'User2'): Promise<Transaction[]> {
   try {
     const sheet = await getUserSheet(user);
-    const rows = await sheet.getRows();
+    console.log(`[DEBUG] Sheet "${sheet.title}" found`);
 
-    if (!rows) {
+    // row 6을 헤더로 사용 (0-indexed: headerRowIndex: 5)
+    // row 1-5는 무시하고 row 6을 헤더로, row 7부터 데이터로 취급
+    // @ts-expect-error - headerRowIndex is a valid option in google-spreadsheet
+    const rows = await sheet.getRows({ headerRowIndex: 5 });
+    console.log(`[DEBUG] Got ${rows?.length || 0} rows from sheet`);
+
+    if (!rows || rows.length === 0) {
+      console.log(`[DEBUG] No rows found in sheet`);
       return [];
     }
 
@@ -151,7 +158,8 @@ export async function getTransactionsByDateRange(
 ): Promise<Transaction[]> {
   try {
     const sheet = await getUserSheet(user);
-    const rows = await sheet.getRows();
+    // @ts-expect-error - headerRowIndex is a valid option in google-spreadsheet
+    const rows = await sheet.getRows({ headerRowIndex: 5 });
 
     if (!rows) {
       return [];
@@ -172,10 +180,14 @@ export async function getTransactionsByDateRange(
 /**
  * 카테고리별 거래 조회
  */
-export async function getTransactionsByCategory(user: 'User1' | 'User2', category: string): Promise<Transaction[]> {
+export async function getTransactionsByCategory(
+  user: 'User1' | 'User2',
+  category: string
+): Promise<Transaction[]> {
   try {
     const sheet = await getUserSheet(user);
-    const rows = await sheet.getRows();
+    // @ts-expect-error - headerRowIndex is a valid option in google-spreadsheet
+    const rows = await sheet.getRows({ headerRowIndex: 5 });
 
     if (!rows) {
       return [];
