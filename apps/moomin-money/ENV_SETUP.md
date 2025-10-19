@@ -64,7 +64,7 @@ SPREADSHEET_ID=your_spreadsheet_id_here
 5. 테스트 사용자 추가 (선택사항)
 6. 다시 "사용자 인증 정보 만들기" → "OAuth 클라이언트 ID"
    - **애플리케이션 유형**: 웹 애플리케이션
-   - **이름**: moomin-money-client
+   - **이름**: moomin-money-web
    - **승인된 리디렉션 URI** 추가:
      ```
      http://localhost:3002/api/auth/callback/google
