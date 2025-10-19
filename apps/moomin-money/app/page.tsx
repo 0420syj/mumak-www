@@ -16,19 +16,16 @@ export default function Home() {
     if (session) {
       router.push('/dashboard');
     }
+    // 미인증 사용자는 /auth로 자동 리다이렉트됨 (미들웨어)
   }, [session, status, router]);
 
-  // 로딩 중일 때 또는 인증 확인 중일 때
-  if (status === 'loading') {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <p className="text-slate-600">로딩 중...</p>
-        </div>
+  // 항상 로딩 상태 표시 (리다이렉트 진행 중)
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4" />
+        <p className="text-slate-600 dark:text-slate-400">로딩 중...</p>
       </div>
-    );
-  }
-
-  // 미인증 사용자는 /auth로 자동 리다이렉트됨 (미들웨어)
-  return null;
+    </div>
+  );
 }
