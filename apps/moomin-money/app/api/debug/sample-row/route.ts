@@ -30,20 +30,22 @@ export async function GET() {
     console.log('[DEBUG] Total rows:', rows.length);
     console.log('[DEBUG] First row type:', typeof rows[0]);
     console.log('[DEBUG] First row constructor:', rows[0]?.constructor?.name);
-    console.log('[DEBUG] First row:', JSON.stringify(rows[0], null, 2));
 
     // 첫 3개 행의 데이터 상세히 확인
     const sampleRows = rows.slice(0, 3).map((row, idx) => {
-      console.log(`[DEBUG] Row ${idx}:`, row);
+      console.log(`[DEBUG] Row ${idx}:`, row.constructor.name);
 
       // row.get() 메서드로 각 컬럼 조회
       const columns: Record<string, string | undefined> = {};
-      for (let i = 0; i < 10; i++) {
-        const col = String.fromCharCode(65 + i); // A=65
+      for (let i = 0; i < 15; i++) {
+        const col = String.fromCharCode(65 + i); // A=65, B=66, ...
         try {
           columns[col] = row.get(col);
-        } catch (e) {
-          columns[col] = `[ERROR: ${e instanceof Error ? e.message : String(e)}]`;
+          if (columns[col]) {
+            console.log(`[DEBUG]   ${col}: ${columns[col]}`);
+          }
+        } catch {
+          // skip errors
         }
       }
 
@@ -52,9 +54,6 @@ export async function GET() {
         rowNumber: row.rowNumber,
         rowType: row?.constructor?.name,
         columns,
-        rowDirect: Object.entries(row)
-          .filter(([key]) => !key.startsWith('_'))
-          .slice(0, 10),
       };
     });
 
