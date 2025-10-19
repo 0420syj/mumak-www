@@ -13,8 +13,8 @@ test.describe('Moomin Money - UI Structure', () => {
   const BASE_URL = 'http://localhost:3002';
 
   test.beforeEach(async ({ page }) => {
-    // 페이지 오류를 무시하고 진행
-    page.on('error', () => {});
+    // 페이지 콘솔 메시지 무시하고 진행
+    page.on('console', () => {});
   });
 
   test('homepage should be accessible', async ({ page }) => {
@@ -40,6 +40,30 @@ test.describe('Moomin Money - UI Structure', () => {
 
     // 버튼이 렌더링될 때까지 대기
     await expect(button).toBeVisible({ timeout: 10000 });
+  });
+
+  test('should prevent unauthenticated access to dashboard', async ({ page }) => {
+    // 비인증 상태에서 대시보드 접근 시도
+    await page.goto(`${BASE_URL}/dashboard`, {
+      waitUntil: 'networkidle',
+    });
+
+    // /auth 페이지로 리다이렉트되어야 함
+    await page.waitForURL(/\/auth/, { timeout: 5000 });
+    const url = page.url();
+    expect(url).toContain('/auth');
+  });
+
+  test('should prevent unauthenticated access to transactions page', async ({ page }) => {
+    // 비인증 상태에서 거래 내역 페이지 접근 시도
+    await page.goto(`${BASE_URL}/dashboard/transactions`, {
+      waitUntil: 'networkidle',
+    });
+
+    // /auth 페이지로 리다이렉트되어야 함
+    await page.waitForURL(/\/auth/, { timeout: 5000 });
+    const url = page.url();
+    expect(url).toContain('/auth');
   });
 
   test('dashboard should be inaccessible without auth', async ({ page }) => {

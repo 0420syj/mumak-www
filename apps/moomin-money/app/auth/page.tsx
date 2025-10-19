@@ -1,9 +1,9 @@
 'use client';
 
 import { AlertCircle, Chrome } from 'lucide-react';
-import { signIn } from 'next-auth/react';
+import { signIn, useSession } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { Button } from '@mumak/ui/components/button';
 import { Card } from '@mumak/ui/components/card';
@@ -23,9 +23,18 @@ export default function LoginPage() {
   const errorParam = searchParams.get('error');
 
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(
-    errorParam ? (ERROR_MESSAGES[errorParam] ?? ERROR_MESSAGES.default) : null
-  );
+  const [error, setError] = useState<string | null>((errorParam && ERROR_MESSAGES[errorParam]) || null);
+
+  const { data: session, status } = useSession();
+
+  /**
+   * 로그인한 사용자가 /auth 페이지에 접근하면 대시보드로 리다이렉트
+   */
+  useEffect(() => {
+    if (status === 'authenticated' && session?.user) {
+      window.location.href = '/dashboard';
+    }
+  }, [status, session]);
 
   /**
    * Google 로그인 핸들러
@@ -45,7 +54,7 @@ export default function LoginPage() {
       // 여기서는 실행되지 않음 (redirect로 인해 페이지 이동)
     } catch (err) {
       console.error('[ERROR] Sign in error:', err);
-      setError(ERROR_MESSAGES.default);
+      setError(ERROR_MESSAGES.default || '로그인 중 오류가 발생했습니다.');
       setIsLoading(false);
     }
   }, []);

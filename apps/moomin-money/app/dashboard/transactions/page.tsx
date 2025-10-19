@@ -5,24 +5,38 @@ import { Button } from '@mumak/ui/components/button';
 import { Card } from '@mumak/ui/components/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@mumak/ui/components/table';
 import { useSession } from 'next-auth/react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 
 const fetcher = (url: string) => fetch(url).then(r => r.json());
 
 export default function TransactionsPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [viewUser, setViewUser] = useState<'User1' | 'User2'>('User1');
 
-  // SWR을 사용한 데이터 조회
+  // SWR을 사용한 데이터 조회 (조건 밖으로 이동하여 Hook Rules 준수)
   const { data, error, isLoading } = useSWR<TransactionsResponse>(
-    session ? `/api/transactions?user=${viewUser}` : null,
+    status === 'authenticated' && session ? `/api/transactions?user=${viewUser}` : null,
     fetcher,
     {
       revalidateOnFocus: false,
       dedupingInterval: 60000, // 1분 동안 중복 요청 방지
     }
   );
+
+  /**
+   * 비로그인 상태에서 /auth로 리다이렉트
+   */
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      window.location.href = '/auth';
+    }
+  }, [status]);
+
+  // 로딩 중 또는 비로그인 상태에는 아무것도 표시하지 않음
+  if (status === 'loading' || status === 'unauthenticated') {
+    return null;
+  }
 
   const transactions = data?.transactions || [];
 
