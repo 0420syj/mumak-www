@@ -88,12 +88,7 @@ export class BusinessLogicError extends AppError {
  */
 export class ExternalServiceError extends AppError {
   constructor(service: string, message: string) {
-    super(
-      'EXTERNAL_SERVICE_ERROR',
-      503,
-      `${service} service error: ${message}`,
-      { service }
-    );
+    super('EXTERNAL_SERVICE_ERROR', 503, `${service} service error: ${message}`, { service });
     Object.setPrototypeOf(this, ExternalServiceError.prototype);
   }
 }

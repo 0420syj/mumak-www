@@ -62,20 +62,14 @@ export default function LoginPage() {
       <Card className="w-full max-w-md p-8 shadow-lg bg-white dark:bg-slate-900">
         {/* 헤더 */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-            Moomin Money
-          </h1>
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Moomin Money</h1>
           <p className="text-slate-600 dark:text-slate-400">스프레드시트 기반 가계부</p>
         </div>
 
         {/* 설명 */}
         <div className="mb-8">
-          <p className="text-slate-700 dark:text-slate-300 text-center text-sm mb-4">
-            Google 계정으로 로그인하세요
-          </p>
-          <p className="text-slate-500 dark:text-slate-400 text-center text-xs">
-            허용된 계정으로만 접근 가능합니다
-          </p>
+          <p className="text-slate-700 dark:text-slate-300 text-center text-sm mb-4">Google 계정으로 로그인하세요</p>
+          <p className="text-slate-500 dark:text-slate-400 text-center text-xs">허용된 계정으로만 접근 가능합니다</p>
         </div>
 
         {/* 에러 메시지 */}
@@ -98,9 +92,7 @@ export default function LoginPage() {
 
         {/* 하단 정보 */}
         <div className="mt-8 pt-8 border-t border-slate-200 dark:border-slate-800">
-          <p className="text-slate-500 dark:text-slate-400 text-xs text-center">
-            이 서비스는 개인용 가계부입니다
-          </p>
+          <p className="text-slate-500 dark:text-slate-400 text-xs text-center">이 서비스는 개인용 가계부입니다</p>
           <p className="text-slate-400 dark:text-slate-500 text-xs text-center mt-2">
             안전한 인증을 위해 NextAuth.js를 사용합니다
           </p>

@@ -5,7 +5,7 @@ import { assertEnvironment, logEnvironmentStatus } from '@/lib/env';
 assertEnvironment();
 logEnvironmentStatus();
 
-export default auth(req => {
+export default auth(() => {
   // 인증되지 않은 사용자는 /auth로 리다이렉트됨
   // NextAuth 미들웨어가 자동으로 처리함
   return undefined;

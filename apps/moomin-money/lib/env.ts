@@ -3,6 +3,8 @@
  * 앱 시작 시 필요한 모든 환경변수를 검증합니다.
  */
 
+/* eslint-disable turbo/no-undeclared-env-vars */
+
 /**
  * 필수 환경변수 목록
  */
@@ -28,14 +30,6 @@ const REQUIRED_ENV_VARS = [
   'SHEET_NAME_USER1',
   'SHEET_NAME_USER2',
 ] as const;
-
-/**
- * 선택적 환경변수 (기본값 있음)
- */
-const OPTIONAL_ENV_VARS = {
-  NODE_ENV: 'development',
-  LOG_LEVEL: 'info',
-} as const;
 
 /**
  * 환경변수 검증 결과
@@ -93,7 +87,8 @@ export function assertEnvironment(): void {
     const errorMessage = [
       errors.join('\n\n'),
       '\nPlease check ENV_SETUP.md for configuration guide.',
-      'Current NODE_ENV:', process.env.NODE_ENV,
+      'Current NODE_ENV:',
+      process.env.NODE_ENV,
     ].join('\n');
 
     throw new Error(errorMessage);

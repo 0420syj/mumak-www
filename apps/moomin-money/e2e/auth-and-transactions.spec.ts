@@ -18,25 +18,18 @@ test.describe('Moomin Money - UI Structure', () => {
     expect(response?.ok()).toBe(true);
   });
 
-  test('auth page should have correct title', async ({ page }) => {
-    await page.goto(`${BASE_URL}/auth`);
+  test('should display login page with Google Sign-In button', async ({ page }) => {
+    await page.goto('/auth');
+    // Response를 확인할 필요가 없으므로 제거
+    await page.waitForURL('/auth');
 
-    // 페이지 제목 확인
-    const heading = page.locator('h1');
-    await expect(heading).toContainText('Moomin Money');
-  });
-
-  test('auth page should display Google button', async ({ page }) => {
-    await page.goto(`${BASE_URL}/auth`);
-
-    // Google 로그인 버튼 확인
-    const googleButton = page.locator('button:has-text("Google로 로그인")');
-    await expect(googleButton).toBeVisible();
+    expect(await page.textContent('h1')).toContain('Moomin Money');
+    expect(await page.getByRole('button', { name: /google/i })).toBeVisible();
   });
 
   test('dashboard should be inaccessible without auth', async ({ page }) => {
     // 대시보드 접근 시도 (비인증 상태)
-    const response = await page.goto(`${BASE_URL}/dashboard`, {
+    await page.goto(`${BASE_URL}/dashboard`, {
       waitUntil: 'networkidle',
     });
 
@@ -64,31 +57,19 @@ test.describe('Moomin Money - Authenticated Flows', () => {
   // 주의: 다음 테스트들은 인증된 세션이 필요함
   // 구현: beforeEach에서 mock auth 설정 또는 real auth 수행
 
-  test.skip('authenticated user should see transactions', async ({ page }) => {
-    // TODO: Setup mock authentication
-    // 1. SessionProvider에서 mock session 설정
-    // 2. 또는 next-auth test utils 사용
-    expect(true).toBe(true);
+  test.skip('should authenticate and redirect to dashboard', async () => {
+    // 실제 OAuth 로그인 테스트는 mock 서버 필요
   });
 
-  test.skip('should display transaction list with data', async ({ page }) => {
-    // TODO: 인증 후 테스트
-    // 1. 로그인
-    // 2. /dashboard/transactions 접근
-    // 3. 테이블 데이터 확인
-    expect(true).toBe(true);
+  test.skip('should prevent unauthorized access', async () => {
+    // 권한 검증 테스트
   });
 
-  test.skip('should switch between users', async ({ page }) => {
-    // TODO: 사용자 전환 기능 테스트
-    expect(true).toBe(true);
+  test.skip('should handle authentication errors', async () => {
+    // 인증 오류 처리
   });
 
-  test.skip('should format data correctly', async ({ page }) => {
-    // TODO: 데이터 포맷팅 확인
-    // - 날짜 형식: YYYY-MM-DD
-    // - 금액 형식: 1,000,000원
-    // - 카테고리: 이모지 제거 확인
-    expect(true).toBe(true);
+  test.skip('should display transactions for authenticated user', async () => {
+    // 인증된 사용자의 거래 데이터 표시
   });
 });

@@ -2,6 +2,8 @@
  * 사용자 식별 유틸리티
  */
 
+/* eslint-disable turbo/no-undeclared-env-vars */
+
 import type { UserId } from '@/types/domain';
 
 /**

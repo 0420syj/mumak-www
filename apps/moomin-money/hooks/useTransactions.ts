@@ -4,8 +4,8 @@
  * 개선된 SWR 설정으로 API 할당량을 절감합니다.
  */
 
-import type { TransactionsResponse } from '@/types/transaction';
 import type { UserId } from '@/types/domain';
+import type { TransactionsResponse } from '@/types/transaction';
 import { useSession } from 'next-auth/react';
 import useSWR, { type SWRConfiguration } from 'swr';
 

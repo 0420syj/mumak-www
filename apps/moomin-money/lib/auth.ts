@@ -3,6 +3,8 @@
  * CSRF 보호, 권한 검증, 세션 관리
  */
 
+/* eslint-disable turbo/no-undeclared-env-vars */
+
 import NextAuth from 'next-auth';
 import Google from 'next-auth/providers/google';
 import { identifyUserByEmail } from './user';
@@ -11,10 +13,7 @@ import { identifyUserByEmail } from './user';
  * 허용된 이메일 목록
  * 이 이메일 주소로만 로그인 가능
  */
-const allowedEmails = [
-  process.env.ALLOWED_EMAIL_1,
-  process.env.ALLOWED_EMAIL_2,
-].filter(Boolean) as string[];
+const allowedEmails = [process.env.ALLOWED_EMAIL_1, process.env.ALLOWED_EMAIL_2].filter(Boolean) as string[];
 
 /**
  * NextAuth 설정

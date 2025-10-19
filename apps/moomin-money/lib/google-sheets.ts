@@ -1,9 +1,3 @@
-import { JWT } from 'google-auth-library';
-import { GoogleSpreadsheet } from 'google-spreadsheet';
-
-import { TransactionType } from '@/types/domain';
-import type { Transaction } from '@/types/transaction';
-
 /**
  * Google Sheets 클라이언트
  * google-spreadsheet 라이브러리를 래핑하여 사용 편의성 향상
@@ -12,6 +6,14 @@ import type { Transaction } from '@/types/transaction';
  * - SHEET_NAME_USER1: User1의 거래 데이터
  * - SHEET_NAME_USER2: User2의 거래 데이터
  */
+
+/* eslint-disable turbo/no-undeclared-env-vars */
+
+import { JWT } from 'google-auth-library';
+import { GoogleSpreadsheet } from 'google-spreadsheet';
+
+import { TransactionType } from '@/types/domain';
+import type { Transaction } from '@/types/transaction';
 
 /**
  * 시트 구성 설정
@@ -314,7 +316,7 @@ function rowToTransaction(
   user: 'User1' | 'User2'
 ): Transaction {
   const dateStr = row.get(COLUMN_NAMES.DATE)?.trim() || '';
-  const contentStr = row.get(COLUMN_NAMES.CONTENT)?.trim() || ''; // 내용 (미사용, B열)
+  row.get(COLUMN_NAMES.CONTENT)?.trim(); // 내용 (미사용, B열)
   const amountStr = row.get(COLUMN_NAMES.AMOUNT)?.trim() || '0';
   const categoryStr = row.get(COLUMN_NAMES.CATEGORY)?.trim() || '';
   const paymentMethodStr = row.get(COLUMN_NAMES.PAYMENT_METHOD)?.trim() || '';
