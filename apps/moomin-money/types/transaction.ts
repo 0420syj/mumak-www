@@ -4,7 +4,7 @@
  * 도메인 모델 기반으로 구성
  */
 
-import type { PaymentMethod, TransactionType, UserId } from './domain';
+import type { TransactionType, UserId } from './domain';
 
 export interface Transaction {
   /** 거래 고유 ID */

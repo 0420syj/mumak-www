@@ -1,4 +1,9 @@
 import { auth } from '@/lib/auth';
+import { assertEnvironment, logEnvironmentStatus } from '@/lib/env';
+
+// 앱 시작 시 환경변수 검증
+assertEnvironment();
+logEnvironmentStatus();
 
 export default auth(req => {
   // 인증되지 않은 사용자는 /auth로 리다이렉트됨
