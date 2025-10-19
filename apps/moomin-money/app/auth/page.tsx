@@ -30,26 +30,19 @@ export default function LoginPage() {
   /**
    * Google 로그인 핸들러
    * - NextAuth가 CSRF 토큰 자동 관리
-   * - redirect: true로 설정하면 NextAuth가 safe redirect 처리
+   * - redirect: true로 설정하면 NextAuth가 Google 인증 후 /dashboard로 리다이렉트
    */
   const handleGoogleSignIn = useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
     try {
-      // redirect: true를 사용하면 NextAuth가 자동으로
-      // safe redirect를 처리합니다 (CSRF 보호)
-      const result = await signIn('google', {
+      // redirect: true를 사용해서 실제 Google 인증 수행
+      await signIn('google', {
         redirect: true,
-        // callbackUrl은 URL 쿼리 파라미터로도 전달 가능
-        // 예: /auth?callbackUrl=/dashboard
+        callbackUrl: '/dashboard', // 로그인 성공 후 이동할 URL
       });
-
-      // redirect: true인 경우 실행되지 않음 (자동 리다이렉트)
-      if (result?.error) {
-        setError(ERROR_MESSAGES[result.error] || ERROR_MESSAGES.default);
-        setIsLoading(false);
-      }
+      // 여기서는 실행되지 않음 (redirect로 인해 페이지 이동)
     } catch (err) {
       console.error('[ERROR] Sign in error:', err);
       setError(ERROR_MESSAGES.default);

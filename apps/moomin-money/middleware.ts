@@ -6,8 +6,9 @@ assertEnvironment();
 logEnvironmentStatus();
 
 export default auth(() => {
-  // 인증되지 않은 사용자는 /auth로 리다이렉트됨
   // NextAuth 미들웨어가 자동으로 처리함
+  // - /auth 페이지: 모든 사용자 접근 가능
+  // - 나머지 페이지: 인증된 사용자만 접근 가능
   return undefined;
 });
 

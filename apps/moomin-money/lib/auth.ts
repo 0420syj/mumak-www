@@ -30,7 +30,6 @@ export const { handlers, auth } = NextAuth({
 
   // 페이지 설정 - NextAuth가 자동으로 CSRF 토큰 관리
   pages: {
-    signIn: '/auth',
     error: '/auth',
   },
 
@@ -125,8 +124,13 @@ export const { handlers, auth } = NextAuth({
      * authorized 콜백: 요청 권한 검증
      * - 미들웨어에서 경로 보호
      */
-    authorized({ auth: authData }) {
-      // 인증된 사용자만 접근 가능
+    authorized({ auth: authData, request }) {
+      // /auth 페이지는 모든 사용자 접근 허용
+      if (request.nextUrl.pathname.startsWith('/auth')) {
+        return true;
+      }
+
+      // 나머지 페이지는 인증된 사용자만 접근 가능
       return !!authData?.user;
     },
   },
