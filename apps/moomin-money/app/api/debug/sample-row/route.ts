@@ -34,19 +34,19 @@ export async function GET() {
 
     // 첫 3개 행의 데이터 상세히 확인
     const sampleRows = rows.slice(0, 3).map((row, idx) => {
-      console.log(`[DEBUG] Row ${idx}:`, row.constructor.name);
+      console.log(`[DEBUG] Row ${idx} rowNumber: ${row.rowNumber}`);
 
       // row.get() 메서드로 각 컬럼 조회
       const columns: Record<string, string | undefined> = {};
       for (let i = 0; i < 15; i++) {
         const col = String.fromCharCode(65 + i); // A=65, B=66, ...
         try {
-          columns[col] = row.get(col);
-          if (columns[col]) {
-            console.log(`[DEBUG]   ${col}: ${columns[col]}`);
-          }
+          const value = row.get(col);
+          columns[col] = value;
+          console.log(`[DEBUG]   ${col}: '${value}' (type: ${typeof value})`);
         } catch {
           // skip errors
+          console.log(`[DEBUG]   ${col}: [ERROR]`);
         }
       }
 
