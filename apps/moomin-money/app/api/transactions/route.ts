@@ -1,5 +1,6 @@
 import { auth } from '@/lib/auth';
 import { getUserTransactions } from '@/lib/google-sheets';
+import { identifyUserByEmail } from '@/lib/user';
 import type { TransactionsResponse } from '@/types/transaction';
 import { NextResponse } from 'next/server';
 
@@ -18,16 +19,8 @@ export async function GET(request: Request) {
     }
 
     // 사용자 결정 (이메일 기반)
-    const allowedEmail1 = process.env.ALLOWED_EMAIL_1;
-    const allowedEmail2 = process.env.ALLOWED_EMAIL_2;
-
-    let currentUser: 'User1' | 'User2';
-
-    if (session.user.email === allowedEmail1) {
-      currentUser = 'User1';
-    } else if (session.user.email === allowedEmail2) {
-      currentUser = 'User2';
-    } else {
+    const currentUser = identifyUserByEmail(session.user.email);
+    if (!currentUser) {
       return NextResponse.json({ error: 'User email not recognized' }, { status: 403 });
     }
 

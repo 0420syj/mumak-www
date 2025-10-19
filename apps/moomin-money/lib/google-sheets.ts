@@ -26,6 +26,19 @@ const SHEET_CONFIG = {
   },
 };
 
+/**
+ * Google Sheets 컬럼명 매핑 (한글)
+ */
+const COLUMN_NAMES = {
+  DATE: '날짜',
+  CONTENT: '내용',
+  AMOUNT: '금액',
+  CATEGORY: '카테고리',
+  PAYMENT_METHOD: '결제수단',
+  LOCATION: '비고',
+  DESCRIPTION: '참고사항',
+} as const;
+
 // 사용자별 시트 이름 매핑 (환경변수에서 가져옴)
 function getUserSheetMap(): Record<'User1' | 'User2', string> {
   const user1Sheet = process.env.SHEET_NAME_USER1;
@@ -166,7 +179,7 @@ export async function getTransactionsByDateRange(
 
     return rows
       .filter(row => {
-        const date = row.get('date')?.trim() || '';
+        const date = row.get(COLUMN_NAMES.DATE)?.trim() || '';
         return date >= startDate && date <= endDate;
       })
       .map((row, index) => rowToTransaction(row, index, user));
@@ -193,7 +206,7 @@ export async function getTransactionsByCategory(user: 'User1' | 'User2', categor
     }
 
     return rows
-      .filter(row => row.get('category')?.trim() === category)
+      .filter(row => row.get(COLUMN_NAMES.CATEGORY)?.trim() === category)
       .map((row, index) => rowToTransaction(row, index, user));
   } catch (error) {
     console.error(
@@ -221,11 +234,11 @@ export async function addTransaction(
     const sheet = await getUserSheet(user);
 
     const newRow = await sheet.addRow({
-      date: data.date,
-      category: data.category,
-      description: data.description,
-      amount: data.amount.toString(),
-      type: data.type,
+      [COLUMN_NAMES.DATE]: data.date,
+      [COLUMN_NAMES.CATEGORY]: data.category,
+      [COLUMN_NAMES.DESCRIPTION]: data.description,
+      [COLUMN_NAMES.AMOUNT]: data.amount.toString(),
+      // type 필드는 현재 모든 거래가 지출이므로 제외
     });
 
     return rowToTransaction(newRow, 0, user);
@@ -299,13 +312,13 @@ function rowToTransaction(
   index: number,
   user: 'User1' | 'User2'
 ): Transaction {
-  const dateStr = row.get('날짜')?.trim() || '';
-  const contentStr = row.get('내용')?.trim() || ''; // 내용 (미사용, B열)
-  const amountStr = row.get('금액')?.trim() || '0';
-  const categoryStr = row.get('카테고리')?.trim() || '';
-  const paymentMethodStr = row.get('결제수단')?.trim() || '';
-  const locationStr = row.get('비고')?.trim() || '';
-  const descriptionStr = row.get('참고사항')?.trim() || '';
+  const dateStr = row.get(COLUMN_NAMES.DATE)?.trim() || '';
+  const contentStr = row.get(COLUMN_NAMES.CONTENT)?.trim() || ''; // 내용 (미사용, B열)
+  const amountStr = row.get(COLUMN_NAMES.AMOUNT)?.trim() || '0';
+  const categoryStr = row.get(COLUMN_NAMES.CATEGORY)?.trim() || '';
+  const paymentMethodStr = row.get(COLUMN_NAMES.PAYMENT_METHOD)?.trim() || '';
+  const locationStr = row.get(COLUMN_NAMES.LOCATION)?.trim() || '';
+  const descriptionStr = row.get(COLUMN_NAMES.DESCRIPTION)?.trim() || '';
 
   const id = `${user}-${dateStr}-${index}`;
   const normalizedDate = normalizeDateString(dateStr);
