@@ -86,6 +86,7 @@ SPREADSHEET_ID=your_spreadsheet_id_here
    - JSON 파일 다운로드
 
 5. 다운로드한 JSON 파일 내용:
+
    ```json
    {
      "type": "service_account",
@@ -115,10 +116,10 @@ SPREADSHEET_ID=your_spreadsheet_id_here
 
 **Sheet 이름**: `Transactions`
 
-| Date       | User | Category | Description | Amount | Type     |
-|-----------|------|----------|-------------|--------|----------|
-| 2024-01-15| User1| Food     | Lunch       | 15000  | Expense  |
-| 2024-01-16| User2| Income   | Salary      | 5000000| Income   |
+| Date       | User  | Category | Description | Amount  | Type    |
+| ---------- | ----- | -------- | ----------- | ------- | ------- |
+| 2024-01-15 | User1 | Food     | Lunch       | 15000   | Expense |
+| 2024-01-16 | User2 | Income   | Salary      | 5000000 | Income  |
 
 ### Step 3: Service Account 추가
 
@@ -168,15 +169,18 @@ pnpm dev
 ## 🆘 문제 해결
 
 ### 1. "Not authorized" 에러
+
 - `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` 올바른지 확인
 - Google Cloud Console에서 OAuth 동의 화면이 완성되었는지 확인
 
 ### 2. "Failed to fetch spreadsheet" 에러
+
 - `SPREADSHEET_ID` 올바른지 확인
 - Service Account Email이 스프레드시트에 공유되었는지 확인
 - `GOOGLE_PRIVATE_KEY`에 개행 문자(`\n`)가 포함되었는지 확인
 
 ### 3. "Invalid credentials" 에러
+
 - Service Account JSON 키가 유효한지 확인
 - 새 키를 다시 생성하여 시도
 

@@ -7,6 +7,7 @@ Google 스프레드시트 연동 웹 가계부 애플리케이션의 아키텍�
 **목적**: 2명의 사용자가 공유 Google 스프레드시트에서 가계부 데이터를 조회, 생성, 수정할 수 있는 웹 애플리케이션
 
 **특징**:
+
 - Google OAuth 인증 (허용된 2개 Email만 접근 가능)
 - Google Spreadsheet 실시간 CRUD
 - 2명 사용자 모두 상호 데이터 접근 및 수정 권한
@@ -19,21 +20,24 @@ Google 스프레드시트 연동 웹 가계부 애플리케이션의 아키텍�
 ### 기술 스택
 
 #### 1. **NextAuth.js v5** (권장) ⭐
+
 ```bash
 npm install next-auth
 ```
 
 **장점**:
+
 - Next.js App Router와 완벽 호환
 - Google OAuth 공식 지원
 - 세션/JWT 두 방식 모두 지원
 - 미들웨어로 경로 보호 가능
 
 **구조**:
+
 ```typescript
 // app/api/auth/[...nextauth]/route.ts
-import NextAuth from "next-auth"
-import Google from "next-auth/providers/google"
+import NextAuth from 'next-auth';
+import Google from 'next-auth/providers/google';
 
 export const { handlers, auth } = NextAuth({
   providers: [
@@ -45,19 +49,17 @@ export const { handlers, auth } = NextAuth({
   callbacks: {
     authorized({ auth, request: { pathname } }) {
       // 허용된 이메일만 접근 가능
-      const allowedEmails = [
-        process.env.ALLOWED_EMAIL_1,
-        process.env.ALLOWED_EMAIL_2,
-      ]
-      return allowedEmails.includes(auth?.user?.email!)
+      const allowedEmails = [process.env.ALLOWED_EMAIL_1, process.env.ALLOWED_EMAIL_2];
+      return allowedEmails.includes(auth?.user?.email!);
     },
   },
-})
+});
 ```
 
 #### 2. **Google OAuth 설정**
 
 **Google Cloud Console 설정**:
+
 1. `https://console.cloud.google.com` 접속
 2. 새 프로젝트 생성
 3. OAuth 동의 화면 설정
@@ -65,6 +67,7 @@ export const { handlers, auth } = NextAuth({
 5. 인증 리디렉션 URI: `http://localhost:3002/api/auth/callback/google`
 
 **환경변수** (`.env.local`):
+
 ```env
 GOOGLE_CLIENT_ID=your_client_id
 GOOGLE_CLIENT_SECRET=your_client_secret
@@ -83,48 +86,56 @@ ALLOWED_EMAIL_2=user2@gmail.com
 ### 기술 스택
 
 #### 1. **google-spreadsheet** (권장)
+
 ```bash
 npm install google-spreadsheet
 ```
 
 **특징**:
+
 - Google Sheets API v4 래퍼
 - TypeScript 지원
 - 간단한 API
 - 인증 통합 용이
 
 **기본 사용**:
+
 ```typescript
-import { GoogleSpreadsheet } from "google-spreadsheet"
-import { JWT } from "google-auth-library"
+import { GoogleSpreadsheet } from 'google-spreadsheet';
+import { JWT } from 'google-auth-library';
 
-const doc = new GoogleSpreadsheet(SPREADSHEET_ID, new JWT({
-  email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-  key: process.env.GOOGLE_PRIVATE_KEY,
-}))
+const doc = new GoogleSpreadsheet(
+  SPREADSHEET_ID,
+  new JWT({
+    email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
+    key: process.env.GOOGLE_PRIVATE_KEY,
+  })
+);
 
-await doc.loadInfo()
-const sheet = doc.sheetsByIndex[0]
-const rows = await sheet.getRows()
+await doc.loadInfo();
+const sheet = doc.sheetsByIndex[0];
+const rows = await sheet.getRows();
 ```
 
 #### 2. **대체/보조 라이브러리**
 
-| 라이브러리 | 용도 | 장점 | 단점 |
-|-----------|------|------|------|
-| **google-auth-library** | Google 인증 | 공식 라이브러리 | 저수준 API |
-| **@google-cloud/sheets** | Sheets API | 공식, 타입스크립트 | 복잡한 설정 |
-| **gsheet** | 간단한 CRUD | 매우 간단 | 기능 제한 |
+| 라이브러리               | 용도        | 장점               | 단점        |
+| ------------------------ | ----------- | ------------------ | ----------- |
+| **google-auth-library**  | Google 인증 | 공식 라이브러리    | 저수준 API  |
+| **@google-cloud/sheets** | Sheets API  | 공식, 타입스크립트 | 복잡한 설정 |
+| **gsheet**               | 간단한 CRUD | 매우 간단          | 기능 제한   |
 
 #### 3. **Service Account 설정**
 
 **Google Cloud Console**:
+
 1. IAM & Admin → Service Accounts
 2. Service Account 생성
 3. JSON 키 다운로드
 4. 스프레드시트에 Service Account Email 공유
 
 **환경변수**:
+
 ```env
 GOOGLE_SERVICE_ACCOUNT_EMAIL=your-service-account@project.iam.gserviceaccount.com
 GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
@@ -162,43 +173,36 @@ RootLayout (인증 미들웨어 + 테마)
 ### 핵심 컴포넌트 (shadcn/ui 기반)
 
 #### 1. **로그인 페이지**
+
 ```tsx
 // app/auth/page.tsx
-import { Button } from "@mumak/ui/button"
-import { Card } from "@mumak/ui/card"
-import { signIn } from "next-auth/react"
+import { Button } from '@mumak/ui/button';
+import { Card } from '@mumak/ui/card';
+import { signIn } from 'next-auth/react';
 
 export default function LoginPage() {
   return (
     <div className="flex items-center justify-center min-h-screen">
       <Card className="w-full max-w-md p-8">
         <h1 className="text-2xl font-bold mb-4">Moomin Money</h1>
-        <p className="text-gray-600 mb-6">
-          Google 계정으로 로그인하세요
-        </p>
-        <Button
-          onClick={() => signIn("google", { callbackUrl: "/dashboard" })}
-          className="w-full"
-        >
+        <p className="text-gray-600 mb-6">Google 계정으로 로그인하세요</p>
+        <Button onClick={() => signIn('google', { callbackUrl: '/dashboard' })} className="w-full">
           Google로 로그인
         </Button>
       </Card>
     </div>
-  )
+  );
 }
 ```
 
 #### 2. **대시보드 레이아웃**
+
 ```tsx
 // app/dashboard/layout.tsx
-import { Sidebar } from "@/components/sidebar"
-import { Header } from "@/components/header"
+import { Sidebar } from '@/components/sidebar';
+import { Header } from '@/components/header';
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen">
       <Sidebar />
@@ -207,23 +211,24 @@ export default function DashboardLayout({
         <main className="flex-1 overflow-auto p-6">{children}</main>
       </div>
     </div>
-  )
+  );
 }
 ```
 
 #### 3. **거래 내역 테이블**
+
 ```tsx
 // app/dashboard/transactions/page.tsx
-import { DataTable } from "@/components/data-table"
-import { TransactionToolbar } from "@/components/transaction-toolbar"
+import { DataTable } from '@/components/data-table';
+import { TransactionToolbar } from '@/components/transaction-toolbar';
 
 export default function TransactionsPage() {
-  const [userId, setUserId] = useState<"mine" | "theirs">("mine")
-  const [transactions, setTransactions] = useState([])
+  const [userId, setUserId] = useState<'mine' | 'theirs'>('mine');
+  const [transactions, setTransactions] = useState([]);
 
   useEffect(() => {
-    fetchTransactions(userId)
-  }, [userId])
+    fetchTransactions(userId);
+  }, [userId]);
 
   return (
     <div>
@@ -236,7 +241,7 @@ export default function TransactionsPage() {
         onAdd={handleAdd}
       />
     </div>
-  )
+  );
 }
 ```
 
@@ -361,18 +366,22 @@ Google Sheets 업데이트
 ## 🛡️ 보안 고려사항
 
 ### 1. **인증 보호**
+
 - NextAuth 미들웨어로 경로 보호
 - 허용된 이메일만 접근 가능
 
 ### 2. **API 보안**
+
 - 모든 API Route에서 세션 확인
 - 사용자별 데이터 접근 제어
 
 ### 3. **환경변수**
+
 - 민감한 정보는 `.env.local`에만 저장
 - `.gitignore`에 포함
 
 ### 4. **Service Account 보안**
+
 - 스프레드시트 공유 시 읽기-쓰기 권한 명확히 설정
 - Private Key 노출 주의
 
@@ -400,18 +409,21 @@ Google Sheets 업데이트
 ## 🚀 단계별 구현 계획
 
 ### Phase 1: 인증 (이번 주)
+
 1. NextAuth.js 설정
 2. Google OAuth 설정
 3. 로그인 페이지 UI
 4. 미들웨어 보호
 
 ### Phase 2: 조회 (다음주)
+
 1. Google Spreadsheet 연동
 2. 데이터 조회 API
 3. 거래 목록 테이블 UI
 4. 사용자별 탭 전환
 
 ### Phase 3: CRUD (다음 다음주)
+
 1. 거래 추가 폼
 2. 거래 수정 기능
 3. 거래 삭제 확인
