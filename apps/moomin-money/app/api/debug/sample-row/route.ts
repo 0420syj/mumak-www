@@ -4,8 +4,9 @@ import { NextResponse } from 'next/server';
 const SHEET_CONFIG = {
   HEADER_ROW: 1,
   DATA_START_COLUMN: 'A',
+  DATA_START_ROW: 2,
   get DATA_RANGE() {
-    return `${this.DATA_START_COLUMN}${this.HEADER_ROW}`;
+    return `${this.DATA_START_COLUMN}${this.DATA_START_ROW}`;
   },
 };
 

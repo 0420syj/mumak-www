@@ -19,9 +19,10 @@ import type { Transaction } from '@/types/transaction';
 const SHEET_CONFIG = {
   HEADER_ROW: 1, // 헤더가 있는 행 번호 (1-based)
   DATA_START_COLUMN: 'A', // 데이터가 시작하는 컬럼
+  DATA_START_ROW: 2, // 실제 데이터가 시작하는 행 (row 1은 헤더)
   get DATA_RANGE() {
-    // 예: "A1"
-    return `${this.DATA_START_COLUMN}${this.HEADER_ROW}`;
+    // 예: "A2" (row 1은 헤더, row 2부터 데이터)
+    return `${this.DATA_START_COLUMN}${this.DATA_START_ROW}`;
   },
 };
 
