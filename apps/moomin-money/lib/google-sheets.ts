@@ -1,5 +1,5 @@
-import { GoogleSpreadsheet } from 'google-spreadsheet';
 import { JWT } from 'google-auth-library';
+import { GoogleSpreadsheet } from 'google-spreadsheet';
 
 import type { Transaction } from '@/types/transaction';
 
@@ -67,10 +67,7 @@ async function initializeSheet(): Promise<GoogleSpreadsheet> {
     const serviceAccountAuth = new JWT({
       email: serviceAccountEmail,
       key: privateKey.replace(/\\n/g, '\n'), // 이스케이프 문자열 처리
-      scopes: [
-        'https://www.googleapis.com/auth/spreadsheets',
-        'https://www.googleapis.com/auth/drive',
-      ],
+      scopes: ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive'],
     });
 
     console.log('[DEBUG] JWT auth created');
@@ -318,6 +315,7 @@ export async function getSheetInfo() {
     const doc = await initializeSheet();
     const sheetMap = getUserSheetMap();
     return {
+      doc, // doc 객체 추가
       title: doc.title,
       spreadsheetId: doc.spreadsheetId,
       sheets: doc.sheetsByIndex.map(sheet => ({
