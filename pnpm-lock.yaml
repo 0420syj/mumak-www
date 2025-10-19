@@ -115,6 +115,9 @@ importers:
       '@mumak/eslint-config':
         specifier: workspace:*
         version: link:../../packages/eslint-config
+      '@mumak/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
       '@playwright/test':
         specifier: ^1.54.2
         version: 1.54.2

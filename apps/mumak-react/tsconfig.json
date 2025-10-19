@@ -1,10 +1,12 @@
 {
-  "files": [],
-  "references": [{ "path": "./tsconfig.app.json" }, { "path": "./tsconfig.node.json" }],
+  "extends": "@mumak/typescript-config/react-vite.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@mumak/ui/*": ["../../packages/ui/src/*"]
     }
-  }
+  },
+  "include": ["src", "vite.config.ts", "vitest.config.js"],
+  "exclude": ["node_modules"]
 }
