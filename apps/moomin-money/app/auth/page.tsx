@@ -24,7 +24,7 @@ export default function LoginPage() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(
-    errorParam ? ERROR_MESSAGES[errorParam] || ERROR_MESSAGES.default : null
+    errorParam ? (ERROR_MESSAGES[errorParam] ?? ERROR_MESSAGES.default) : null
   );
 
   /**

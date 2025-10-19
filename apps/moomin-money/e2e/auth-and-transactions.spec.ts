@@ -57,8 +57,8 @@ test.describe('Moomin Money - UI Structure', () => {
     await page.goto(`${BASE_URL}/auth`);
     await page.waitForLoadState('networkidle');
 
-    // 카드 컴포넌트 확인
-    const card = page.locator('[class*="Card"]').first();
+    // 카드 컴포넌트 확인 - data-slot="card" 속성 사용 (shadcn/ui Card)
+    const card = page.locator('[data-slot="card"]');
     await expect(card).toBeVisible();
 
     // 설명 텍스트 확인
