@@ -57,11 +57,6 @@ async function initializeSheet(): Promise<GoogleSpreadsheet> {
   const privateKey = process.env.GOOGLE_PRIVATE_KEY;
   const spreadsheetId = process.env.SPREADSHEET_ID;
 
-  console.log('[DEBUG] Initializing Google Sheets...');
-  console.log('[DEBUG] serviceAccountEmail:', serviceAccountEmail ? 'set' : 'MISSING');
-  console.log('[DEBUG] privateKey:', privateKey ? `set (length: ${privateKey.length})` : 'MISSING');
-  console.log('[DEBUG] spreadsheetId:', spreadsheetId ? 'set' : 'MISSING');
-
   if (!serviceAccountEmail || !privateKey || !spreadsheetId) {
     const missing = [];
     if (!serviceAccountEmail) missing.push('GOOGLE_SERVICE_ACCOUNT_EMAIL');
@@ -75,8 +70,6 @@ async function initializeSheet(): Promise<GoogleSpreadsheet> {
   let doc: GoogleSpreadsheet;
 
   try {
-    console.log('[DEBUG] Creating GoogleSpreadsheet instance...');
-
     // JWT 인증 설정
     const serviceAccountAuth = new JWT({
       email: serviceAccountEmail,
@@ -84,22 +77,15 @@ async function initializeSheet(): Promise<GoogleSpreadsheet> {
       scopes: ['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive'],
     });
 
-    console.log('[DEBUG] JWT auth created');
-
     // GoogleSpreadsheet 인스턴스 생성
     doc = new GoogleSpreadsheet(spreadsheetId, serviceAccountAuth);
 
-    console.log('[DEBUG] Calling doc.loadInfo()...');
     await doc.loadInfo();
     cachedDoc = doc;
-    console.log('[SUCCESS] Google Sheets loaded:', doc.title);
-    console.log('[DEBUG] Available sheets:', doc.sheetsByIndex.map(s => s.title).join(', '));
+    console.log(`[SUCCESS] Google Sheets initialized: ${doc.title}`);
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : String(error);
-    const errorStack = error instanceof Error ? error.stack : '';
-    console.error('[ERROR] Failed to load Google Sheets');
-    console.error('[ERROR] Message:', errorMsg);
-    console.error('[ERROR] Stack:', errorStack);
+    console.error('[ERROR] Failed to initialize Google Sheets:', errorMsg);
     throw new Error(`Failed to initialize Google Sheets connection: ${errorMsg}`);
   }
 
@@ -128,21 +114,21 @@ export async function getUserSheet(user: 'User1' | 'User2') {
 export async function getUserTransactions(user: 'User1' | 'User2'): Promise<Transaction[]> {
   try {
     const sheet = await getUserSheet(user);
-    console.log(`[DEBUG] Sheet "${sheet.title}" found`);
 
     // row 6을 헤더로 사용하기 위해 range를 지정
     // @ts-expect-error - range is a valid option in google-spreadsheet
     const rows = await sheet.getRows({ range: SHEET_CONFIG.DATA_RANGE });
-    console.log(`[DEBUG] Got ${rows?.length || 0} rows from sheet`);
 
     if (!rows || rows.length === 0) {
-      console.log(`[DEBUG] No rows found in sheet`);
       return [];
     }
 
     return rows.map((row, index) => rowToTransaction(row, index, user));
   } catch (error) {
-    console.error(`Error fetching transactions for ${user}:`, error);
+    console.error(
+      `[ERROR] Failed to fetch transactions for ${user}:`,
+      error instanceof Error ? error.message : String(error)
+    );
     throw error;
   }
 }
@@ -156,7 +142,7 @@ export async function getAllTransactions(): Promise<Transaction[]> {
     const user2Transactions = await getUserTransactions('User2');
     return [...user1Transactions, ...user2Transactions];
   } catch (error) {
-    console.error('Error fetching all transactions:', error);
+    console.error('[ERROR] Failed to fetch all transactions:', error instanceof Error ? error.message : String(error));
     throw error;
   }
 }
@@ -185,7 +171,10 @@ export async function getTransactionsByDateRange(
       })
       .map((row, index) => rowToTransaction(row, index, user));
   } catch (error) {
-    console.error(`Error fetching transactions by date range for ${user}:`, error);
+    console.error(
+      `[ERROR] Failed to fetch transactions by date range for ${user}:`,
+      error instanceof Error ? error.message : String(error)
+    );
     throw error;
   }
 }
@@ -207,7 +196,10 @@ export async function getTransactionsByCategory(user: 'User1' | 'User2', categor
       .filter(row => row.get('category')?.trim() === category)
       .map((row, index) => rowToTransaction(row, index, user));
   } catch (error) {
-    console.error(`Error fetching transactions for category ${category}:`, error);
+    console.error(
+      `[ERROR] Failed to fetch transactions for category ${category}:`,
+      error instanceof Error ? error.message : String(error)
+    );
     throw error;
   }
 }
@@ -238,7 +230,10 @@ export async function addTransaction(
 
     return rowToTransaction(newRow, 0, user);
   } catch (error) {
-    console.error(`Error adding transaction for ${user}:`, error);
+    console.error(
+      `[ERROR] Failed to add transaction for ${user}:`,
+      error instanceof Error ? error.message : String(error)
+    );
     throw error;
   }
 }
@@ -350,7 +345,7 @@ export async function getSheetInfo() {
       userSheets: sheetMap,
     };
   } catch (error) {
-    console.error('Error getting sheet info:', error);
+    console.error('[ERROR] Failed to get sheet info:', error instanceof Error ? error.message : String(error));
     throw error;
   }
 }
