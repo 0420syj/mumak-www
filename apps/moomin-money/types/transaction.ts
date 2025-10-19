@@ -1,7 +1,10 @@
 /**
  * 거래 타입 정의
  * Google Spreadsheet의 각 행을 TypeScript 객체로 표현
+ * 도메인 모델 기반으로 구성
  */
+
+import type { PaymentMethod, TransactionType, UserId } from './domain';
 
 export interface Transaction {
   /** 거래 고유 ID */
@@ -11,7 +14,7 @@ export interface Transaction {
   date: string;
 
   /** 거래한 사용자 */
-  user: 'User1' | 'User2';
+  user: UserId;
 
   /** 거래 카테고리 (이모지 제거됨) */
   category: string;
@@ -22,8 +25,8 @@ export interface Transaction {
   /** 거래 금액 */
   amount: number;
 
-  /** 거래 타입 */
-  type: 'income' | 'expense';
+  /** 거래 타입 - 도메인 모델 사용 */
+  type: TransactionType;
 
   /** 결제 수단 */
   paymentMethod?: string;
@@ -49,7 +52,7 @@ export interface TransactionsResponse {
   total: number;
 
   /** 현재 사용자가 조회 중인 데이터 소유자 */
-  owner: 'User1' | 'User2';
+  owner: UserId;
 
   /** 조회 시간 */
   fetchedAt: string;
@@ -60,11 +63,11 @@ export interface TransactionsResponse {
  */
 export interface CreateTransactionRequest {
   date: string;
-  user: 'User1' | 'User2';
+  user: UserId;
   category: string;
   description: string;
   amount: number;
-  type: 'income' | 'expense';
+  type: TransactionType;
   paymentMethod?: string;
   location?: string;
 }
@@ -102,13 +105,13 @@ export interface TransactionStats {
  */
 export interface TransactionFilters {
   /** 사용자별 필터링 */
-  user?: 'User1' | 'User2';
+  user?: UserId;
 
   /** 카테고리별 필터링 */
   category?: string;
 
   /** 거래 타입 필터링 */
-  type?: 'income' | 'expense';
+  type?: TransactionType;
 
   /** 시작 날짜 */
   startDate?: string;

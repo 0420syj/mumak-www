@@ -1,6 +1,7 @@
 import { JWT } from 'google-auth-library';
 import { GoogleSpreadsheet } from 'google-spreadsheet';
 
+import { TransactionType } from '@/types/domain';
 import type { Transaction } from '@/types/transaction';
 
 /**
@@ -332,7 +333,7 @@ function rowToTransaction(
     category: cleanedCategory,
     description: descriptionStr,
     amount,
-    type: 'expense', // 현재 모든 거래는 지출
+    type: TransactionType.EXPENSE, // 현재 모든 거래는 지출
     paymentMethod: paymentMethodStr,
     location: locationStr,
   };
