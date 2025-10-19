@@ -108,7 +108,7 @@ async function initializeSheet(): Promise<GoogleSpreadsheet> {
 /**
  * 사용자별 시트 가져오기
  */
-async function getUserSheet(user: 'User1' | 'User2') {
+export async function getUserSheet(user: 'User1' | 'User2') {
   const doc = await initializeSheet();
   const sheetMap = getUserSheetMap();
   const sheetName = sheetMap[user];
