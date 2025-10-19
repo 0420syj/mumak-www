@@ -17,10 +17,10 @@ import type { Transaction } from '@/types/transaction';
  * (변경 필요 시 여기서만 수정하면 됨)
  */
 const SHEET_CONFIG = {
-  HEADER_ROW: 6, // 헤더가 있는 행 번호 (1-based)
-  DATA_START_COLUMN: 'B', // 데이터가 시작하는 컬럼 (A열은 비워둠)
+  HEADER_ROW: 1, // 헤더가 있는 행 번호 (1-based)
+  DATA_START_COLUMN: 'A', // 데이터가 시작하는 컬럼
   get DATA_RANGE() {
-    // 예: "B6"
+    // 예: "A1"
     return `${this.DATA_START_COLUMN}${this.HEADER_ROW}`;
   },
 };
