@@ -1,4 +1,5 @@
 import { GoogleSpreadsheet } from 'google-spreadsheet';
+import { JWT } from 'google-auth-library';
 
 import type { Transaction } from '@/types/transaction';
 
@@ -61,11 +62,21 @@ async function initializeSheet(): Promise<GoogleSpreadsheet> {
 
   try {
     console.log('[DEBUG] Creating GoogleSpreadsheet instance...');
-    // @ts-expect-error - google-spreadsheet v5 constructor signature
-    doc = new GoogleSpreadsheet(spreadsheetId, undefined, {
-      client_email: serviceAccountEmail,
-      private_key: privateKey,
+
+    // JWT 인증 설정
+    const serviceAccountAuth = new JWT({
+      email: serviceAccountEmail,
+      key: privateKey.replace(/\\n/g, '\n'), // 이스케이프 문자열 처리
+      scopes: [
+        'https://www.googleapis.com/auth/spreadsheets',
+        'https://www.googleapis.com/auth/drive',
+      ],
     });
+
+    console.log('[DEBUG] JWT auth created');
+
+    // GoogleSpreadsheet 인스턴스 생성
+    doc = new GoogleSpreadsheet(spreadsheetId, serviceAccountAuth);
 
     console.log('[DEBUG] Calling doc.loadInfo()...');
     await doc.loadInfo();

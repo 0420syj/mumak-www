@@ -22,6 +22,7 @@
   "dependencies": {
     "@mumak/ui": "workspace:*",
     "date-fns": "^4.1.0",
+    "google-auth-library": "^10.4.1",
     "google-spreadsheet": "^5.0.2",
     "lucide-react": "^0.546.0",
     "next": "^15.5.6",

@@ -37,10 +37,7 @@ export async function GET(request: Request) {
       currentUser = 'User2';
     } else {
       console.log('[DEBUG] Email not recognized');
-      return NextResponse.json(
-        { error: 'User email not recognized' },
-        { status: 403 }
-      );
+      return NextResponse.json({ error: 'User email not recognized' }, { status: 403 });
     }
 
     console.log('[DEBUG] Current user:', currentUser);
