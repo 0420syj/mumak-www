@@ -29,6 +29,13 @@ ALLOWED_EMAIL_2=user2@gmail.com
 GOOGLE_SERVICE_ACCOUNT_EMAIL=your-service-account@project.iam.gserviceaccount.com
 GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nyour_private_key_here\n-----END PRIVATE KEY-----\n"
 SPREADSHEET_ID=your_spreadsheet_id_here
+
+# =========================
+# Google Spreadsheet 시트명
+# =========================
+# 각 사용자의 거래 데이터가 저장된 시트 이름
+SHEET_NAME_USER1=시트명1
+SHEET_NAME_USER2=시트명1
 ```
 
 ---
@@ -116,12 +123,29 @@ SPREADSHEET_ID=your_spreadsheet_id_here
 
 ### Step 2: 구조 설정 (예시)
 
-**Sheet 이름**: `Transactions`
+**Sheet 이름**: `SHEET_NAME_USER1`과 `SHEET_NAME_USER2` 환경변수에 설정한 시트명
 
-| Date       | User  | Category | Description | Amount  | Type    |
-| ---------- | ----- | -------- | ----------- | ------- | ------- |
-| 2024-01-15 | User1 | Food     | Lunch       | 15000   | Expense |
-| 2024-01-16 | User2 | Income   | Salary      | 5000000 | Income  |
+각 시트에 포함되어야 할 컬럼:
+
+| B: 날짜     | C: 내용     | D: 금액 | E: 카테고리  | F: 결제수단 | G: 비고  | H: 참고사항 |
+| ----------- | ----------- | ------- | ------------ | ----------- | -------- | ----------- |
+| 2024. 1. 15 | 마크업 커피 | W4,500  | 음식         | 카드        | 강남역   | 아메리카노  |
+| 2024. 1. 16 | GS25        | W15,000 | 식료품       | 현금        | 압구정   | -           |
+| 2024. 1. 17 | 영화표      | W14,000 | 엔터테인먼트 | 카드        | CGV 강남 | IMAX        |
+
+**참고**:
+
+- **날짜 형식**: `2024. 1. 15` (마침표와 공백 포함)
+- **금액 형식**: `W4,500` (W 문자 + 쉼표 포함, 코드에서 정규화됨)
+- **카테고리**: 이모지 미포함 (과거 이모지가 있었다면 제거됨)
+- **비고 (G)**: 구매처, 위치 정보
+- **참고사항 (H)**: 추가 설명
+
+**사용자별 시트 분리**:
+
+- User1 데이터 시트: `.env.local`의 `SHEET_NAME_USER1`에 지정 (예: "와와 FO의 사본1")
+- User2 데이터 시트: `.env.local`의 `SHEET_NAME_USER2`에 지정 (예: "와와 FO의 사본2")
+- 두 시트 모두 같은 구조를 가져야 합니다
 
 ### Step 3: Service Account 추가
 

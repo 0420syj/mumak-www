@@ -6,6 +6,7 @@ import { NextResponse } from 'next/server';
 /**
  * GET /api/transactions
  * 인증된 사용자의 거래 데이터 조회
+ * 쿼리: ?user=User1 또는 ?user=User2 (기본값: 현재 사용자)
  */
 export async function GET(request: Request) {
   try {
@@ -34,10 +35,11 @@ export async function GET(request: Request) {
     }
 
     // 쿼리 파라미터로 어떤 사용자의 데이터를 볼지 결정
+    // ?user=User1 또는 ?user=User2 (미지정 시 현재 사용자의 데이터)
     const { searchParams } = new URL(request.url);
     const viewUser = (searchParams.get('user') as 'User1' | 'User2') || currentUser;
 
-    // 거래 데이터 조회
+    // 거래 데이터 조회 (사용자별 시트에서)
     const transactions = await getUserTransactions(viewUser);
 
     const response: TransactionsResponse = {

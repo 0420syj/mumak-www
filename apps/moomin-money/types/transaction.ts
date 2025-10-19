@@ -4,7 +4,7 @@
  */
 
 export interface Transaction {
-  /** 거래 고유 ID (row index 또는 timestamp) */
+  /** 거래 고유 ID */
   id: string;
 
   /** 거래 날짜 (YYYY-MM-DD) */
@@ -13,10 +13,10 @@ export interface Transaction {
   /** 거래한 사용자 */
   user: 'User1' | 'User2';
 
-  /** 거래 카테고리 */
+  /** 거래 카테고리 (이모지 제거됨) */
   category: string;
 
-  /** 거래 설명 */
+  /** 거래 설명/비고 */
   description: string;
 
   /** 거래 금액 */
@@ -24,6 +24,12 @@ export interface Transaction {
 
   /** 거래 타입 */
   type: 'income' | 'expense';
+
+  /** 결제 수단 */
+  paymentMethod?: string;
+
+  /** 구매처/위치 */
+  location?: string;
 
   /** 생성 시간 (ISO 8601) */
   createdAt?: string;
@@ -59,6 +65,8 @@ export interface CreateTransactionRequest {
   description: string;
   amount: number;
   type: 'income' | 'expense';
+  paymentMethod?: string;
+  location?: string;
 }
 
 /**

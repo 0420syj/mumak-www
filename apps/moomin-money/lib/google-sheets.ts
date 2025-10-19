@@ -5,7 +5,28 @@ import type { Transaction } from '@/types/transaction';
 /**
  * Google Sheets 클라이언트
  * google-spreadsheet 라이브러리를 래핑하여 사용 편의성 향상
+ *
+ * 시트 구조:
+ * - SHEET_NAME_USER1: User1의 거래 데이터
+ * - SHEET_NAME_USER2: User2의 거래 데이터
  */
+
+// 사용자별 시트 이름 매핑 (환경변수에서 가져옴)
+function getUserSheetMap(): Record<'User1' | 'User2', string> {
+  const user1Sheet = process.env.SHEET_NAME_USER1;
+  const user2Sheet = process.env.SHEET_NAME_USER2;
+
+  if (!user1Sheet || !user2Sheet) {
+    throw new Error(
+      'Missing sheet name configuration. Check environment variables: SHEET_NAME_USER1, SHEET_NAME_USER2'
+    );
+  }
+
+  return {
+    User1: user1Sheet,
+    User2: user2Sheet,
+  };
+}
 
 let cachedDoc: GoogleSpreadsheet | null = null;
 
@@ -22,9 +43,7 @@ async function initializeSheet(): Promise<GoogleSpreadsheet> {
   const spreadsheetId = process.env.SPREADSHEET_ID;
 
   if (!serviceAccountEmail || !privateKey || !spreadsheetId) {
-    throw new Error(
-      'Missing Google Sheets configuration. Check environment variables.'
-    );
+    throw new Error('Missing Google Sheets configuration. Check environment variables.');
   }
 
   // @ts-ignore - google-spreadsheet v5 constructor
@@ -46,57 +65,50 @@ async function initializeSheet(): Promise<GoogleSpreadsheet> {
 }
 
 /**
- * Transactions 시트 가져오기
+ * 사용자별 시트 가져오기
  */
-async function getTransactionsSheet() {
+async function getUserSheet(user: 'User1' | 'User2') {
   const doc = await initializeSheet();
-  const sheet = doc.sheetsByTitle['Transactions'];
+  const sheetMap = getUserSheetMap();
+  const sheetName = sheetMap[user];
+  const sheet = doc.sheetsByTitle[sheetName];
 
   if (!sheet) {
-    throw new Error('Transactions sheet not found in spreadsheet');
+    throw new Error(`Sheet "${sheetName}" not found for ${user}`);
   }
 
   return sheet;
 }
 
 /**
- * 모든 거래 데이터 조회
+ * 특정 사용자의 모든 거래 데이터 조회
  */
-export async function getAllTransactions(): Promise<Transaction[]> {
+export async function getUserTransactions(user: 'User1' | 'User2'): Promise<Transaction[]> {
   try {
-    const sheet = await getTransactionsSheet();
+    const sheet = await getUserSheet(user);
     const rows = await sheet.getRows();
 
     if (!rows) {
       return [];
     }
 
-    return rows.map((row, index) => rowToTransaction(row, index));
+    return rows.map((row, index) => rowToTransaction(row, index, user));
   } catch (error) {
-    console.error('Error fetching transactions:', error);
+    console.error(`Error fetching transactions for ${user}:`, error);
     throw error;
   }
 }
 
 /**
- * 특정 사용자의 거래 데이터 조회
+ * 모든 거래 데이터 조회 (User1과 User2 모두)
  */
-export async function getUserTransactions(
-  user: 'User1' | 'User2'
-): Promise<Transaction[]> {
+export async function getAllTransactions(): Promise<Transaction[]> {
   try {
-    const sheet = await getTransactionsSheet();
-    const rows = await sheet.getRows();
-
-    if (!rows) {
-      return [];
-    }
-
-    return rows
-      .filter((row) => row.get('user')?.trim() === user)
-      .map((row, index) => rowToTransaction(row, index));
+    const user1Transactions = await getUserTransactions('User1');
+    const user2Transactions = await getUserTransactions('User2');
+    return [...user1Transactions, ...user2Transactions];
   } catch (error) {
-    console.error(`Error fetching transactions for ${user}:`, error);
+    console.error('Error fetching all transactions:', error);
     throw error;
   }
 }
@@ -105,11 +117,12 @@ export async function getUserTransactions(
  * 날짜 범위로 거래 데이터 조회
  */
 export async function getTransactionsByDateRange(
+  user: 'User1' | 'User2',
   startDate: string,
   endDate: string
 ): Promise<Transaction[]> {
   try {
-    const sheet = await getTransactionsSheet();
+    const sheet = await getUserSheet(user);
     const rows = await sheet.getRows();
 
     if (!rows) {
@@ -117,13 +130,13 @@ export async function getTransactionsByDateRange(
     }
 
     return rows
-      .filter((row) => {
+      .filter(row => {
         const date = row.get('date')?.trim() || '';
         return date >= startDate && date <= endDate;
       })
-      .map((row, index) => rowToTransaction(row, index));
+      .map((row, index) => rowToTransaction(row, index, user));
   } catch (error) {
-    console.error('Error fetching transactions by date range:', error);
+    console.error(`Error fetching transactions by date range for ${user}:`, error);
     throw error;
   }
 }
@@ -131,11 +144,9 @@ export async function getTransactionsByDateRange(
 /**
  * 카테고리별 거래 조회
  */
-export async function getTransactionsByCategory(
-  category: string
-): Promise<Transaction[]> {
+export async function getTransactionsByCategory(user: 'User1' | 'User2', category: string): Promise<Transaction[]> {
   try {
-    const sheet = await getTransactionsSheet();
+    const sheet = await getUserSheet(user);
     const rows = await sheet.getRows();
 
     if (!rows) {
@@ -143,8 +154,8 @@ export async function getTransactionsByCategory(
     }
 
     return rows
-      .filter((row) => row.get('category')?.trim() === category)
-      .map((row, index) => rowToTransaction(row, index));
+      .filter(row => row.get('category')?.trim() === category)
+      .map((row, index) => rowToTransaction(row, index, user));
   } catch (error) {
     console.error(`Error fetching transactions for category ${category}:`, error);
     throw error;
@@ -154,48 +165,113 @@ export async function getTransactionsByCategory(
 /**
  * 거래 추가 (Phase 3에서 사용)
  */
-export async function addTransaction(data: {
-  date: string;
-  user: 'User1' | 'User2';
-  category: string;
-  description: string;
-  amount: number;
-  type: 'income' | 'expense';
-}): Promise<Transaction> {
+export async function addTransaction(
+  user: 'User1' | 'User2',
+  data: {
+    date: string;
+    category: string;
+    description: string;
+    amount: number;
+    type: 'income' | 'expense';
+  }
+): Promise<Transaction> {
   try {
-    const sheet = await getTransactionsSheet();
+    const sheet = await getUserSheet(user);
 
     const newRow = await sheet.addRow({
       date: data.date,
-      user: data.user,
       category: data.category,
       description: data.description,
       amount: data.amount.toString(),
       type: data.type,
     });
 
-    return rowToTransaction(newRow, 0);
+    return rowToTransaction(newRow, 0, user);
   } catch (error) {
-    console.error('Error adding transaction:', error);
+    console.error(`Error adding transaction for ${user}:`, error);
     throw error;
   }
 }
 
 /**
- * Spreadsheet 행을 Transaction 객체로 변환
+ * 날짜 문자열 정규화 (예: "2022. 5. 24" → "2022-05-24")
  */
-function rowToTransaction(row: any, index: number): Transaction {
-  const amount = parseFloat(row.get('amount')?.trim() || '0');
-  const id = `${row.get('date')}-${index}`;
+function normalizeDateString(dateStr: string): string {
+  try {
+    // "2022. 5. 24" 형식을 "2022-05-24"로 변환
+    const matches = dateStr.match(/(\d{4})\.\s+(\d{1,2})\.\s+(\d{1,2})/);
+    if (!matches || !matches[1] || !matches[2] || !matches[3]) return dateStr;
+
+    const year = matches[1];
+    const month = matches[2].padStart(2, '0');
+    const day = matches[3].padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  } catch {
+    return dateStr;
+  }
+}
+
+/**
+ * 금액 문자열 파싱 (예: "W660,000" → 660000)
+ */
+function parseAmountString(amountStr: string): number {
+  try {
+    // "W660,000" → "660000" → 660000
+    const cleaned = amountStr.replace(/[^\d]/g, '');
+    return parseInt(cleaned, 10) || 0;
+  } catch {
+    return 0;
+  }
+}
+
+/**
+ * 카테고리에서 이모지 제거 (예: "🍕 음식" → "음식")
+ */
+function cleanCategory(categoryStr: string): string {
+  try {
+    // 이모지 및 특수 문자 제거, 앞뒤 공백 제거
+    return categoryStr.replace(/[\p{Emoji}]/gu, '').trim();
+  } catch {
+    return categoryStr.trim();
+  }
+}
+
+/**
+ * Spreadsheet 행을 Transaction 객체로 변환
+ *
+ * 컬럼 매핑:
+ * - B: date
+ * - C: description (내용)
+ * - D: amount (금액)
+ * - E: category
+ * - F: paymentMethod (결제수단)
+ * - G: location (비고/구매처)
+ * - H: description (참고사항) - 우선순위
+ */
+function rowToTransaction(row: any, index: number, user: 'User1' | 'User2'): Transaction {
+  const dateStr = row.get('date')?.trim() || '';
+  const categoryStr = row.get('category')?.trim() || '';
+  const amountStr = row.get('amount')?.trim() || '0';
+  const paymentMethodStr = row.get('paymentMethod')?.trim() || '';
+  const locationStr = row.get('location')?.trim() || '';
+  const descriptionStr = row.get('description')?.trim() || '';
+
+  const id = `${user}-${dateStr}-${index}`;
+  const normalizedDate = normalizeDateString(dateStr);
+  const amount = parseAmountString(amountStr);
+  const cleanedCategory = cleanCategory(categoryStr);
 
   return {
     id,
-    date: row.get('date')?.trim() || '',
-    user: (row.get('user')?.trim() as 'User1' | 'User2') || 'User1',
-    category: row.get('category')?.trim() || '',
-    description: row.get('description')?.trim() || '',
-    amount: isNaN(amount) ? 0 : amount,
-    type: (row.get('type')?.trim() as 'income' | 'expense') || 'expense',
+    date: normalizedDate,
+    user,
+    category: cleanedCategory,
+    description: descriptionStr,
+    amount,
+    type: 'expense', // 현재 모든 거래는 지출
+    paymentMethod: paymentMethodStr,
+    location: locationStr,
   };
 }
 
@@ -205,15 +281,17 @@ function rowToTransaction(row: any, index: number): Transaction {
 export async function getSheetInfo() {
   try {
     const doc = await initializeSheet();
+    const sheetMap = getUserSheetMap();
     return {
       title: doc.title,
       spreadsheetId: doc.spreadsheetId,
-      sheets: doc.sheetsByIndex.map((sheet) => ({
+      sheets: doc.sheetsByIndex.map(sheet => ({
         title: sheet.title,
         index: sheet.index,
         rowCount: sheet.rowCount,
         columnCount: sheet.columnCount,
       })),
+      userSheets: sheetMap,
     };
   } catch (error) {
     console.error('Error getting sheet info:', error);
