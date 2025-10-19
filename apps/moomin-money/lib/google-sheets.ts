@@ -12,6 +12,19 @@ import type { Transaction } from '@/types/transaction';
  * - SHEET_NAME_USER2: User2의 거래 데이터
  */
 
+/**
+ * 시트 구성 설정
+ * (변경 필요 시 여기서만 수정하면 됨)
+ */
+const SHEET_CONFIG = {
+  HEADER_ROW: 6, // 헤더가 있는 행 번호 (1-based)
+  DATA_START_COLUMN: 'B', // 데이터가 시작하는 컬럼 (A열은 비워둠)
+  get DATA_RANGE() {
+    // 예: "B6"
+    return `${this.DATA_START_COLUMN}${this.HEADER_ROW}`;
+  },
+};
+
 // 사용자별 시트 이름 매핑 (환경변수에서 가져옴)
 function getUserSheetMap(): Record<'User1' | 'User2', string> {
   const user1Sheet = process.env.SHEET_NAME_USER1;
@@ -116,9 +129,9 @@ export async function getUserTransactions(user: 'User1' | 'User2'): Promise<Tran
     const sheet = await getUserSheet(user);
     console.log(`[DEBUG] Sheet "${sheet.title}" found`);
 
-    // row 6을 헤더로 사용하기 위해 range를 "A6" 이후로 지정
+    // row 6을 헤더로 사용하기 위해 range를 지정
     // @ts-expect-error - range is a valid option in google-spreadsheet
-    const rows = await sheet.getRows({ range: 'A6' });
+    const rows = await sheet.getRows({ range: SHEET_CONFIG.DATA_RANGE });
     console.log(`[DEBUG] Got ${rows?.length || 0} rows from sheet`);
 
     if (!rows || rows.length === 0) {
@@ -158,7 +171,7 @@ export async function getTransactionsByDateRange(
   try {
     const sheet = await getUserSheet(user);
     // @ts-expect-error - range is a valid option in google-spreadsheet
-    const rows = await sheet.getRows({ range: 'A6' });
+    const rows = await sheet.getRows({ range: SHEET_CONFIG.DATA_RANGE });
 
     if (!rows) {
       return [];
@@ -179,14 +192,11 @@ export async function getTransactionsByDateRange(
 /**
  * 카테고리별 거래 조회
  */
-export async function getTransactionsByCategory(
-  user: 'User1' | 'User2',
-  category: string
-): Promise<Transaction[]> {
+export async function getTransactionsByCategory(user: 'User1' | 'User2', category: string): Promise<Transaction[]> {
   try {
     const sheet = await getUserSheet(user);
     // @ts-expect-error - range is a valid option in google-spreadsheet
-    const rows = await sheet.getRows({ range: 'A6' });
+    const rows = await sheet.getRows({ range: SHEET_CONFIG.DATA_RANGE });
 
     if (!rows) {
       return [];
