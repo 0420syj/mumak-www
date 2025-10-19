@@ -1,5 +1,7 @@
 # 🚀 Moomin Money - 시작 가이드
 
+**개인 프로젝트 (1인 개발용)**
+
 Google 스프레드시트 연동 웹 가계부 애플리케이션을 시작하기 위한 빠른 가이드입니다.
 
 ---
@@ -61,6 +63,7 @@ pnpm dev
 ## 📋 구현 로드맵
 
 ### Phase 1: 인증 (1-2주)
+
 - [ ] NextAuth.js 설정
 - [ ] Google OAuth 구현
 - [ ] 로그인 페이지 UI
@@ -69,6 +72,7 @@ pnpm dev
 **관련 파일**: `ARCHITECTURE.md` - Phase 1 섹션
 
 ### Phase 2: 조회 (1-2주)
+
 - [ ] Google Spreadsheet API 연결
 - [ ] 데이터 조회 API 엔드포인트
 - [ ] 거래 목록 테이블 UI
@@ -77,6 +81,7 @@ pnpm dev
 **관련 파일**: `ARCHITECTURE.md` - Phase 2 섹션
 
 ### Phase 3: CRUD (2-3주)
+
 - [ ] 거래 추가 폼
 - [ ] 거래 수정 기능
 - [ ] 거래 삭제 확인
@@ -111,16 +116,16 @@ apps/moomin-money/
 
 ## 🔧 기술 스택 요약
 
-| 카테고리 | 기술 | 버전 |
-|---------|------|------|
-| **프레임워크** | Next.js | ^15.5.6 |
-| **런타임** | React | ^19.2.0 |
-| **인증** | NextAuth.js | ^5.0.0 |
-| **Spreadsheet** | google-spreadsheet | ^4.1.3 |
-| **데이터 조회** | SWR | ^2.2.5 |
-| **날짜** | date-fns | ^3.6.0 |
-| **UI** | shadcn/ui (@mumak/ui) | workspace:* |
-| **스타일** | Tailwind CSS | via @mumak/ui |
+| 카테고리        | 기술                  | 버전          |
+| --------------- | --------------------- | ------------- |
+| **프레임워크**  | Next.js               | ^15.5.6       |
+| **런타임**      | React                 | ^19.2.0       |
+| **인증**        | NextAuth.js           | ^5.0.0        |
+| **Spreadsheet** | google-spreadsheet    | ^4.1.3        |
+| **데이터 조회** | SWR                   | ^2.2.5        |
+| **날짜**        | date-fns              | ^3.6.0        |
+| **UI**          | shadcn/ui (@mumak/ui) | workspace:\*  |
+| **스타일**      | Tailwind CSS          | via @mumak/ui |
 
 ---
 
@@ -132,12 +137,12 @@ apps/moomin-money/
 
 ```typescript
 interface Transaction {
-  id: string
-  date: string
-  user: 'User1' | 'User2'
-  category: string
-  amount: number
-  type: 'income' | 'expense'
+  id: string;
+  date: string;
+  user: 'User1' | 'User2';
+  category: string;
+  amount: number;
+  type: 'income' | 'expense';
 }
 ```
 
@@ -154,15 +159,15 @@ grep ".env.local" .gitignore  # 있어야 함
 
 ```typescript
 // API Route에서 모든 요청은 인증 확인
-import { auth } from '@/lib/auth'
+import { auth } from '@/lib/auth';
 
 export async function GET() {
-  const session = await auth()
-  
+  const session = await auth();
+
   if (!session?.user?.email) {
-    return new Response('Unauthorized', { status: 401 })
+    return new Response('Unauthorized', { status: 401 });
   }
-  
+
   // 로직 진행
 }
 ```
@@ -172,9 +177,9 @@ export async function GET() {
 필요한 컴포넌트를 `@mumak/ui`에서 import:
 
 ```typescript
-import { Button } from "@mumak/ui/button"
-import { Card } from "@mumak/ui/card"
-import { Input } from "@mumak/ui/input"
+import { Button } from '@mumak/ui/button';
+import { Card } from '@mumak/ui/card';
+import { Input } from '@mumak/ui/input';
 ```
 
 ---
@@ -204,6 +209,7 @@ pnpm test:e2e
 ### 문제: Google 로그인이 안 됨
 
 **확인사항**:
+
 1. `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` 올바른지 확인
 2. OAuth 동의 화면이 구성되었는지 확인
 3. 리디렉션 URI가 정확한지 확인
@@ -213,6 +219,7 @@ pnpm test:e2e
 ### 문제: Spreadsheet 데이터를 못 읽음
 
 **확인사항**:
+
 1. Service Account Email이 스프레드시트에 공유되었는지 확인
 2. `SPREADSHEET_ID`가 올바른지 확인
 3. `GOOGLE_PRIVATE_KEY`에 개행 문자(`\n`)가 포함되었는지 확인

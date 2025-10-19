@@ -392,14 +392,16 @@ Google Sheets 업데이트
 ```json
 {
   "dependencies": {
-    "next-auth": "^5.0.0",
-    "google-spreadsheet": "^4.1.2",
-    "google-auth-library": "^9.0.0",
-    "swr": "^2.2.0",
-    "date-fns": "^3.0.0"
-  },
-  "devDependencies": {
-    "@types/next-auth": "^4.0.0"
+    "next": "^15.5.6",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "next-auth": "5.0.0-beta.29",
+    "google-spreadsheet": "^5.0.2",
+    "swr": "^2.3.6",
+    "date-fns": "^4.1.0",
+    "next-themes": "^0.4.6",
+    "@mumak/ui": "workspace:*",
+    "lucide-react": "^0.546.0"
   }
 }
 ```
