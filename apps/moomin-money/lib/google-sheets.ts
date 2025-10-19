@@ -42,23 +42,43 @@ async function initializeSheet(): Promise<GoogleSpreadsheet> {
   const privateKey = process.env.GOOGLE_PRIVATE_KEY;
   const spreadsheetId = process.env.SPREADSHEET_ID;
 
+  console.log('[DEBUG] Initializing Google Sheets...');
+  console.log('[DEBUG] serviceAccountEmail:', serviceAccountEmail ? 'set' : 'MISSING');
+  console.log('[DEBUG] privateKey:', privateKey ? `set (length: ${privateKey.length})` : 'MISSING');
+  console.log('[DEBUG] spreadsheetId:', spreadsheetId ? 'set' : 'MISSING');
+
   if (!serviceAccountEmail || !privateKey || !spreadsheetId) {
-    throw new Error('Missing Google Sheets configuration. Check environment variables.');
+    const missing = [];
+    if (!serviceAccountEmail) missing.push('GOOGLE_SERVICE_ACCOUNT_EMAIL');
+    if (!privateKey) missing.push('GOOGLE_PRIVATE_KEY');
+    if (!spreadsheetId) missing.push('SPREADSHEET_ID');
+    const errorMsg = `Missing Google Sheets configuration: ${missing.join(', ')}`;
+    console.error('[ERROR]', errorMsg);
+    throw new Error(errorMsg);
   }
 
-  // @ts-ignore - google-spreadsheet v5 constructor
-  const doc = new GoogleSpreadsheet(spreadsheetId, undefined, {
-    client_email: serviceAccountEmail,
-    private_key: privateKey,
-  } as any);
+  let doc: GoogleSpreadsheet;
 
   try {
+    console.log('[DEBUG] Creating GoogleSpreadsheet instance...');
+    // @ts-expect-error - google-spreadsheet v5 constructor signature
+    doc = new GoogleSpreadsheet(spreadsheetId, undefined, {
+      client_email: serviceAccountEmail,
+      private_key: privateKey,
+    });
+
+    console.log('[DEBUG] Calling doc.loadInfo()...');
     await doc.loadInfo();
     cachedDoc = doc;
-    console.log(`✓ Google Sheets loaded: ${doc.title}`);
+    console.log('[SUCCESS] Google Sheets loaded:', doc.title);
+    console.log('[DEBUG] Available sheets:', doc.sheetsByIndex.map(s => s.title).join(', '));
   } catch (error) {
-    console.error('Failed to load Google Sheets:', error);
-    throw new Error('Failed to initialize Google Sheets connection');
+    const errorMsg = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : '';
+    console.error('[ERROR] Failed to load Google Sheets');
+    console.error('[ERROR] Message:', errorMsg);
+    console.error('[ERROR] Stack:', errorStack);
+    throw new Error(`Failed to initialize Google Sheets connection: ${errorMsg}`);
   }
 
   return doc;
@@ -249,7 +269,11 @@ function cleanCategory(categoryStr: string): string {
  * - G: location (비고/구매처)
  * - H: description (참고사항) - 우선순위
  */
-function rowToTransaction(row: any, index: number, user: 'User1' | 'User2'): Transaction {
+function rowToTransaction(
+  row: { get: (field: string) => string | undefined },
+  index: number,
+  user: 'User1' | 'User2'
+): Transaction {
   const dateStr = row.get('date')?.trim() || '';
   const categoryStr = row.get('category')?.trim() || '';
   const amountStr = row.get('amount')?.trim() || '0';
