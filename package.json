@@ -13,6 +13,8 @@
     "test:coverage": "turbo run test:coverage",
     "test:ci": "turbo run test:ci",
     "test:e2e": "turbo run test:e2e",
+    "test:e2e:ci": "turbo run test:e2e --filter=!moomin-money",
+    "test:e2e:moomin": "turbo run test:e2e --filter=moomin-money",
     "prepare": "husky"
   },
   "devDependencies": {
@@ -30,8 +32,8 @@
       "turbo run format --"
     ]
   },
-  "packageManager": "pnpm@10.18.3",
   "engines": {
     "node": ">=22.12"
-  }
+  },
+  "packageManager": "pnpm@10.20.0"
 }

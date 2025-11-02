@@ -5,7 +5,7 @@
 
 /* eslint-disable turbo/no-undeclared-env-vars */
 
-import NextAuth from 'next-auth';
+import NextAuth, { type NextAuthConfig } from 'next-auth';
 import Google from 'next-auth/providers/google';
 import { identifyUserByEmail } from './user';
 
@@ -19,7 +19,7 @@ const allowedEmails = [process.env.ALLOWED_EMAIL_1, process.env.ALLOWED_EMAIL_2]
  * NextAuth 설정
  * SOLID 원칙과 보안 베스트 프랙티스 준수
  */
-export const { handlers, auth } = NextAuth({
+const authConfig = {
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -153,4 +153,6 @@ export const { handlers, auth } = NextAuth({
 
   // 환경 설정
   debug: process.env.NODE_ENV === 'development',
-}) as const;
+} satisfies NextAuthConfig;
+
+export const { handlers, auth } = NextAuth(authConfig);

@@ -3,7 +3,7 @@
 import { AlertCircle, Chrome } from 'lucide-react';
 import { signIn, useSession } from 'next-auth/react';
 import { useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { Suspense, useCallback, useEffect, useState } from 'react';
 
 import { Button } from '@mumak/ui/components/button';
 import { Card } from '@mumak/ui/components/card';
@@ -18,7 +18,11 @@ const ERROR_MESSAGES: Record<string, string> = {
   default: '로그인 중 오류가 발생했습니다. 다시 시도해주세요.',
 };
 
-export default function LoginPage() {
+/**
+ * 로그인 페이지 메인 컴포넌트
+ * useSearchParams()를 사용하므로 Suspense로 감싸야 함
+ */
+function LoginPageContent() {
   const searchParams = useSearchParams();
   const errorParam = searchParams.get('error');
 
@@ -101,5 +105,28 @@ export default function LoginPage() {
         </div>
       </Card>
     </div>
+  );
+}
+
+/**
+ * 로그인 페이지
+ * useSearchParams()를 사용하는 컴포넌트를 Suspense로 감쌈
+ */
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
+          <Card className="w-full max-w-md p-8 shadow-lg bg-white dark:bg-slate-900">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto" />
+              <p className="mt-4 text-slate-600 dark:text-slate-400">로딩 중...</p>
+            </div>
+          </Card>
+        </div>
+      }
+    >
+      <LoginPageContent />
+    </Suspense>
   );
 }

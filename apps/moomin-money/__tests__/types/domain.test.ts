@@ -149,7 +149,7 @@ describe('Domain Models', () => {
       const maxFutureDays = DomainConfig.DATE_CONSTRAINTS.MAX_FUTURE_DAYS;
       const futureDate = new Date(today.getTime() + maxFutureDays * 24 * 60 * 60 * 1000);
 
-      const isoString = futureDate.toISOString().split('T')[0];
+      const isoString = futureDate.toISOString().split('T')[0]!;
       expect(TransactionValidator.isValidDate(isoString)).toBe(true);
     });
   });

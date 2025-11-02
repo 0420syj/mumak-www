@@ -94,8 +94,8 @@ export class TransactionValidator {
   /**
    * 거래 타입 유효성 검사
    */
-  static isValidTransactionType(type: string): type is TransactionType {
-    return Object.values(TransactionType).includes(type as TransactionType);
+  static isValidTransactionType(type: unknown): type is TransactionType {
+    return typeof type === 'string' && Object.values(TransactionType).includes(type as TransactionType);
   }
 }
 
