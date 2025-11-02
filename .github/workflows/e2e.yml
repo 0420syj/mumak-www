@@ -49,4 +49,5 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run E2E tests
-        run: pnpm turbo run test:e2e
+        # moomin-money는 Google OAuth 등 환경변수가 필요하므로 CI에서 제외
+        run: pnpm test:e2e:ci
