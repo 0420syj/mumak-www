@@ -19,7 +19,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.54.2",
-    "eslint": "^9.33.0",
+    "eslint": "^9.39.1",
     "husky": "^9.0.11",
     "lint-staged": "^16.2.4",
     "prettier": "^3.6.2",
