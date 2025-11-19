@@ -29,7 +29,7 @@
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.54.2",
+    "@playwright/test": "^1.56.1",
     "@mumak/eslint-config": "workspace:*",
     "@mumak/typescript-config": "workspace:*",
     "@testing-library/jest-dom": "^6.9.1",

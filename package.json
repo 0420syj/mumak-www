@@ -22,7 +22,7 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@playwright/test": "^1.54.2",
+    "@playwright/test": "^1.56.1",
     "eslint": "^9.39.1",
     "husky": "^9.0.11",
     "lint-staged": "^16.2.6",
