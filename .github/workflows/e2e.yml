@@ -2,11 +2,9 @@ name: E2E Tests
 
 on:
   pull_request:
-    # 모든 브랜치에서 PR 생성 시 실행
     branches: ['**']
   push:
     branches: [main, develop]
-  # 수동 실행 가능
   workflow_dispatch:
 
 concurrency:
@@ -15,7 +13,7 @@ concurrency:
 
 jobs:
   e2e:
-    name: 🎭 E2E Tests
+    name: E2E Tests
     runs-on: ubuntu-latest
     container:
       image: mcr.microsoft.com/playwright:v1.54.2-noble
@@ -23,6 +21,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -45,9 +45,26 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
+      - name: Setup Turborepo cache
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ hashFiles('**/turbo.json', '**/package.json') }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-${{ hashFiles('**/turbo.json', '**/package.json') }}-
+            ${{ runner.os }}-turbo-
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run E2E tests
-        # moomin-money는 Google OAuth 등 환경변수가 필요하므로 CI에서 제외
-        run: pnpm test:e2e:ci
+      - name: Determine affected apps
+        id: affected
+        run: |
+          if [ "${{ github.event_name }}" == "pull_request" ]; then
+            echo "filter=--filter=[HEAD^1]" >> $GITHUB_OUTPUT
+          else
+            echo "filter=" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run E2E tests (affected apps only)
+        run: pnpm turbo run test:e2e ${{ steps.affected.outputs.filter }} --filter=!moomin-money

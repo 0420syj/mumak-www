@@ -98,6 +98,17 @@ pnpm --filter=mumak-react test:e2e:ui # Playwright UI 실행
 - ESLint 검사 및 자동 수정
 - Prettier 포맷팅
 
+## ⚡ Turborepo 최적화
+
+이 프로젝트는 Turborepo의 다양한 기능을 활용하여 최적화되어 있습니다:
+
+- **변경 감지**: PR에서 변경된 패키지만 빌드/테스트
+- **스마트 캐싱**: inputs/outputs 기반 정교한 캐싱
+- **병렬 실행**: 의존성을 고려한 최적 병렬 처리
+- **개발자 도구**: dry-run, affected, graph 등
+
+자세한 사용법은 [TURBOREPO.md](./TURBOREPO.md)를 참고하세요.
+
 ## 🔧 개발 환경 설정
 
 ### VS Code 확장 프로그램

@@ -1,47 +1,85 @@
 {
   "$schema": "https://turborepo.com/schema.json",
   "ui": "tui",
+  "globalDependencies": [
+    "package.json",
+    "pnpm-lock.yaml",
+    "turbo.json",
+    ".env*"
+  ],
+  "globalEnv": ["NODE_ENV", "CI"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**", "dist/**", "out/**"]
+      "outputs": [".next/**", "!.next/cache/**", "dist/**", "out/**", "*.tsbuildinfo"],
+      "env": ["NEXT_PUBLIC_*", "VERCEL_*"],
+      "passThroughEnv": ["NODE_ENV"]
     },
     "lint": {
-      "dependsOn": ["^lint"]
+      "dependsOn": ["^lint"],
+      "inputs": ["$TURBO_DEFAULT$", "eslint.config.js"],
+      "outputs": [".turbo/**"]
     },
     "lint:fix": {
-      "dependsOn": ["^lint:fix"]
+      "dependsOn": ["^lint:fix"],
+      "inputs": ["$TURBO_DEFAULT$", "eslint.config.js"],
+      "outputs": [".turbo/**", "**/*.{ts,tsx,js,jsx}"]
     },
     "check-types": {
-      "dependsOn": ["^check-types"]
+      "dependsOn": ["^check-types"],
+      "inputs": ["$TURBO_DEFAULT$", "tsconfig*.json"],
+      "outputs": [".turbo/**", "*.tsbuildinfo"]
     },
     "format": {
-      "inputs": ["$TURBO_DEFAULT$"]
+      "inputs": ["$TURBO_DEFAULT$"],
+      "outputs": [".turbo/**", "**/*.{ts,tsx,md,json,js,jsx}"]
     },
     "format:check": {
-      "inputs": ["$TURBO_DEFAULT$"]
+      "inputs": ["$TURBO_DEFAULT$"],
+      "outputs": [".turbo/**"]
     },
     "test": {
       "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", "**/*.{ts,tsx,js,jsx}", "**/*.test.{ts,tsx,js,jsx}", "**/*.spec.{ts,tsx,js,jsx}"],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "**/*.{ts,tsx,js,jsx}",
+        "**/*.test.{ts,tsx,js,jsx}",
+        "**/*.spec.{ts,tsx,js,jsx}",
+        "jest.config.*",
+        "vitest.config.*"
+      ],
       "outputs": ["coverage/**", "test-results/**", ".turbo/**"]
     },
     "test:coverage": {
       "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", "**/*.{ts,tsx,js,jsx}", "**/*.test.{ts,tsx,js,jsx}", "**/*.spec.{ts,tsx,js,jsx}"],
+      "inputs": ["$TURBO_DEFAULT$", "**/*.{ts,tsx,js,jsx}"],
       "outputs": ["coverage/**", ".turbo/**"]
     },
     "test:ci": {
       "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", "**/*.{ts,tsx,js,jsx}", "**/*.test.{ts,tsx,js,jsx}", "**/*.spec.{ts,tsx,js,jsx}"],
+      "inputs": ["$TURBO_DEFAULT$", "**/*.{ts,tsx,js,jsx}"],
       "outputs": ["coverage/**", ".turbo/**"]
     },
     "test:e2e": {
       "dependsOn": ["^build"],
-      "passThroughEnv": ["PLAYWRIGHT_*", "CI"],
-      "inputs": ["$TURBO_DEFAULT$", "**/*.{ts,tsx,js,jsx}", "e2e/**/*"],
-      "outputs": ["test-results/**", ".turbo/**"]
+      "passThroughEnv": [
+        "PLAYWRIGHT_*",
+        "CI",
+        "GOOGLE_*",
+        "GOOGLE_CLIENT_ID",
+        "GOOGLE_CLIENT_SECRET"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "**/*.{ts,tsx,js,jsx}",
+        "e2e/**/*",
+        "playwright.config.*"
+      ],
+      "outputs": ["test-results/**", "playwright-report/**", ".turbo/**"]
+    },
+    "clean": {
+      "cache": false
     },
     "dev": {
       "cache": false,

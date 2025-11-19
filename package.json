@@ -15,6 +15,12 @@
     "test:e2e": "turbo run test:e2e",
     "test:e2e:ci": "turbo run test:e2e --filter=!moomin-money",
     "test:e2e:moomin": "turbo run test:e2e --filter=moomin-money",
+    "turbo:dry": "turbo run build test --dry-run",
+    "turbo:dry:json": "turbo run build test --dry-run=json",
+    "turbo:graph": "turbo run build --graph",
+    "turbo:clean": "turbo run clean && rm -rf node_modules .turbo",
+    "affected": "turbo run build test lint --filter=[HEAD^1]",
+    "affected:dry": "turbo run build test lint --filter=[HEAD^1] --dry-run",
     "prepare": "husky"
   },
   "devDependencies": {
