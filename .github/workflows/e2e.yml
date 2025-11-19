@@ -67,4 +67,4 @@ jobs:
           fi
 
       - name: Run E2E tests (affected apps only)
-        run: pnpm turbo run test:e2e ${{ steps.affected.outputs.filter }} --filter=!moomin-money
+        run: pnpm turbo run test:e2e ${{ steps.affected.outputs.filter }}

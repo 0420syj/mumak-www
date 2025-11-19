@@ -13,8 +13,6 @@
     "test:coverage": "turbo run test:coverage",
     "test:ci": "turbo run test:ci",
     "test:e2e": "turbo run test:e2e",
-    "test:e2e:ci": "turbo run test:e2e --filter=!moomin-money",
-    "test:e2e:moomin": "turbo run test:e2e --filter=moomin-money",
     "turbo:dry": "turbo run build test --dry-run",
     "turbo:dry:json": "turbo run build test --dry-run=json",
     "turbo:graph": "turbo run build --graph",
