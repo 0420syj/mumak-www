@@ -9,7 +9,7 @@ updates:
       day: 'wednesday'
       time: '09:00'
       timezone: 'Asia/Seoul'
-    open-pull-requests-limit: 10
+    open-pull-requests-limit: 20
     reviewers:
       - '0420syj'
     assignees:
