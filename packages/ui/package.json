@@ -64,7 +64,7 @@
     "@turbo/gen": "^2.6.1",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.6",
-    "@types/react-dom": "^19.2.2",
+    "@types/react-dom": "^19.2.3",
     "eslint": "^9.39.1",
     "prettier": "^3.6.2",
     "shadcn": "^3.5.0",
