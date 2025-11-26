@@ -25,8 +25,8 @@ export default function Page() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-200 flex items-center justify-center p-0 md:p-4">
-      <div className="w-full h-screen md:h-[800px] max-w-md bg-white md:rounded-3xl shadow-2xl overflow-hidden relative flex flex-col">
+    <main className="min-h-dvh bg-slate-200 flex items-center justify-center p-0 md:p-4">
+      <div className="w-full h-dvh md:h-[800px] max-w-md bg-white md:rounded-3xl shadow-2xl overflow-hidden relative flex flex-col">
         {viewState === 'tasting' ? (
           <>
             <div className="flex-1 overflow-hidden">

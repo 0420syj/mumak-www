@@ -71,7 +71,7 @@ export function TastingScreen({ stack, onAddAroma, onRemoveAroma, wineName, setW
           <div className="flex-1 overflow-y-auto p-4">
             {AROMA_CATEGORIES.map(category => (
               <TabsContent key={category.value} value={category.value} className="mt-0 h-full">
-                <div className="grid grid-cols-3 gap-3 pb-safe">
+                <div className="grid grid-cols-3 gap-3 pb-8 md:pb-4">
                   {AROMA_DATA.filter(item => item.category === category.value).map(item => (
                     <Button
                       key={item.id}
