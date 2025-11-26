@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useAromaStack } from '@/hooks/use-aroma-stack';
 import { TastingScreen } from '@/components/tasting/tasting-screen';
 import { ReceiptScreen } from '@/components/receipt/receipt-screen';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { Button } from '@mumak/ui/components/button';
 import { ArrowRight } from 'lucide-react';
 
@@ -25,8 +26,13 @@ export default function Page() {
   };
 
   return (
-    <main className="min-h-dvh bg-slate-200 flex items-center justify-center p-0 md:p-4">
-      <div className="w-full h-dvh md:h-[800px] max-w-md bg-white md:rounded-3xl shadow-2xl overflow-hidden relative flex flex-col">
+    <main className="min-h-dvh bg-slate-200 dark:bg-slate-950 flex items-center justify-center p-0 md:p-4 transition-colors duration-300">
+      <div className="w-full h-dvh md:h-[800px] max-w-md bg-white dark:bg-slate-900 md:rounded-3xl shadow-2xl overflow-hidden relative flex flex-col transition-colors duration-300">
+        {/* Header / Theme Toggle */}
+        <div className="absolute top-4 left-4 z-50">
+          <ThemeToggle />
+        </div>
+
         {viewState === 'tasting' ? (
           <>
             <div className="flex-1 overflow-hidden">
@@ -42,7 +48,7 @@ export default function Page() {
               <div className="absolute top-4 right-4 z-50 animate-in fade-in zoom-in duration-300">
                 <Button
                   onClick={handleFinish}
-                  className="rounded-full shadow-lg bg-slate-900 text-white hover:bg-slate-800"
+                  className="rounded-full shadow-lg bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200"
                 >
                   완료 <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>

@@ -49,7 +49,7 @@ export function ReceiptScreen({ stack, wineName, onReset }: ReceiptScreenProps) 
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-full p-4 bg-slate-100">
+    <div className="flex flex-col items-center justify-center min-h-full p-4 bg-slate-100 dark:bg-slate-950 transition-colors duration-300">
       <div
         ref={receiptRef}
         style={{
@@ -252,11 +252,18 @@ export function ReceiptScreen({ stack, wineName, onReset }: ReceiptScreenProps) 
       </div>
 
       <div className="flex gap-4 w-full max-w-sm">
-        <Button variant="outline" className="flex-1" onClick={onReset}>
+        <Button
+          variant="outline"
+          className="flex-1 dark:bg-slate-900 dark:text-slate-100 dark:border-slate-800 dark:hover:bg-slate-800"
+          onClick={onReset}
+        >
           <RefreshCw className="mr-2 h-4 w-4" />
           새로 만들기
         </Button>
-        <Button className="flex-1" onClick={handleDownload}>
+        <Button
+          className="flex-1 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200"
+          onClick={handleDownload}
+        >
           <Download className="mr-2 h-4 w-4" />
           이미지 저장
         </Button>
