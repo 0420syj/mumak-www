@@ -2,13 +2,29 @@ import React, { useRef } from 'react';
 import { AromaItem } from '@/lib/constants';
 import { Button } from '@mumak/ui/components/button';
 import { Download, RefreshCw } from 'lucide-react';
-import html2canvas from 'html2canvas';
+import { toPng } from 'html-to-image';
 
 interface ReceiptScreenProps {
   stack: AromaItem[];
   wineName: string;
   onReset: () => void;
 }
+
+// Safe colors (Hex codes)
+const COLORS = {
+  bg: '#ffffff',
+  bg_slate_50: '#f8fafc',
+  bg_slate_100: '#f1f5f9',
+  bg_slate_200: '#e2e8f0',
+  bg_slate_300: '#cbd5e1',
+  bg_slate_900: '#0f172a',
+  text_slate_900: '#0f172a',
+  text_slate_800: '#1e293b',
+  text_slate_500: '#64748b',
+  text_slate_400: '#94a3b8',
+  border_slate_200: '#e2e8f0',
+  border_slate_300: '#cbd5e1',
+};
 
 export function ReceiptScreen({ stack, wineName, onReset }: ReceiptScreenProps) {
   const receiptRef = useRef<HTMLDivElement>(null);
@@ -17,14 +33,14 @@ export function ReceiptScreen({ stack, wineName, onReset }: ReceiptScreenProps) 
     if (!receiptRef.current) return;
 
     try {
-      const canvas = await html2canvas(receiptRef.current, {
-        scale: 2, // Higher quality
-        backgroundColor: '#f8fafc', // match bg-slate-50
+      const dataUrl = await toPng(receiptRef.current, {
+        cacheBust: true,
+        backgroundColor: COLORS.bg_slate_50,
+        pixelRatio: 2, // Higher quality
       });
 
-      const image = canvas.toDataURL('image/png');
       const link = document.createElement('a');
-      link.href = image;
+      link.href = dataUrl;
       link.download = `wine-receipt-${new Date().getTime()}.png`;
       link.click();
     } catch (error) {
@@ -36,82 +52,200 @@ export function ReceiptScreen({ stack, wineName, onReset }: ReceiptScreenProps) 
     <div className="flex flex-col items-center justify-center min-h-full p-4 bg-slate-100">
       <div
         ref={receiptRef}
-        className="w-full max-w-sm bg-white p-6 shadow-lg relative overflow-hidden mb-8"
         style={{
-          backgroundImage: 'radial-gradient(circle, transparent 2px, #fff 2px)',
+          width: '100%',
+          maxWidth: '24rem', // max-w-sm
+          padding: '1.5rem', // p-6
+          marginBottom: '2rem', // mb-8
+          position: 'relative',
+          overflow: 'hidden',
+          backgroundColor: COLORS.bg,
+          backgroundImage: `radial-gradient(circle, transparent 2px, ${COLORS.bg} 2px)`,
           backgroundSize: '100% 100%',
+          boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
         }}
       >
         {/* Zigzag Top */}
         <div
-          className="absolute top-0 left-0 w-full h-2 bg-slate-100"
           style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '0.5rem', // h-2
+            backgroundColor: COLORS.bg_slate_100,
             maskImage:
               'linear-gradient(45deg, transparent 75%, black 75%), linear-gradient(-45deg, transparent 75%, black 75%)',
             maskSize: '10px 10px',
+            WebkitMaskImage:
+              'linear-gradient(45deg, transparent 75%, black 75%), linear-gradient(-45deg, transparent 75%, black 75%)',
+            WebkitMaskSize: '10px 10px',
           }}
         />
 
         {/* Header */}
-        <div className="text-center border-b-2 border-dashed border-slate-300 pb-4 mb-4">
-          <h1 className="text-2xl font-bold uppercase tracking-widest text-slate-900">My Wine Receipt</h1>
-          <p className="text-xs text-slate-500 mt-1">{new Date().toLocaleDateString()}</p>
+        <div
+          style={{
+            textAlign: 'center',
+            paddingBottom: '1rem',
+            marginBottom: '1rem',
+            borderBottom: `2px dashed ${COLORS.border_slate_300}`,
+          }}
+        >
+          <h1
+            style={{
+              fontSize: '1.5rem',
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              letterSpacing: '0.1em',
+              margin: 0,
+              color: COLORS.text_slate_900,
+            }}
+          >
+            My Wine Receipt
+          </h1>
+          <p style={{ fontSize: '0.75rem', marginTop: '0.25rem', margin: 0, color: COLORS.text_slate_500 }}>
+            {new Date().toLocaleDateString()}
+          </p>
         </div>
 
         {/* Content */}
-        <div className="space-y-4 mb-6">
-          <div className="flex justify-between items-baseline">
-            <span className="text-sm text-slate-500 uppercase">Item</span>
-            <span className="text-lg font-bold text-slate-900">{wineName || 'Unnamed Wine'}</span>
+        <div style={{ marginBottom: '1.5rem' }}>
+          <div
+            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '0.5rem' }}
+          >
+            <span style={{ fontSize: '0.875rem', textTransform: 'uppercase', color: COLORS.text_slate_500 }}>Item</span>
+            <span style={{ fontSize: '1.125rem', fontWeight: 700, color: COLORS.text_slate_900 }}>
+              {wineName || 'Unnamed Wine'}
+            </span>
           </div>
 
-          <div className="border-t border-dashed border-slate-200 py-2">
-            <ul className="space-y-2">
-              <li className="flex justify-between items-center text-sm text-slate-400 italic">
+          <div
+            style={{
+              paddingTop: '0.5rem',
+              paddingBottom: '0.5rem',
+              borderTop: `1px dashed ${COLORS.border_slate_200}`,
+            }}
+          >
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+              <li
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  fontSize: '0.875rem',
+                  fontStyle: 'italic',
+                  color: COLORS.text_slate_400,
+                  marginBottom: '0.5rem',
+                }}
+              >
                 <span>00</span>
                 <span>Start</span>
               </li>
               {stack.map((item, index) => (
-                <li key={`${item.id}-${index}`} className="flex justify-between items-center text-slate-800">
-                  <span className="text-xs text-slate-400 font-mono">{(index + 1).toString().padStart(2, '0')}</span>
-                  <div className="flex items-center gap-2 flex-1 mx-2">
+                <li
+                  key={`${item.id}-${index}`}
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginBottom: '0.5rem',
+                    color: COLORS.text_slate_800,
+                  }}
+                >
+                  <span style={{ fontSize: '0.75rem', fontFamily: 'monospace', color: COLORS.text_slate_400 }}>
+                    {(index + 1).toString().padStart(2, '0')}
+                  </span>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1, margin: '0 0.5rem' }}>
                     <span>{item.icon}</span>
                     <span>{item.name}</span>
                   </div>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">{item.category}</span>
+                  <span
+                    style={{
+                      fontSize: '0.75rem',
+                      padding: '0.125rem 0.5rem',
+                      borderRadius: '9999px',
+                      backgroundColor: COLORS.bg_slate_100,
+                      color: COLORS.text_slate_500,
+                    }}
+                  >
+                    {item.category}
+                  </span>
                 </li>
               ))}
-              <li className="flex justify-between items-center text-sm text-slate-400 italic mt-2">
+              <li
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  fontSize: '0.875rem',
+                  fontStyle: 'italic',
+                  color: COLORS.text_slate_400,
+                  marginTop: '0.5rem',
+                }}
+              >
                 <span>{(stack.length + 1).toString().padStart(2, '0')}</span>
                 <span>Finish</span>
               </li>
             </ul>
           </div>
 
-          <div className="flex justify-between border-t-2 border-dashed border-slate-300 pt-2 font-bold">
-            <span>Total Aromas</span>
-            <span>{stack.length}</span>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              paddingTop: '0.5rem',
+              fontWeight: 700,
+              borderTop: `2px dashed ${COLORS.border_slate_300}`,
+            }}
+          >
+            <span style={{ color: COLORS.text_slate_900 }}>Total Aromas</span>
+            <span style={{ color: COLORS.text_slate_900 }}>{stack.length}</span>
           </div>
         </div>
 
         {/* Footer / Barcode */}
-        <div className="mt-8 text-center space-y-2">
+        <div style={{ marginTop: '2rem', textAlign: 'center' }}>
           <div
-            className="h-12 bg-slate-900 mx-auto w-3/4 opacity-80"
             style={{
+              height: '3rem',
+              width: '75%',
+              margin: '0 auto',
+              opacity: 0.8,
+              backgroundColor: COLORS.bg_slate_900,
               maskImage: 'repeating-linear-gradient(90deg, black, black 2px, transparent 2px, transparent 4px)',
+              WebkitMaskImage: 'repeating-linear-gradient(90deg, black, black 2px, transparent 2px, transparent 4px)',
+              marginBottom: '0.5rem',
             }}
           />
-          <p className="text-[10px] text-slate-400 tracking-[0.5em] uppercase">Thanks for drinking</p>
+          <p
+            style={{
+              fontSize: '10px',
+              letterSpacing: '0.5em',
+              textTransform: 'uppercase',
+              margin: 0,
+              color: COLORS.text_slate_400,
+            }}
+          >
+            Thanks for drinking
+          </p>
         </div>
 
         {/* Zigzag Bottom */}
         <div
-          className="absolute bottom-0 left-0 w-full h-2 bg-slate-100"
           style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            width: '100%',
+            height: '0.5rem',
+            backgroundColor: COLORS.bg_slate_100,
             maskImage:
               'linear-gradient(45deg, transparent 75%, black 75%), linear-gradient(-45deg, transparent 75%, black 75%)',
             maskSize: '10px 10px',
+            WebkitMaskImage:
+              'linear-gradient(45deg, transparent 75%, black 75%), linear-gradient(-45deg, transparent 75%, black 75%)',
+            WebkitMaskSize: '10px 10px',
             transform: 'rotate(180deg)',
           }}
         />

@@ -2,8 +2,10 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import Page from '../app/page';
 import { AROMA_DATA } from '../lib/constants';
 
-// Mock html2canvas for ReceiptScreen
-jest.mock('html2canvas', () => jest.fn(() => Promise.resolve({ toDataURL: () => '' })));
+// Mock html-to-image for ReceiptScreen
+jest.mock('html-to-image', () => ({
+  toPng: jest.fn(() => Promise.resolve('')),
+}));
 window.URL.createObjectURL = jest.fn();
 
 // Mock useAromaStack hook? No, let's test integration with real hook logic.

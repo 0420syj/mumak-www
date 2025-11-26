@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@mumak/ui": "workspace:*",
-    "html2canvas": "^1.4.1",
+    "html-to-image": "^1.11.13",
     "lucide-react": "^0.554.0",
     "next": "^15.5.6",
     "next-themes": "^0.4.6",
@@ -31,9 +31,9 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
-    "@playwright/test": "^1.57.0",
     "@mumak/eslint-config": "workspace:*",
     "@mumak/typescript-config": "workspace:*",
+    "@playwright/test": "^1.57.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
