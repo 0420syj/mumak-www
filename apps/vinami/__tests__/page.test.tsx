@@ -8,12 +8,24 @@ jest.mock('html-to-image', () => ({
 }));
 window.URL.createObjectURL = jest.fn();
 
-// Mock useAromaStack hook? No, let's test integration with real hook logic.
+// Mock next-themes
+jest.mock('next-themes', () => ({
+  useTheme: () => ({
+    setTheme: jest.fn(),
+    theme: 'light',
+  }),
+  ThemeProvider: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+}));
 
 describe('Page Integration', () => {
   it('renders TastingScreen initially', () => {
     render(<Page />);
     expect(screen.getByPlaceholderText('와인 이름을 입력하세요')).toBeInTheDocument();
+  });
+
+  it('renders ThemeToggle', () => {
+    render(<Page />);
+    expect(screen.getByText('Toggle theme')).toBeInTheDocument();
   });
 
   it('shows Finish button when aroma is added', () => {

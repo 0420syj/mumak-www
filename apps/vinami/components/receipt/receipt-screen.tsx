@@ -1,8 +1,8 @@
-import React, { useRef } from 'react';
 import { AromaItem } from '@/lib/constants';
 import { Button } from '@mumak/ui/components/button';
-import { Download, RefreshCw } from 'lucide-react';
 import { toPng } from 'html-to-image';
+import { Download, RefreshCw } from 'lucide-react';
+import { useRef } from 'react';
 
 interface ReceiptScreenProps {
   stack: AromaItem[];
