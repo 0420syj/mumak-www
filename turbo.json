@@ -26,6 +26,10 @@
       "inputs": ["$TURBO_DEFAULT$", "tsconfig*.json"],
       "outputs": [".turbo/**", "*.tsbuildinfo"]
     },
+    "knip": {
+      "inputs": ["$TURBO_DEFAULT$", "knip.config.ts", "**/*.{ts,tsx,js,jsx}"],
+      "outputs": [".turbo/**"]
+    },
     "format": {
       "inputs": ["$TURBO_DEFAULT$"],
       "outputs": [".turbo/**", "**/*.{ts,tsx,md,json,js,jsx}"]
