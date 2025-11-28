@@ -41,7 +41,7 @@ test.describe('My Wine Receipt Flow', () => {
     try {
       const download = await downloadPromise;
       expect(download.suggestedFilename()).toMatch(/wine-receipt-\d+\.png/);
-    } catch (e) {
+    } catch {
       console.log(
         'Download event timed out or failed. This might be due to html2canvas execution time or browser restriction in headless mode.'
       );
