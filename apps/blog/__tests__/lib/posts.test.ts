@@ -28,23 +28,35 @@ describe('Posts Data Access Layer', () => {
       const posts = getPosts('ko');
       if (posts.length > 1) {
         for (let i = 0; i < posts.length - 1; i++) {
-          const currentDate = new Date(posts[i].date);
-          const nextDate = new Date(posts[i + 1].date);
-          expect(currentDate.getTime()).toBeGreaterThanOrEqual(nextDate.getTime());
+          const currentPost = posts[i];
+          const nextPost = posts[i + 1];
+          if (currentPost && nextPost) {
+            const currentDate = new Date(currentPost.date);
+            const nextDate = new Date(nextPost.date);
+            expect(currentDate.getTime()).toBeGreaterThanOrEqual(nextDate.getTime());
+          }
         }
       }
     });
 
     it('should not include draft posts in production', () => {
       const originalEnv = process.env.NODE_ENV;
-      process.env.NODE_ENV = 'production';
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: 'production',
+        writable: true,
+        configurable: true,
+      });
 
       const posts = getPosts('ko');
       posts.forEach(post => {
         expect(post.draft).not.toBe(true);
       });
 
-      process.env.NODE_ENV = originalEnv;
+      Object.defineProperty(process.env, 'NODE_ENV', {
+        value: originalEnv,
+        writable: true,
+        configurable: true,
+      });
     });
 
     it('should return PostMeta with required fields', () => {
@@ -68,10 +80,13 @@ describe('Posts Data Access Layer', () => {
     it('should return a post with content for valid slug', () => {
       const posts = getPosts('ko', 'essay');
       if (posts.length > 0) {
-        const post = getPost('ko', 'essay', posts[0].slug);
-        expect(post).not.toBeNull();
-        expect(post).toHaveProperty('content');
-        expect(post).toHaveProperty('meta');
+        const firstPost = posts[0];
+        if (firstPost) {
+          const post = getPost('ko', 'essay', firstPost.slug);
+          expect(post).not.toBeNull();
+          expect(post).toHaveProperty('content');
+          expect(post).toHaveProperty('meta');
+        }
       }
     });
 

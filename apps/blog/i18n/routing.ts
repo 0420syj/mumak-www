@@ -7,6 +7,7 @@ export const routing = defineRouting({
   locales,
   defaultLocale,
   localePrefix: 'always',
+  timeZone: 'Asia/Seoul',
 });
 
 export const { Link, redirect, usePathname, useRouter, getPathname } = createNavigation(routing);

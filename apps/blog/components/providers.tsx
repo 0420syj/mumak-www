@@ -11,8 +11,10 @@ interface ProvidersProps {
 }
 
 export function Providers({ children, locale, messages }: ProvidersProps) {
+  const timeZone = locale === 'ko' ? 'Asia/Seoul' : 'UTC';
+
   return (
-    <NextIntlClientProvider locale={locale} messages={messages}>
+    <NextIntlClientProvider locale={locale} messages={messages} timeZone={timeZone}>
       <NextThemesProvider
         attribute="class"
         defaultTheme="system"
