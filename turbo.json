@@ -8,7 +8,7 @@
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**", "out/**", "*.tsbuildinfo"],
-      "env": ["NEXT_PUBLIC_*", "VERCEL_*"],
+      "env": ["NEXT_PUBLIC_*", "VERCEL_*", "ANALYZE"],
       "passThroughEnv": ["NODE_ENV"]
     },
     "lint": {
