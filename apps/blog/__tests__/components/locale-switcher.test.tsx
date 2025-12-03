@@ -31,7 +31,7 @@ jest.mock('@/i18n/routing', () => ({
     children: React.ReactNode;
     href: string;
     locale: string;
-    'aria-current'?: string;
+    'aria-current'?: 'true' | 'false' | 'page' | 'step' | 'location' | 'date' | 'time' | undefined;
     className?: string;
   }) => (
     <a

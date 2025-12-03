@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 
-import { locales } from '@/i18n/config';
-import { getCategories, getAllPostSlugs, type Locale } from '@/lib/posts';
+import { locales, type Locale } from '@/i18n/config';
+import { getCategories, getAllPostSlugs } from '@/lib/posts';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://blog.mumak.dev';
 
