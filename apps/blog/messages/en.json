@@ -1,0 +1,38 @@
+{
+  "common": {
+    "home": "Home",
+    "essay": "Essay",
+    "articles": "Articles",
+    "notes": "Notes",
+    "language": "Language"
+  },
+  "home": {
+    "title": "Mumak Log",
+    "description": "A space for thoughts and records",
+    "latestPosts": "Latest Posts"
+  },
+  "category": {
+    "essay": {
+      "title": "Essay",
+      "description": "Long-form writing"
+    },
+    "articles": {
+      "title": "Articles",
+      "description": "Technical articles"
+    },
+    "notes": {
+      "title": "Notes",
+      "description": "Short memos and TIL"
+    }
+  },
+  "post": {
+    "readMore": "Read more",
+    "backToList": "Back to list"
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "The page you requested does not exist.",
+    "backHome": "Back to Home"
+  }
+}
+
