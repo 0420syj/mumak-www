@@ -5,6 +5,8 @@ import { type Locale } from '@/i18n/config';
 import { Link } from '@/i18n/routing';
 import { getPosts } from '@/lib/posts';
 
+import { Spotify } from '@/components/spotify';
+
 interface HomePageProps {
   params: Promise<{ locale: string }>;
 }
@@ -24,22 +26,78 @@ export default async function HomePage({ params }: HomePageProps) {
   setRequestLocale(locale);
 
   const t = await getTranslations('home');
-  const posts = getPosts(locale as Locale).slice(0, 5);
+  const allPosts = getPosts(locale as Locale).slice(0, 6);
+  const [featuredPost, ...recentPosts] = allPosts;
+
+  const introText = t('intro');
+  const introLines = introText.split('\n');
+  const introWithoutRss = introLines.slice(0, -1).join('\n');
+  const rssHint = locale === 'ko' ? '여기서' : 'here';
 
   return (
-    <div className="space-y-12">
-      <section className="text-center py-12">
-        <h1 className="text-4xl font-bold mb-4">{t('title')}</h1>
-        <p className="text-lg text-muted-foreground">{t('description')}</p>
+    <div className="space-y-16 pb-12">
+      <section className="flex flex-col md:flex-row gap-8 md:items-start md:justify-between py-8">
+        <div className="space-y-4 max-w-2xl">
+          <h1 className="text-4xl font-bold">{t('title')}</h1>
+          <p className="text-lg text-muted-foreground whitespace-pre-wrap leading-relaxed">
+            {introWithoutRss}
+            {'\n'}
+            {locale === 'ko' ? (
+              <>
+                {rssHint}{' '}
+                <a href="/feed.xml" className="text-primary hover:underline">
+                  {t('rssLink')}
+                </a>
+                를 확인할 수 있어요.
+              </>
+            ) : (
+              <>
+                You can check the{' '}
+                <a href="/feed.xml" className="text-primary hover:underline">
+                  {t('rssLink')}
+                </a>{' '}
+                feed {rssHint}.
+              </>
+            )}
+          </p>
+        </div>
+
+        <div className="w-full md:w-auto">
+          <Spotify />
+        </div>
       </section>
 
-      <section>
-        <h2 className="text-2xl font-semibold mb-6">{t('latestPosts')}</h2>
-        <div className="space-y-6">
-          {posts.length === 0 ? (
-            <p className="text-muted-foreground">No posts yet.</p>
-          ) : (
-            posts.map(post => (
+      {featuredPost && (
+        <section>
+          <h2 className="text-2xl font-semibold mb-6">{t('latestPosts')}</h2>
+          <Link href={`/${featuredPost.category}/${featuredPost.slug}`} className="group block">
+            <article className="border border-border rounded-xl p-8 bg-muted/30 hover:bg-muted/50 transition-all">
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <span className="capitalize font-medium text-primary">{featuredPost.category}</span>
+                  <span>·</span>
+                  <time dateTime={featuredPost.date}>
+                    {new Date(featuredPost.date).toLocaleDateString(locale, {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </time>
+                </div>
+                <h3 className="text-3xl font-bold group-hover:text-primary transition-colors">{featuredPost.title}</h3>
+                <p className="text-lg text-muted-foreground line-clamp-3">{featuredPost.description}</p>
+                <div className="text-sm font-medium text-primary mt-2 flex items-center gap-1">Read more &rarr;</div>
+              </div>
+            </article>
+          </Link>
+        </section>
+      )}
+
+      {recentPosts.length > 0 && (
+        <section>
+          <h2 className="text-2xl font-semibold mb-6">{t('recentPosts')}</h2>
+          <div className="space-y-6">
+            {recentPosts.map(post => (
               <article
                 key={`${post.category}-${post.slug}`}
                 className="border border-border rounded-lg p-6 hover:bg-muted/50 transition-colors"
@@ -60,10 +118,10 @@ export default async function HomePage({ params }: HomePageProps) {
                   <p className="text-muted-foreground">{post.description}</p>
                 </Link>
               </article>
-            ))
-          )}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
