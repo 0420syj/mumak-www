@@ -1,6 +1,27 @@
-# Mumak Next
+# Mumak Log Blog
 
-Next.js + TypeScript로 구성된 Next.js 애플리케이션입니다.
+Next.js 16 + TypeScript + next-intl로 구성된 다국어 MDX 블로그입니다.
+
+## 주요 기능
+
+- **다국어 지원 (i18n)**: 한국어/영어 지원 (next-intl)
+- **MDX 콘텐츠**: 마크다운 + React 컴포넌트 (next-mdx-remote-client)
+- **카테고리 분류**: essay, articles, notes
+- **SEO 최적화**: sitemap.xml, robots.txt, generateMetadata
+- **반응형 디자인**: Tailwind CSS + @tailwindcss/typography
+
+## 기술 스택
+
+| 구분 | 기술 |
+|------|------|
+| Framework | Next.js 16.0.6 (App Router) |
+| i18n | next-intl |
+| MDX | next-mdx-remote-client |
+| Frontmatter | gray-matter |
+| Styling | Tailwind CSS, @tailwindcss/typography |
+| UI | @mumak/ui (shadcn/ui 기반) |
+| Unit Test | Jest + React Testing Library |
+| E2E Test | Playwright |
 
 ## 개발 환경
 
@@ -25,81 +46,93 @@ pnpm start
 
 ## 테스트
 
-이 프로젝트는 Jest와 Playwright를 사용하여 테스트를 구성했습니다.
-
-### 단위 테스트 (Jest)
-
 ```bash
-# 테스트 실행
+# 단위 테스트
 pnpm test
 
-# 커버리지 포함하여 실행
-pnpm test:coverage
-```
-
-### E2E 테스트 (Playwright)
-
-```bash
-# E2E 테스트 실행
+# E2E 테스트
 pnpm test:e2e
 
-# E2E 테스트 UI 실행
-pnpm test:e2e:ui
-
-# 헤드리스 모드로 실행
-pnpm test:e2e:headed
-
-# 디버그 모드로 실행
-pnpm test:e2e:debug
+# 전체 테스트
+pnpm test && pnpm test:e2e
 ```
 
-## 테스트 파일 구조
+## 프로젝트 구조
 
 ```bash
-src/
-├── app                 # App router
-├── __tests__/          # 단위 테스트 파일들
-│   └── counter.test.tsx
-├── e2e                 # E2E 테스트 파일들
-│   └── counter.test.tsx
-└── components/         # 테스트 대상 컴포넌트들
-    └── counter.tsx
+apps/blog/
+├── app/
+│   ├── [locale]/                # 다국어 라우팅
+│   │   ├── layout.tsx           # 공통 레이아웃
+│   │   ├── page.tsx             # 홈 페이지
+│   │   ├── not-found.tsx        # 404 페이지
+│   │   └── [category]/
+│   │       ├── page.tsx         # 카테고리 목록
+│   │       └── [slug]/
+│   │           └── page.tsx     # 글 상세
+│   ├── sitemap.ts               # 사이트맵 생성
+│   └── robots.ts                # robots.txt 생성
+├── content/                     # MDX 콘텐츠
+│   ├── ko/{essay,articles,notes}/
+│   └── en/{essay,articles,notes}/
+├── messages/                    # i18n 번역 파일
+│   ├── ko.json
+│   └── en.json
+├── i18n/                        # i18n 설정
+│   ├── config.ts
+│   ├── routing.ts
+│   └── request.ts
+├── lib/
+│   └── posts.ts                 # 데이터 접근 계층
+├── components/
+│   ├── locale-switcher.tsx      # 언어 전환
+│   ├── navigation.tsx           # 네비게이션
+│   └── providers.tsx            # 프로바이더
+├── __tests__/                   # 단위 테스트
+│   ├── i18n/config.test.ts
+│   ├── lib/posts.test.ts
+│   └── components/locale-switcher.test.tsx
+├── e2e/                         # E2E 테스트
+│   ├── i18n.spec.ts
+│   ├── blog.spec.ts
+│   └── navigation.spec.ts
+├── mdx-components.tsx           # MDX 커스텀 컴포넌트
+└── middleware.ts                # i18n 미들웨어
 ```
 
-## 테스트 설정
+## 콘텐츠 작성
 
-- **Jest**: `jest.setup.ts`에서 설정
-- **Playwright**: `playwright.config.ts`에서 설정
-- **테스트 환경**: jsdom을 사용하여 브라우저 환경 시뮬레이션
-- **UI 라이브러리**: @testing-library/react 사용
+### MDX 파일 생성
 
-## 추가 테스트 작성
+`content/{locale}/{category}/` 디렉토리에 `.mdx` 파일을 생성합니다.
 
-### 단위 테스트 예제
+```mdx
+---
+title: "글 제목"
+date: "2024-12-03"
+description: "글 요약"
+tags: ["tag1", "tag2"]
+draft: false
+---
 
-```typescript
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { YourComponent } from '../components/your-component';
+본문 내용...
 
-describe('YourComponent', () => {
-  it('should render correctly', () => {
-    render(<YourComponent />);
-    expect(screen.getByText('Expected Text')).toBeInTheDocument();
-  });
-});
+## 소제목
+
+마크다운 + React 컴포넌트를 사용할 수 있습니다.
 ```
 
-### E2E 테스트 예제
+### Frontmatter 필드
 
-```typescript
-import { test, expect } from '@playwright/test';
+| 필드 | 필수 | 설명 |
+|------|------|------|
+| title | O | 글 제목 |
+| date | O | 작성일 (YYYY-MM-DD) |
+| description | O | 글 요약 |
+| tags | X | 태그 배열 |
+| draft | X | true면 production에서 제외 |
 
-test('should work correctly', async ({ page }) => {
-  await page.goto('/');
-  await expect(page.locator('h1')).toBeVisible();
-  await page.click('button');
-  await expect(page.locator('text=Updated')).toBeVisible();
-});
-```
+## 테스트 결과
+
+- Jest 단위 테스트: 17 passed
+- Playwright E2E 테스트: 69 passed
