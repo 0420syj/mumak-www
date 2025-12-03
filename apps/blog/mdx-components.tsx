@@ -21,7 +21,9 @@ export const mdxComponents: MDXComponents = {
   ),
   code: ({ children }) => <code className="px-1.5 py-0.5 bg-muted rounded text-sm font-mono">{children}</code>,
   pre: ({ children }) => <pre className="my-4 p-4 bg-muted rounded-lg overflow-x-auto">{children}</pre>,
-  img: ({ src, alt }) => <Image src={src || ''} alt={alt || ''} width={800} height={400} className="my-4 rounded-lg" />,
+  img: ({ src, alt }) => (
+    <Image src={src || ''} alt={alt || ''} width={800} height={400} className="my-4 rounded-lg" loading="lazy" />
+  ),
   hr: () => <hr className="my-8 border-border" />,
   table: ({ children }) => (
     <div className="my-4 overflow-x-auto">
