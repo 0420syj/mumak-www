@@ -9,7 +9,13 @@
   "home": {
     "title": "Mumak Log",
     "description": "A space for thoughts and records",
-    "latestPosts": "Latest Posts"
+    "intro": "Hello! I'm Simwan, a Frontend Developer.\nI'm interested in Web tech and UX, and I love documenting what I learn.\nYou can check the RSS feed here.",
+    "latestPosts": "Latest Post",
+    "recentPosts": "Recent Posts",
+    "listeningTo": "Listening to Spotify",
+    "lastPlayed": "Last Played on Spotify",
+    "rssLink": "RSS",
+    "rssDescription": "You can check the RSS feed here"
   },
   "category": {
     "essay": {
