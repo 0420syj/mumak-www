@@ -119,7 +119,12 @@ export async function getNowPlaying(): Promise<NowPlaying | null> {
         return null;
       }
 
-      const track = data.items[0].track;
+      const firstItem = data.items[0];
+      if (!firstItem) {
+        return null;
+      }
+
+      const track = firstItem.track;
 
       return {
         isPlaying: false,

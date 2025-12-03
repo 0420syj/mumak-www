@@ -10,9 +10,11 @@ jest.mock('next-intl/server', () => ({
 jest.mock('@/lib/spotify');
 jest.mock('next/image', () => ({
   __esModule: true,
+  // eslint-disable-next-line @next/next/no-img-element
   default: ({ src, alt }: { src: string; alt: string }) => <img src={src} alt={alt} />,
 }));
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockGetTranslations = jest.requireMock('next-intl/server').getTranslations as jest.MockedFunction<any>;
 const mockGetNowPlaying = getNowPlaying as jest.MockedFunction<typeof getNowPlaying>;
 

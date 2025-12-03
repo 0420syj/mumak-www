@@ -1,7 +1,7 @@
 import { type NextRequest } from 'next/server';
 
 import { locales, type Locale } from '@/i18n/config';
-import { getPosts, getPost } from '@/lib/posts';
+import { getPosts } from '@/lib/posts';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://blog.mumak.dev';
 
