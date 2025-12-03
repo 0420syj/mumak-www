@@ -45,6 +45,9 @@ test.describe('Home Page', () => {
     await expect(page.getByRole('heading', { level: 2, name: 'Latest Post' })).toBeVisible();
     await expect(page.getByRole('heading', { level: 2, name: 'Recent Posts' })).toBeVisible();
 
+    const introText = await page.locator('section').first().textContent();
+    expect(introText).toContain('Wan Sim');
+
     const rssLink = page.getByRole('link', { name: 'RSS' });
     await expect(rssLink).toBeVisible();
   });
