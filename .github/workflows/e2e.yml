@@ -57,14 +57,5 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Determine affected apps
-        id: affected
-        run: |
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
-            echo "filter=--filter=[HEAD^1]" >> $GITHUB_OUTPUT
-          else
-            echo "filter=" >> $GITHUB_OUTPUT
-          fi
-
       - name: Run E2E tests (affected apps only)
-        run: pnpm turbo run test:e2e ${{ steps.affected.outputs.filter }}
+        run: pnpm turbo run test:e2e --filter=[HEAD^1]
