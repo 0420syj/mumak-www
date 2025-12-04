@@ -13,7 +13,7 @@ test.describe('i18n - Internationalization', () => {
 
     // Check Korean UI elements
     await expect(page.getByRole('link', { name: 'Mumak Log' })).toBeVisible();
-    await expect(page.getByText('생각과 기록을 담는 공간')).toBeVisible();
+    await expect(page.getByText('프론트엔드 개발자 심완입니다')).toBeVisible();
     await expect(page.getByText('최신 글')).toBeVisible();
   });
 
@@ -22,8 +22,8 @@ test.describe('i18n - Internationalization', () => {
 
     // Check English UI elements
     await expect(page.getByRole('link', { name: 'Mumak Log' })).toBeVisible();
-    await expect(page.getByText('A space for thoughts and records')).toBeVisible();
-    await expect(page.getByText('Latest Posts')).toBeVisible();
+    await expect(page.getByText("I'm Wan Sim, a Frontend Developer")).toBeVisible();
+    await expect(page.getByText('Latest Post')).toBeVisible();
   });
 
   test('should switch language using locale switcher', async ({ page }) => {
@@ -37,7 +37,7 @@ test.describe('i18n - Internationalization', () => {
 
     // Verify we're on English page
     await page.waitForURL(/\/en/);
-    await expect(page.getByText('Latest Posts')).toBeVisible();
+    await expect(page.getByText('Latest Post')).toBeVisible();
   });
 
   test('should maintain page path when switching language', async ({ page }) => {
