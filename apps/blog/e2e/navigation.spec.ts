@@ -49,6 +49,37 @@ test.describe('Navigation', () => {
       await expect(nav.getByRole('link', { name: 'Articles' })).toBeVisible();
       await expect(nav.getByRole('link', { name: 'Notes' })).toBeVisible();
     });
+
+    test('should open mobile sheet with links and switchers', async ({ page }) => {
+      await page.setViewportSize({ width: 480, height: 900 });
+      await page.goto('/ko');
+
+      const trigger = page.getByRole('button', { name: 'Open navigation' });
+      await trigger.click();
+
+      await expect(page.getByRole('link', { name: '에세이' })).toBeVisible();
+      await expect(page.getByRole('link', { name: '아티클' })).toBeVisible();
+      await expect(page.getByRole('link', { name: '노트' })).toBeVisible();
+
+      await page.getByRole('link', { name: '에세이' }).click();
+      await page.waitForURL(/\/ko\/essay$/);
+      await expect(page).toHaveURL(/\/ko\/essay$/);
+    });
+
+    test('mobile header keeps switchers visible and sheet can close', async ({ page }) => {
+      await page.setViewportSize({ width: 480, height: 900 });
+      await page.goto('/ko');
+
+      await expect(page.getByRole('button', { name: 'Change theme' })).toBeVisible();
+      await expect(page.getByRole('button', { name: 'Change language' })).toBeVisible();
+
+      const trigger = page.getByRole('button', { name: 'Open navigation' });
+      await trigger.click();
+      await expect(page.getByRole('dialog')).toBeVisible();
+
+      await page.getByRole('button', { name: 'Close' }).click();
+      await expect(page.getByRole('dialog')).not.toBeVisible();
+    });
   });
 
   test.describe('Post Navigation', () => {
