@@ -6,13 +6,11 @@ import { Link, usePathname } from '@/i18n/routing';
 
 import { Button } from '@mumak/ui/components/button';
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@mumak/ui/components/sheet';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@mumak/ui/components/dropdown-menu';
 
 import { LocaleSwitcher } from './locale-switcher';
 import { ThemeSwitcher } from './theme-switcher';
@@ -35,8 +33,8 @@ export function Navigation() {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-3 sm:gap-4">
             <div className="md:hidden">
-              <Sheet>
-                <SheetTrigger asChild>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon-sm" aria-label="Open navigation">
                     <span className="sr-only">Open navigation</span>
                     <svg
@@ -55,37 +53,18 @@ export function Navigation() {
                       <line x1="4" x2="20" y1="18" y2="18" />
                     </svg>
                   </Button>
-                </SheetTrigger>
+                </DropdownMenuTrigger>
 
-                <SheetContent side="left" className="p-0" aria-label="Navigation menu">
-                  <div className="flex flex-col h-full">
-                    <SheetHeader className="sr-only">
-                      <SheetTitle>Navigation</SheetTitle>
-                      <SheetDescription>Navigation menu</SheetDescription>
-                    </SheetHeader>
-
-                    <div className="px-4 pt-4 pb-2">
-                      <Link href="/" className="text-xl font-bold">
-                        Mumak Log
+                <DropdownMenuContent align="start" className="min-w-40">
+                  {navItems.map(item => (
+                    <DropdownMenuItem key={item.href} asChild>
+                      <Link href={item.href} className={isActive(item.href) ? 'font-medium' : ''}>
+                        {t(item.labelKey)}
                       </Link>
-                    </div>
-
-                    <nav className="flex flex-col px-2 py-2 gap-1 border-t">
-                      {navItems.map(item => (
-                        <Link
-                          key={item.href}
-                          href={item.href}
-                          className={`px-3 py-2 text-sm rounded-md transition-colors ${
-                            isActive(item.href) ? 'bg-muted font-medium' : 'hover:bg-muted/50'
-                          }`}
-                        >
-                          {t(item.labelKey)}
-                        </Link>
-                      ))}
-                    </nav>
-                  </div>
-                </SheetContent>
-              </Sheet>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
 
             <Link href="/" className="text-xl font-bold">
