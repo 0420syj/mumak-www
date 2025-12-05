@@ -2,16 +2,15 @@ services:
   blog:
     build:
       context: ../..
-      dockerfile: Dockerfile.blog
+      dockerfile: apps/blog/Dockerfile
     ports:
-      - "3002:3000"
+      - '3000:3000'
     environment:
       - NODE_ENV=production
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
+      test: ['CMD', 'wget', '-q', '--spider', 'http://localhost:3000']
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 10s
-

@@ -1,7 +1,7 @@
 # ===========================================
 # Stage 1: Pruner - turbo prune으로 필요한 파일만 추출
 # ===========================================
-FROM node:22-alpine AS pruner
+FROM node:24-alpine AS pruner
 
 RUN apk add --no-cache libc6-compat
 RUN corepack enable && corepack prepare pnpm@10.24.0 --activate
@@ -20,7 +20,7 @@ RUN turbo prune blog --docker
 # ===========================================
 # Stage 2: Builder - 의존성 설치 및 빌드
 # ===========================================
-FROM node:22-alpine AS builder
+FROM node:24-alpine AS builder
 
 RUN apk add --no-cache libc6-compat
 RUN corepack enable && corepack prepare pnpm@10.24.0 --activate
@@ -39,7 +39,7 @@ RUN pnpm turbo build --filter=blog
 # ===========================================
 # Stage 3: Runner - 최소 런타임 이미지
 # ===========================================
-FROM node:22-alpine AS runner
+FROM node:24-alpine AS runner
 
 WORKDIR /app
 
@@ -68,4 +68,3 @@ ENV HOSTNAME="0.0.0.0"
 ENV NODE_ENV=production
 
 CMD ["node", "apps/blog/server.js"]
-
