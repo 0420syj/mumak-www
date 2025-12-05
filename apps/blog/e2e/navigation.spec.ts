@@ -50,23 +50,23 @@ test.describe('Navigation', () => {
       await expect(nav.getByRole('link', { name: 'Notes' })).toBeVisible();
     });
 
-    test('should open mobile sheet with links and switchers', async ({ page }) => {
+    test('should open mobile dropdown menu with links', async ({ page }) => {
       await page.setViewportSize({ width: 480, height: 900 });
       await page.goto('/ko');
 
       const trigger = page.getByRole('button', { name: 'Open navigation' });
       await trigger.click();
 
-      await expect(page.getByRole('link', { name: '에세이' })).toBeVisible();
-      await expect(page.getByRole('link', { name: '아티클' })).toBeVisible();
-      await expect(page.getByRole('link', { name: '노트' })).toBeVisible();
+      await expect(page.getByRole('menuitem', { name: '에세이' })).toBeVisible();
+      await expect(page.getByRole('menuitem', { name: '아티클' })).toBeVisible();
+      await expect(page.getByRole('menuitem', { name: '노트' })).toBeVisible();
 
-      await page.getByRole('link', { name: '에세이' }).click();
+      await page.getByRole('menuitem', { name: '에세이' }).click();
       await page.waitForURL(/\/ko\/essay$/);
       await expect(page).toHaveURL(/\/ko\/essay$/);
     });
 
-    test('mobile header keeps switchers visible and sheet can close', async ({ page }) => {
+    test('mobile header keeps switchers visible and dropdown can close with escape', async ({ page }) => {
       await page.setViewportSize({ width: 480, height: 900 });
       await page.goto('/ko');
 
