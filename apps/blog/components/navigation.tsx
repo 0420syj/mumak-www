@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Link, usePathname } from '@/i18n/routing';
 
 import { LocaleSwitcher } from './locale-switcher';
+import { ThemeSwitcher } from './theme-switcher';
 
 const navItems = [
   { href: '/', labelKey: 'home' },
@@ -48,7 +49,10 @@ export function Navigation() {
             </div>
           </div>
 
-          <LocaleSwitcher />
+          <div className="flex items-center gap-2">
+            <ThemeSwitcher />
+            <LocaleSwitcher />
+          </div>
         </div>
       </div>
     </nav>
