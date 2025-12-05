@@ -61,9 +61,6 @@ test.describe('Navigation', () => {
       await expect(page.getByRole('link', { name: '아티클' })).toBeVisible();
       await expect(page.getByRole('link', { name: '노트' })).toBeVisible();
 
-      await expect(page.getByRole('button', { name: 'Change theme' })).toBeVisible();
-      await expect(page.getByRole('button', { name: 'Change language' })).toBeVisible();
-
       await page.getByRole('link', { name: '에세이' }).click();
       await page.waitForURL(/\/ko\/essay$/);
       await expect(page).toHaveURL(/\/ko\/essay$/);

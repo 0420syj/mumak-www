@@ -26,32 +26,7 @@ export function Navigation() {
     <nav className="border-b border-border">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center gap-3 sm:gap-6">
-            <Link href="/" className="text-xl font-bold">
-              Mumak Log
-            </Link>
-
-            <div className="hidden md:flex items-center gap-4">
-              {navItems.map(item => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={`px-3 py-2 text-sm rounded-md transition-colors ${
-                    isActive(item.href) ? 'bg-muted font-medium' : 'hover:bg-muted/50'
-                  }`}
-                >
-                  {t(item.labelKey)}
-                </Link>
-              ))}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div className="hidden md:flex items-center gap-2">
-              <ThemeSwitcher />
-              <LocaleSwitcher />
-            </div>
-
+          <div className="flex items-center gap-3 sm:gap-4">
             <div className="md:hidden">
               <Sheet>
                 <SheetTrigger asChild>
@@ -96,15 +71,33 @@ export function Navigation() {
                         </Link>
                       ))}
                     </nav>
-
-                    <div className="mt-auto border-t px-3 py-3 flex items-center justify-end gap-2">
-                      <ThemeSwitcher />
-                      <LocaleSwitcher />
-                    </div>
                   </div>
                 </SheetContent>
               </Sheet>
             </div>
+
+            <Link href="/" className="text-xl font-bold">
+              Mumak Log
+            </Link>
+
+            <div className="hidden md:flex items-center gap-4">
+              {navItems.map(item => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`px-3 py-2 text-sm rounded-md transition-colors ${
+                    isActive(item.href) ? 'bg-muted font-medium' : 'hover:bg-muted/50'
+                  }`}
+                >
+                  {t(item.labelKey)}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <ThemeSwitcher />
+            <LocaleSwitcher />
           </div>
         </div>
       </div>
