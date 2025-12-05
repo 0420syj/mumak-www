@@ -8,7 +8,6 @@ import { LocaleSwitcher } from './locale-switcher';
 import { ThemeSwitcher } from './theme-switcher';
 
 const navItems = [
-  { href: '/', labelKey: 'home' },
   { href: '/essay', labelKey: 'essay' },
   { href: '/articles', labelKey: 'articles' },
   { href: '/notes', labelKey: 'notes' },
@@ -18,12 +17,7 @@ export function Navigation() {
   const t = useTranslations('common');
   const pathname = usePathname();
 
-  const isActive = (href: string) => {
-    if (href === '/') {
-      return pathname === '/';
-    }
-    return pathname.startsWith(href);
-  };
+  const isActive = (href: string) => pathname.startsWith(href);
 
   return (
     <nav className="border-b border-border">

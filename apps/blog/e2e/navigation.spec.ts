@@ -16,7 +16,6 @@ test.describe('Navigation', () => {
       await page.goto('/ko');
 
       const nav = page.locator('nav');
-      await expect(nav.getByRole('link', { name: '홈' })).toBeVisible();
       await expect(nav.getByRole('link', { name: '에세이' })).toBeVisible();
       await expect(nav.getByRole('link', { name: '아티클' })).toBeVisible();
       await expect(nav.getByRole('link', { name: '노트' })).toBeVisible();
@@ -46,7 +45,6 @@ test.describe('Navigation', () => {
       await page.goto('/en');
       const nav = page.locator('nav');
 
-      await expect(nav.getByRole('link', { name: 'Home' })).toBeVisible();
       await expect(nav.getByRole('link', { name: 'Essay' })).toBeVisible();
       await expect(nav.getByRole('link', { name: 'Articles' })).toBeVisible();
       await expect(nav.getByRole('link', { name: 'Notes' })).toBeVisible();
