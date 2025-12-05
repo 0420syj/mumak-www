@@ -5,17 +5,20 @@ import userEvent from '@testing-library/user-event';
 import { ThemeSwitcher } from '@/components/theme-switcher';
 
 const setTheme = jest.fn();
+const mockThemeState = {
+  theme: 'system',
+  resolvedTheme: 'light',
+  setTheme,
+};
 
 jest.mock('next-themes', () => ({
-  useTheme: jest.fn(() => ({
-    theme: 'system',
-    setTheme,
-  })),
+  useTheme: jest.fn(() => mockThemeState),
 }));
 
 describe('ThemeSwitcher', () => {
   beforeEach(() => {
     setTheme.mockClear();
+    Object.assign(mockThemeState, { theme: 'system', resolvedTheme: 'light' as const });
   });
 
   it('should render trigger button', () => {
@@ -36,5 +39,12 @@ describe('ThemeSwitcher', () => {
 
     await user.click(screen.getByRole('menuitemradio', { name: 'Dark' }));
     expect(setTheme).toHaveBeenCalledWith('dark');
+  });
+
+  it('shows dark icon when system resolves to dark', () => {
+    Object.assign(mockThemeState, { theme: 'system', resolvedTheme: 'dark' as const });
+    const { container } = render(<ThemeSwitcher />);
+
+    expect(container.querySelector('.lucide-moon')).toBeInTheDocument();
   });
 });

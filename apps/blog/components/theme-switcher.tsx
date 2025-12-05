@@ -22,7 +22,7 @@ const themeOptions: Array<{ value: ThemeValue; label: string; Icon: typeof SunIc
 ];
 
 export function ThemeSwitcher() {
-  const { theme, setTheme } = useTheme();
+  const { theme, resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -36,11 +36,14 @@ export function ThemeSwitcher() {
       return SunIcon;
     }
 
-    if (selectedTheme === 'system') {
+    const effectiveTheme: ThemeValue =
+      selectedTheme === 'system' ? ((resolvedTheme as ThemeValue | undefined) ?? 'system') : selectedTheme;
+
+    if (effectiveTheme === 'system') {
       return LaptopIcon;
     }
 
-    return selectedTheme === 'dark' ? MoonIcon : SunIcon;
+    return effectiveTheme === 'dark' ? MoonIcon : SunIcon;
   })();
 
   return (
