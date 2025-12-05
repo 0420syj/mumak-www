@@ -1,6 +1,15 @@
 'use client';
 
+import { CheckIcon, GlobeIcon } from 'lucide-react';
 import { useLocale } from 'next-intl';
+
+import { Button } from '@mumak/ui/components/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@mumak/ui/components/dropdown-menu';
 
 import { Link, usePathname } from '@/i18n/routing';
 
@@ -14,20 +23,29 @@ export function LocaleSwitcher() {
   const pathname = usePathname();
 
   return (
-    <div className="flex items-center gap-2">
-      {Object.entries(localeNames).map(([loc, name]) => (
-        <Link
-          key={loc}
-          href={pathname}
-          locale={loc}
-          aria-current={locale === loc ? 'true' : undefined}
-          className={`px-2 py-1 text-sm rounded transition-colors ${
-            locale === loc ? 'bg-foreground text-background font-medium' : 'hover:bg-muted'
-          }`}
-        >
-          {name}
-        </Link>
-      ))}
-    </div>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon-sm" aria-label="Change language">
+          <GlobeIcon className="size-4" />
+        </Button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent align="end" sideOffset={8}>
+        {Object.entries(localeNames).map(([loc, name]) => (
+          <DropdownMenuItem key={loc} inset asChild>
+            <Link
+              href={pathname}
+              locale={loc}
+              aria-current={locale === loc ? 'true' : undefined}
+              role="menuitem"
+              className="flex w-full items-center gap-2"
+            >
+              {name}
+              {locale === loc ? <CheckIcon aria-hidden className="ml-auto size-4" /> : null}
+            </Link>
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

@@ -33,7 +33,8 @@ test.describe('i18n - Internationalization', () => {
     await expect(page.getByText('최신 글')).toBeVisible();
 
     // Click English link
-    await page.getByRole('link', { name: 'English' }).click();
+    await page.getByRole('button', { name: 'Change language' }).click();
+    await page.getByRole('menuitem', { name: 'English' }).click();
 
     // Verify we're on English page
     await page.waitForURL(/\/en/);
@@ -45,11 +46,13 @@ test.describe('i18n - Internationalization', () => {
     await page.goto('/ko');
 
     // Click English
-    await page.getByRole('link', { name: 'English' }).click();
+    await page.getByRole('button', { name: 'Change language' }).click();
+    await page.getByRole('menuitem', { name: 'English' }).click();
     await page.waitForURL(/\/en/);
 
     // Click Korean back
-    await page.getByRole('link', { name: '한국어' }).click();
+    await page.getByRole('button', { name: 'Change language' }).click();
+    await page.getByRole('menuitem', { name: '한국어' }).click();
     await page.waitForURL(/\/ko/);
 
     // Should be back on Korean home

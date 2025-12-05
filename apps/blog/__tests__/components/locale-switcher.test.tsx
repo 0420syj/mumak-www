@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 import { LocaleSwitcher } from '@/components/locale-switcher';
 
@@ -27,18 +28,21 @@ jest.mock('@/i18n/routing', () => ({
     locale,
     'aria-current': ariaCurrent,
     className,
+    role,
   }: {
     children: React.ReactNode;
     href: string;
     locale: string;
     'aria-current'?: 'true' | 'false' | 'page' | 'step' | 'location' | 'date' | 'time' | undefined;
     className?: string;
+    role?: string;
   }) => (
     <a
       href={`/${locale}${href === '/ko' || href === '/en' ? '' : href}`}
       data-locale={locale}
       aria-current={ariaCurrent}
       className={className}
+      role={role}
     >
       {children}
     </a>
@@ -47,33 +51,35 @@ jest.mock('@/i18n/routing', () => ({
 }));
 
 describe('LocaleSwitcher', () => {
-  it('should render language options', () => {
+  it('should render trigger button', () => {
     render(<LocaleSwitcher />);
 
-    // Check if both language options are rendered
-    expect(screen.getByText('한국어')).toBeInTheDocument();
-    expect(screen.getByText('English')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Change language' })).toBeInTheDocument();
   });
 
-  it('should have correct locale links', () => {
+  it('should render language options when opened', async () => {
+    const user = userEvent.setup();
     render(<LocaleSwitcher />);
 
-    const koLink = screen.getByText('한국어').closest('a');
-    const enLink = screen.getByText('English').closest('a');
+    await user.click(screen.getByRole('button', { name: 'Change language' }));
+
+    expect(screen.getByRole('menuitem', { name: '한국어' })).toBeInTheDocument();
+    expect(screen.getByRole('menuitem', { name: 'English' })).toBeInTheDocument();
+  });
+
+  it('should have correct locale links and highlight current locale', async () => {
+    const user = userEvent.setup();
+    render(<LocaleSwitcher />);
+
+    await user.click(screen.getByRole('button', { name: 'Change language' }));
+
+    const koLink = screen.getByRole('menuitem', { name: '한국어' });
+    const enLink = screen.getByRole('menuitem', { name: 'English' });
 
     expect(koLink).toHaveAttribute('data-locale', 'ko');
     expect(enLink).toHaveAttribute('data-locale', 'en');
-  });
 
-  it('should highlight current locale', () => {
-    render(<LocaleSwitcher />);
-
-    const koLink = screen.getByText('한국어').closest('a');
-    const enLink = screen.getByText('English').closest('a');
-
-    // Current locale (ko) should have aria-current attribute
     expect(koLink).toHaveAttribute('aria-current');
-    // Non-current locale should not have aria-current
     expect(enLink).not.toHaveAttribute('aria-current');
   });
 });
