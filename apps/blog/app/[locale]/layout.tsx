@@ -5,6 +5,7 @@ import { getMessages, setRequestLocale } from 'next-intl/server';
 import localFont from 'next/font/local';
 import { notFound } from 'next/navigation';
 
+import { Footer } from '@/components/footer';
 import { Navigation } from '@/components/navigation';
 import { Providers } from '@/components/providers';
 import { type Locale, locales } from '@/i18n/config';
@@ -82,11 +83,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
           <div className="min-h-screen flex flex-col">
             <Navigation />
             <main className="flex-1 container mx-auto px-4 py-8">{children}</main>
-            <footer className="border-t border-border py-6">
-              <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-                &copy; {new Date().getFullYear()} Mumak Log
-              </div>
-            </footer>
+            <Footer />
           </div>
         </Providers>
       </body>

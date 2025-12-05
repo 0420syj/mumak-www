@@ -6,6 +6,10 @@
     "notes": "Notes",
     "language": "Language"
   },
+  "footer": {
+    "about": "About",
+    "now": "Now"
+  },
   "home": {
     "title": "Mumak Log",
     "description": "A space for thoughts and records",
@@ -39,6 +43,19 @@
     "title": "Page Not Found",
     "description": "The page you requested does not exist.",
     "backHome": "Back to Home"
+  },
+  "about": {
+    "title": "About",
+    "description": "Hello, I'm Wan Sim.",
+    "intro": "I'm a Frontend Developer. I'm interested in web technologies and user experience, and I love documenting what I learn.",
+    "contact": "Contact",
+    "email": "Email"
+  },
+  "now": {
+    "title": "Now",
+    "description": "What I'm doing now",
+    "intro": "This page contains what I'm currently focusing on.",
+    "lastUpdated": "Last updated"
   }
 }
 

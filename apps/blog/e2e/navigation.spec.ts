@@ -75,10 +75,10 @@ test.describe('Navigation', () => {
 
       const trigger = page.getByRole('button', { name: 'Open navigation' });
       await trigger.click();
-      await expect(page.getByRole('dialog')).toBeVisible();
+      await expect(page.getByRole('menu')).toBeVisible();
 
-      await page.getByRole('button', { name: 'Close' }).click();
-      await expect(page.getByRole('dialog')).not.toBeVisible();
+      await page.keyboard.press('Escape');
+      await expect(page.getByRole('menu')).not.toBeVisible();
     });
   });
 
@@ -110,6 +110,71 @@ test.describe('Navigation', () => {
       const footer = page.locator('footer');
       await expect(footer).toBeVisible();
       await expect(footer).toContainText('Mumak Log');
+    });
+
+    test('should display RSS, About, and Now links', async ({ page }) => {
+      await page.goto('/ko');
+
+      const footer = page.locator('footer');
+      await expect(footer.getByRole('link', { name: 'RSS' })).toBeVisible();
+      await expect(footer.getByRole('link', { name: 'About' })).toBeVisible();
+      await expect(footer.getByRole('link', { name: 'Now' })).toBeVisible();
+    });
+
+    test('should navigate to About page from footer', async ({ page }) => {
+      await page.goto('/ko');
+
+      const footer = page.locator('footer');
+      await footer.getByRole('link', { name: 'About' }).click();
+      await page.waitForURL(/\/ko\/about$/);
+
+      await expect(page.getByRole('heading', { level: 1, name: 'About' })).toBeVisible();
+    });
+
+    test('should navigate to Now page from footer', async ({ page }) => {
+      await page.goto('/ko');
+
+      const footer = page.locator('footer');
+      await footer.getByRole('link', { name: 'Now' }).click();
+      await page.waitForURL(/\/ko\/now$/);
+
+      await expect(page.getByRole('heading', { level: 1, name: 'Now' })).toBeVisible();
+    });
+
+    test('should have RSS link pointing to feed.xml', async ({ page }) => {
+      await page.goto('/ko');
+
+      const footer = page.locator('footer');
+      const rssLink = footer.getByRole('link', { name: 'RSS' });
+      await expect(rssLink).toHaveAttribute('href', '/feed.xml');
+    });
+  });
+
+  test.describe('About Page', () => {
+    test('should display About page content', async ({ page }) => {
+      await page.goto('/ko/about');
+
+      await expect(page.getByRole('heading', { level: 1, name: 'About' })).toBeVisible();
+    });
+
+    test('should work in English', async ({ page }) => {
+      await page.goto('/en/about');
+
+      await expect(page.getByRole('heading', { level: 1, name: 'About' })).toBeVisible();
+    });
+  });
+
+  test.describe('Now Page', () => {
+    test('should display Now page content', async ({ page }) => {
+      await page.goto('/ko/now');
+
+      await expect(page.getByRole('heading', { level: 1, name: 'Now' })).toBeVisible();
+    });
+
+    test('should work in English', async ({ page }) => {
+      await page.goto('/en/now');
+
+      await expect(page.getByRole('heading', { level: 1, name: 'Now' })).toBeVisible();
     });
   });
 });
