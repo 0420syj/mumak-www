@@ -1,0 +1,71 @@
+# ===========================================
+# Stage 1: Pruner - turbo prune으로 필요한 파일만 추출
+# ===========================================
+FROM node:22-alpine AS pruner
+
+RUN apk add --no-cache libc6-compat
+RUN corepack enable && corepack prepare pnpm@10.24.0 --activate
+
+WORKDIR /app
+
+# turbo 전역 설치 (prune 명령 실행용)
+RUN pnpm add -g turbo
+
+COPY . .
+
+# blog 앱과 의존 패키지만 추출
+# 결과: out/json (package.json들), out/full (소스코드), out/pnpm-lock.yaml
+RUN turbo prune blog --docker
+
+# ===========================================
+# Stage 2: Builder - 의존성 설치 및 빌드
+# ===========================================
+FROM node:22-alpine AS builder
+
+RUN apk add --no-cache libc6-compat
+RUN corepack enable && corepack prepare pnpm@10.24.0 --activate
+
+WORKDIR /app
+
+# pruned lockfile과 package.json들 복사 후 의존성 설치
+COPY --from=pruner /app/out/json/ .
+COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
+RUN pnpm install --frozen-lockfile
+
+# 소스 코드 복사 후 빌드
+COPY --from=pruner /app/out/full/ .
+RUN pnpm turbo build --filter=blog
+
+# ===========================================
+# Stage 3: Runner - 최소 런타임 이미지
+# ===========================================
+FROM node:22-alpine AS runner
+
+WORKDIR /app
+
+# 보안: 시스템 패키지 보안 업데이트 적용 및 비root 사용자 생성
+RUN apk upgrade --no-cache && \
+    addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
+
+# standalone 서버 복사 (monorepo 구조 유지)
+COPY --from=builder --chown=nextjs:nodejs /app/apps/blog/.next/standalone ./
+
+# static 파일과 public 폴더 복사
+COPY --from=builder --chown=nextjs:nodejs /app/apps/blog/.next/static ./apps/blog/.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/apps/blog/public ./apps/blog/public
+
+# 런타임에 fs로 접근하는 폴더들 복사
+COPY --from=builder --chown=nextjs:nodejs /app/apps/blog/content ./apps/blog/content
+COPY --from=builder --chown=nextjs:nodejs /app/apps/blog/messages ./apps/blog/messages
+
+USER nextjs
+
+EXPOSE 3000
+
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+ENV NODE_ENV=production
+
+CMD ["node", "apps/blog/server.js"]
+

@@ -1,3 +1,4 @@
+import path from 'path';
 import createNextIntlPlugin from 'next-intl/plugin';
 import bundleAnalyzer from '@next/bundle-analyzer';
 
@@ -9,6 +10,11 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
+  outputFileTracingRoot: path.join(import.meta.dirname, '../../'),
+  outputFileTracingIncludes: {
+    '/*': ['./content/**/*', './messages/**/*'],
+  },
   transpilePackages: ['@mumak/ui'],
   images: {
     formats: ['image/avif', 'image/webp'],
