@@ -8,10 +8,10 @@ import { Button } from '@mumak/ui/components/button';
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-  SheetDescription,
 } from '@mumak/ui/components/sheet';
 
 import { LocaleSwitcher } from './locale-switcher';

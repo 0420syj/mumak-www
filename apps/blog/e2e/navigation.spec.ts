@@ -65,6 +65,21 @@ test.describe('Navigation', () => {
       await page.waitForURL(/\/ko\/essay$/);
       await expect(page).toHaveURL(/\/ko\/essay$/);
     });
+
+    test('mobile header keeps switchers visible and sheet can close', async ({ page }) => {
+      await page.setViewportSize({ width: 480, height: 900 });
+      await page.goto('/ko');
+
+      await expect(page.getByRole('button', { name: 'Change theme' })).toBeVisible();
+      await expect(page.getByRole('button', { name: 'Change language' })).toBeVisible();
+
+      const trigger = page.getByRole('button', { name: 'Open navigation' });
+      await trigger.click();
+      await expect(page.getByRole('dialog')).toBeVisible();
+
+      await page.getByRole('button', { name: 'Close' }).click();
+      await expect(page.getByRole('dialog')).not.toBeVisible();
+    });
   });
 
   test.describe('Post Navigation', () => {
