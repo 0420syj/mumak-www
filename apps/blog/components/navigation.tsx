@@ -5,9 +5,9 @@ import { useTranslations } from 'next-intl';
 import { Link, usePathname } from '@/i18n/routing';
 
 import { LocaleSwitcher } from './locale-switcher';
+import { ThemeSwitcher } from './theme-switcher';
 
 const navItems = [
-  { href: '/', labelKey: 'home' },
   { href: '/essay', labelKey: 'essay' },
   { href: '/articles', labelKey: 'articles' },
   { href: '/notes', labelKey: 'notes' },
@@ -17,12 +17,7 @@ export function Navigation() {
   const t = useTranslations('common');
   const pathname = usePathname();
 
-  const isActive = (href: string) => {
-    if (href === '/') {
-      return pathname === '/';
-    }
-    return pathname.startsWith(href);
-  };
+  const isActive = (href: string) => pathname.startsWith(href);
 
   return (
     <nav className="border-b border-border">
@@ -48,7 +43,10 @@ export function Navigation() {
             </div>
           </div>
 
-          <LocaleSwitcher />
+          <div className="flex items-center gap-2">
+            <ThemeSwitcher />
+            <LocaleSwitcher />
+          </div>
         </div>
       </div>
     </nav>
