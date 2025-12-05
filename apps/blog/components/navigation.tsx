@@ -5,7 +5,14 @@ import { useTranslations } from 'next-intl';
 import { Link, usePathname } from '@/i18n/routing';
 
 import { Button } from '@mumak/ui/components/button';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@mumak/ui/components/sheet';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetDescription,
+} from '@mumak/ui/components/sheet';
 
 import { LocaleSwitcher } from './locale-switcher';
 import { ThemeSwitcher } from './theme-switcher';
@@ -54,6 +61,7 @@ export function Navigation() {
                   <div className="flex flex-col h-full">
                     <SheetHeader className="sr-only">
                       <SheetTitle>Navigation</SheetTitle>
+                      <SheetDescription>Navigation menu</SheetDescription>
                     </SheetHeader>
 
                     <div className="px-4 pt-4 pb-2">
