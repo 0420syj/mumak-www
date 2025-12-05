@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Link, usePathname } from '@/i18n/routing';
 
 import { Button } from '@mumak/ui/components/button';
-import { Sheet, SheetContent, SheetTrigger } from '@mumak/ui/components/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@mumak/ui/components/sheet';
 
 import { LocaleSwitcher } from './locale-switcher';
 import { ThemeSwitcher } from './theme-switcher';
@@ -50,8 +50,12 @@ export function Navigation() {
                   </Button>
                 </SheetTrigger>
 
-                <SheetContent side="left" className="p-0">
+                <SheetContent side="left" className="p-0" aria-label="Navigation menu">
                   <div className="flex flex-col h-full">
+                    <SheetHeader className="sr-only">
+                      <SheetTitle>Navigation</SheetTitle>
+                    </SheetHeader>
+
                     <div className="px-4 pt-4 pb-2">
                       <Link href="/" className="text-xl font-bold">
                         Mumak Log
