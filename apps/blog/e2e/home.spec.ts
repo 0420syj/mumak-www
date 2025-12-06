@@ -6,10 +6,11 @@ test.describe('Home Page', () => {
 
     await expect(page.getByRole('heading', { level: 1, name: 'Mumak Log' })).toBeVisible();
 
-    const introText = await page.locator('section').first().textContent();
+    const introSection = page.locator('section').first();
+    const introText = await introSection.textContent();
     expect(introText).toContain('심완');
 
-    const rssLink = page.getByRole('link', { name: 'RSS' });
+    const rssLink = introSection.getByRole('link', { name: 'RSS' });
     await expect(rssLink).toBeVisible();
     const href = await rssLink.getAttribute('href');
     expect(href).toContain('feed.xml');
@@ -45,17 +46,19 @@ test.describe('Home Page', () => {
     await expect(page.getByRole('heading', { level: 2, name: 'Latest Post' })).toBeVisible();
     await expect(page.getByRole('heading', { level: 2, name: 'Recent Posts' })).toBeVisible();
 
-    const introText = await page.locator('section').first().textContent();
+    const introSection = page.locator('section').first();
+    const introText = await introSection.textContent();
     expect(introText).toContain('Wan Sim');
 
-    const rssLink = page.getByRole('link', { name: 'RSS' });
+    const rssLink = introSection.getByRole('link', { name: 'RSS' });
     await expect(rssLink).toBeVisible();
   });
 
   test('should navigate to RSS feed', async ({ page }) => {
     await page.goto('/ko');
 
-    const rssLink = page.getByRole('link', { name: 'RSS' });
+    const introSection = page.locator('section').first();
+    const rssLink = introSection.getByRole('link', { name: 'RSS' });
     const href = await rssLink.getAttribute('href');
 
     if (href) {

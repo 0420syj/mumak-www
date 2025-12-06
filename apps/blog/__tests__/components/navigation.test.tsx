@@ -64,9 +64,13 @@ describe('Navigation', () => {
     const trigger = screen.getByRole('button', { name: 'Open navigation' });
     await user.click(trigger);
 
-    // Dropdown menu items should be visible
-    const menuItems = screen.getAllByRole('menuitem');
-    expect(menuItems.length).toBe(3);
+    // Dropdown menu should be visible
+    const menu = screen.getByRole('menu');
+    expect(menu).toBeInTheDocument();
+
+    // Menu should contain navigation links (asChild renders <a> with role="link")
+    const menuLinks = menu.querySelectorAll('a');
+    expect(menuLinks.length).toBe(3);
   });
 
   it('should render theme switcher and locale switcher', () => {
