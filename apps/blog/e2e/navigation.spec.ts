@@ -5,7 +5,7 @@ test.describe('Navigation', () => {
     test('should display logo and navigate to home', async ({ page }) => {
       await page.goto('/ko/essay');
 
-      const logo = page.getByRole('link', { name: 'Mumak Log' });
+      const logo = page.getByRole('link', { name: 'Wan Sim' });
       await expect(logo).toBeVisible();
 
       await logo.click();
@@ -109,7 +109,7 @@ test.describe('Navigation', () => {
 
       const footer = page.locator('footer');
       await expect(footer).toBeVisible();
-      await expect(footer).toContainText('Mumak Log');
+      await expect(footer).toContainText('Wan Sim');
     });
 
     test('should display RSS, About, and Now links', async ({ page }) => {

@@ -12,7 +12,7 @@ test.describe('i18n - Internationalization', () => {
     await page.goto('/ko');
 
     // Check Korean UI elements
-    await expect(page.getByRole('link', { name: 'Mumak Log' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Wan Sim' })).toBeVisible();
     await expect(page.getByText('프론트엔드 개발자 심완입니다')).toBeVisible();
     await expect(page.getByText('최신 글')).toBeVisible();
   });
@@ -21,7 +21,7 @@ test.describe('i18n - Internationalization', () => {
     await page.goto('/en');
 
     // Check English UI elements
-    await expect(page.getByRole('link', { name: 'Mumak Log' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Wan Sim' })).toBeVisible();
     await expect(page.getByText("I'm Wan Sim, a Frontend Developer")).toBeVisible();
     await expect(page.getByText('Latest Post')).toBeVisible();
   });

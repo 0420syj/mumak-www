@@ -51,7 +51,7 @@ describe('Footer', () => {
   it('should render copyright', () => {
     render(<Footer />);
 
-    expect(screen.getByText(/Mumak Log/)).toBeInTheDocument();
+    expect(screen.getByText(/Wan Sim/)).toBeInTheDocument();
     expect(screen.getByText(new RegExp(new Date().getFullYear().toString()))).toBeInTheDocument();
   });
 });

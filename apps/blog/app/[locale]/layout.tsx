@@ -29,8 +29,8 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://blog.mumak.dev';
 
 export const metadata: Metadata = {
   title: {
-    template: '%s | Mumak Log',
-    default: 'Mumak Log',
+    template: '%s | Wan Sim',
+    default: 'Wan Sim',
   },
   description: 'A space for thoughts and records',
   metadataBase: new URL(BASE_URL),
@@ -38,13 +38,13 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'ko_KR',
     alternateLocale: ['en_US'],
-    siteName: 'Mumak Log',
-    title: 'Mumak Log',
+    siteName: 'Wan Sim',
+    title: 'Wan Sim',
     description: 'A space for thoughts and records',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Mumak Log',
+    title: 'Wan Sim',
     description: 'A space for thoughts and records',
   },
   robots: {

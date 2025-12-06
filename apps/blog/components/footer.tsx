@@ -27,7 +27,7 @@ export function Footer() {
               {t('now')}
             </Link>
           </nav>
-          <p>&copy; {new Date().getFullYear()} Mumak Log</p>
+          <p>&copy; {new Date().getFullYear()} Wan Sim</p>
         </div>
       </div>
     </footer>

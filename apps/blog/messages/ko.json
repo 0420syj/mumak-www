@@ -11,9 +11,9 @@
     "now": "Now"
   },
   "home": {
-    "title": "Mumak Log",
+    "title": "Wan Sim",
     "description": "생각과 기록을 담는 공간",
-    "intro": "안녕하세요! 프론트엔드 개발자 심완입니다.\n웹 기술과 사용자 경험에 관심이 많으며, 배운 것을 기록하는 것을 좋아합니다.",
+    "intro": "글을 써보고 싶어서 만든 블로그입니다.\n웹 기술과 사용자 경험에 관심이 많습니다.\n사사로운 일상부터 개발자로서 고민한 흔적들을 기록하고자 합니다.",
     "latestPosts": "최신 글",
     "recentPosts": "이전 글",
     "listeningTo": "Spotify에서 재생 중",

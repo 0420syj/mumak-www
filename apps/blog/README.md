@@ -1,4 +1,4 @@
-# Mumak Log Blog
+# Wan Sim Blog
 
 Next.js 16 + TypeScript + next-intl로 구성된 다국어 MDX 블로그입니다.
 
@@ -12,16 +12,16 @@ Next.js 16 + TypeScript + next-intl로 구성된 다국어 MDX 블로그입니�
 
 ## 기술 스택
 
-| 구분 | 기술 |
-|------|------|
-| Framework | Next.js 16.0.6 (App Router) |
-| i18n | next-intl |
-| MDX | next-mdx-remote-client |
-| Frontmatter | gray-matter |
-| Styling | Tailwind CSS, @tailwindcss/typography |
-| UI | @mumak/ui (shadcn/ui 기반) |
-| Unit Test | Jest + React Testing Library |
-| E2E Test | Playwright |
+| 구분        | 기술                                  |
+| ----------- | ------------------------------------- |
+| Framework   | Next.js 16.0.6 (App Router)           |
+| i18n        | next-intl                             |
+| MDX         | next-mdx-remote-client                |
+| Frontmatter | gray-matter                           |
+| Styling     | Tailwind CSS, @tailwindcss/typography |
+| UI          | @mumak/ui (shadcn/ui 기반)            |
+| Unit Test   | Jest + React Testing Library          |
+| E2E Test    | Playwright                            |
 
 ## 개발 환경
 
@@ -108,10 +108,10 @@ apps/blog/
 
 ```mdx
 ---
-title: "글 제목"
-date: "2024-12-03"
-description: "글 요약"
-tags: ["tag1", "tag2"]
+title: '글 제목'
+date: '2024-12-03'
+description: '글 요약'
+tags: ['tag1', 'tag2']
 draft: false
 ---
 
@@ -124,13 +124,13 @@ draft: false
 
 ### Frontmatter 필드
 
-| 필드 | 필수 | 설명 |
-|------|------|------|
-| title | O | 글 제목 |
-| date | O | 작성일 (YYYY-MM-DD) |
-| description | O | 글 요약 |
-| tags | X | 태그 배열 |
-| draft | X | true면 production에서 제외 |
+| 필드        | 필수 | 설명                       |
+| ----------- | ---- | -------------------------- |
+| title       | O    | 글 제목                    |
+| date        | O    | 작성일 (YYYY-MM-DD)        |
+| description | O    | 글 요약                    |
+| tags        | X    | 태그 배열                  |
+| draft       | X    | true면 production에서 제외 |
 
 ## 테스트 결과
 

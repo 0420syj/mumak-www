@@ -39,7 +39,7 @@ describe('Navigation', () => {
   it('should render logo', () => {
     render(<Navigation />);
 
-    expect(screen.getByRole('link', { name: 'Mumak Log' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Wan Sim' })).toBeInTheDocument();
   });
 
   it('should render desktop navigation links', () => {

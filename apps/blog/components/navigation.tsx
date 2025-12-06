@@ -68,7 +68,7 @@ export function Navigation() {
             </div>
 
             <Link href="/" className="text-xl font-bold">
-              Mumak Log
+              Wan Sim
             </Link>
 
             <div className="hidden md:flex items-center gap-4">

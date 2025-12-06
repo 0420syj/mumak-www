@@ -1,19 +1,16 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('Home Page', () => {
-  test('should display intro section with RSS link', async ({ page }) => {
+  test('should display intro section', async ({ page }) => {
     await page.goto('/ko');
 
-    await expect(page.getByRole('heading', { level: 1, name: 'Mumak Log' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Wan Sim' })).toBeVisible();
 
     const introSection = page.locator('section').first();
     const introText = await introSection.textContent();
-    expect(introText).toContain('심완');
-
-    const rssLink = introSection.getByRole('link', { name: 'RSS' });
-    await expect(rssLink).toBeVisible();
-    const href = await rssLink.getAttribute('href');
-    expect(href).toContain('feed.xml');
+    expect(introText).toContain('글을 써보고 싶어서 만든 블로그입니다.');
+    expect(introText).toContain('웹 기술과 사용자 경험에 관심이 많습니다.');
+    expect(introText).toContain('사사로운 일상부터 개발자로서 고민한 흔적들을 기록하고자 합니다.');
   });
 
   test('should display featured post section', async ({ page }) => {
@@ -42,30 +39,15 @@ test.describe('Home Page', () => {
   test('should work in English', async ({ page }) => {
     await page.goto('/en');
 
-    await expect(page.getByRole('heading', { level: 1, name: 'Mumak Log' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Wan Sim' })).toBeVisible();
     await expect(page.getByRole('heading', { level: 2, name: 'Latest Post' })).toBeVisible();
     await expect(page.getByRole('heading', { level: 2, name: 'Recent Posts' })).toBeVisible();
 
     const introSection = page.locator('section').first();
     const introText = await introSection.textContent();
-    expect(introText).toContain('Wan Sim');
-
-    const rssLink = introSection.getByRole('link', { name: 'RSS' });
-    await expect(rssLink).toBeVisible();
-  });
-
-  test('should navigate to RSS feed', async ({ page }) => {
-    await page.goto('/ko');
-
-    const introSection = page.locator('section').first();
-    const rssLink = introSection.getByRole('link', { name: 'RSS' });
-    const href = await rssLink.getAttribute('href');
-
-    if (href) {
-      const response = await page.goto(href.startsWith('http') ? href : `http://localhost:3002${href}`);
-      const contentType = response?.headers()['content-type'] || '';
-      expect(contentType).toContain('xml');
-    }
+    expect(introText).toContain('Created this blog to write anything I want.');
+    expect(introText).toContain("I'm interested in web technologies and user experience.");
+    expect(introText).toContain("Gonna write about anything from daily life to developer's thoughts.");
   });
 
   test('should navigate to featured post', async ({ page }) => {

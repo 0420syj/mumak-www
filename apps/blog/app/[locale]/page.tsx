@@ -26,7 +26,7 @@ export default async function HomePage({ params }: HomePageProps) {
   setRequestLocale(locale);
 
   const t = await getTranslations('home');
-  const allPosts = getPosts(locale as Locale).slice(0, 6);
+  const allPosts = getPosts(locale as Locale).slice(0, 4);
   const [featuredPost, ...recentPosts] = allPosts;
 
   return (
