@@ -13,13 +13,11 @@
   "home": {
     "title": "Mumak Log",
     "description": "생각과 기록을 담는 공간",
-    "intro": "안녕하세요! 프론트엔드 개발자 심완입니다.\n웹 기술과 사용자 경험에 관심이 많으며, 배운 것을 기록하는 것을 좋아합니다.\n여기서 RSS를 확인할 수 있어요.",
+    "intro": "안녕하세요! 프론트엔드 개발자 심완입니다.\n웹 기술과 사용자 경험에 관심이 많으며, 배운 것을 기록하는 것을 좋아합니다.",
     "latestPosts": "최신 글",
     "recentPosts": "이전 글",
     "listeningTo": "Spotify에서 재생 중",
-    "lastPlayed": "Spotify에서 최근 재생",
-    "rssLink": "RSS",
-    "rssDescription": "여기서 RSS를 확인할 수 있어요"
+    "lastPlayed": "Spotify에서 최근 재생"
   },
   "category": {
     "essay": {

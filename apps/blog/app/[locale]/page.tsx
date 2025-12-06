@@ -29,37 +29,12 @@ export default async function HomePage({ params }: HomePageProps) {
   const allPosts = getPosts(locale as Locale).slice(0, 6);
   const [featuredPost, ...recentPosts] = allPosts;
 
-  const introText = t('intro');
-  const introLines = introText.split('\n');
-  const introWithoutRss = introLines.slice(0, -1).join('\n');
-  const rssHint = locale === 'ko' ? '여기서' : 'here';
-
   return (
     <div className="space-y-16 pb-12">
       <section className="flex flex-col md:flex-row gap-8 md:items-start md:justify-between py-8">
         <div className="space-y-4 max-w-2xl">
           <h1 className="text-4xl font-bold">{t('title')}</h1>
-          <p className="text-lg text-muted-foreground whitespace-pre-wrap leading-relaxed">
-            {introWithoutRss}
-            {'\n'}
-            {locale === 'ko' ? (
-              <>
-                {rssHint}{' '}
-                <a href="/feed.xml" className="text-primary hover:underline">
-                  {t('rssLink')}
-                </a>
-                를 확인할 수 있어요.
-              </>
-            ) : (
-              <>
-                You can check the{' '}
-                <a href="/feed.xml" className="text-primary hover:underline">
-                  {t('rssLink')}
-                </a>{' '}
-                feed {rssHint}.
-              </>
-            )}
-          </p>
+          <p className="text-lg text-muted-foreground whitespace-pre-wrap leading-relaxed">{t('intro')}</p>
         </div>
 
         <div className="w-full md:w-auto">
