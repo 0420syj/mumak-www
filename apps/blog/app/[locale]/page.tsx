@@ -7,6 +7,8 @@ import { getPosts, isValidCategory } from '@/lib/posts';
 
 import { Spotify } from '@/components/spotify';
 
+const HOME_POST_LIMIT = 4;
+
 interface HomePageProps {
   params: Promise<{ locale: string }>;
 }
@@ -27,7 +29,8 @@ export default async function HomePage({ params }: HomePageProps) {
 
   const t = await getTranslations('home');
   const tCommon = await getTranslations('common');
-  const allPosts = getPosts(locale as Locale).slice(0, 4);
+  const tPost = await getTranslations('post');
+  const allPosts = getPosts(locale as Locale).slice(0, HOME_POST_LIMIT);
   const [featuredPost, ...recentPosts] = allPosts;
 
   const translateCategory = (category: string) => {
@@ -71,7 +74,9 @@ export default async function HomePage({ params }: HomePageProps) {
                 </div>
                 <h3 className="text-3xl font-bold group-hover:text-primary transition-colors">{featuredPost.title}</h3>
                 <p className="text-lg text-muted-foreground line-clamp-3">{featuredPost.description}</p>
-                <div className="text-sm font-medium text-primary mt-2 flex items-center gap-1">Read more &rarr;</div>
+                <div className="text-sm font-medium text-primary mt-2 flex items-center gap-1">
+                  {tPost('readMore')} &rarr;
+                </div>
               </div>
             </article>
           </Link>
