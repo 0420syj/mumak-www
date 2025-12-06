@@ -19,6 +19,12 @@ export interface Post {
   content: string;
 }
 
+export interface PageMeta {
+  title: string;
+  description: string;
+  lastUpdated?: string;
+}
+
 const CATEGORIES = ['essay', 'articles', 'notes'] as const;
 export type Category = (typeof CATEGORIES)[number];
 
@@ -148,4 +154,28 @@ export function getAllPostSlugs(locale: Locale): Array<{
   }
 
   return slugs;
+}
+
+export function getPage(locale: Locale, pageName: string): { meta: PageMeta; content: string } | null {
+  const filePath = path.join(getContentPath(locale), `${pageName}.mdx`);
+
+  if (!fs.existsSync(filePath)) {
+    return null;
+  }
+
+  try {
+    const fileContent = fs.readFileSync(filePath, 'utf-8');
+    const { data, content } = matter(fileContent);
+
+    return {
+      meta: {
+        title: data.title || 'Untitled',
+        description: data.description || '',
+        lastUpdated: data.lastUpdated,
+      },
+      content,
+    };
+  } catch {
+    return null;
+  }
 }

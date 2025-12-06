@@ -1,5 +1,11 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { MDXRemote } from 'next-mdx-remote-client/rsc';
+import { notFound } from 'next/navigation';
+
+import type { Locale } from '@/i18n/config';
+import { getPage } from '@/lib/posts';
+import { mdxComponents } from '@/mdx-components';
 
 interface NowPageProps {
   params: Promise<{ locale: string }>;
@@ -8,10 +14,11 @@ interface NowPageProps {
 export async function generateMetadata({ params }: NowPageProps): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'now' });
+  const page = getPage(locale as Locale, 'now');
 
   return {
-    title: t('title'),
-    description: t('description'),
+    title: page?.meta.title ?? t('title'),
+    description: page?.meta.description ?? t('description'),
   };
 }
 
@@ -20,20 +27,30 @@ export default async function NowPage({ params }: NowPageProps) {
   setRequestLocale(locale);
 
   const t = await getTranslations('now');
+  const page = getPage(locale as Locale, 'now');
+
+  if (!page) {
+    notFound();
+  }
+
+  const lastUpdatedDate = page.meta.lastUpdated ? new Date(page.meta.lastUpdated) : null;
 
   return (
     <article className="max-w-2xl mx-auto">
       <header className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">{t('title')}</h1>
-        <p className="text-lg text-muted-foreground">{t('description')}</p>
+        <h1 className="text-3xl font-bold mb-2">{page.meta.title || t('title')}</h1>
+        <p className="text-lg text-muted-foreground">{page.meta.description || t('description')}</p>
       </header>
 
       <div className="prose prose-neutral dark:prose-invert">
-        <p>{t('intro')}</p>
+        <MDXRemote source={page.content} components={mdxComponents} />
       </div>
 
       <footer className="mt-8 pt-4 border-t border-border text-sm text-muted-foreground">
-        {t('lastUpdated')}: 2025-12-05
+        {t('lastUpdated')}:{' '}
+        {lastUpdatedDate
+          ? lastUpdatedDate.toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' })
+          : '—'}
       </footer>
     </article>
   );
