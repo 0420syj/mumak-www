@@ -29,7 +29,7 @@ export default async function AboutPage({ params }: AboutPageProps) {
       </header>
 
       <div className="prose prose-neutral dark:prose-invert">
-        <p>{t('intro')}</p>
+        <p className="whitespace-pre-wrap leading-relaxed">{t('intro')}</p>
       </div>
     </article>
   );

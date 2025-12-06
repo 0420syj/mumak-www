@@ -45,13 +45,13 @@
   "about": {
     "title": "About",
     "description": "Hello, I'm Wan Sim.",
-    "intro": "I'm a Frontend Developer. I'm interested in web technologies and user experience, and I love documenting what I learn.",
+    "intro": "I am a software engineer who values positivity, efficiency, and honesty.\nThis is a space where I refactor the tangled thoughts in my head into clean text.\nWhile this blog serves more as a personal record than a content for others, it is always open.\n\nFeel free to look around, just like browsing through my source code.",
     "contact": "Contact",
     "email": "Email"
   },
   "now": {
     "title": "Now",
-    "description": "What I'm doing now",
+    "description": "These days...",
     "intro": "This page contains what I'm currently focusing on.",
     "lastUpdated": "Last updated"
   }
