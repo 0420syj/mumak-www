@@ -15,6 +15,9 @@ export function Footer() {
             <Link href="/about" className="hover:text-foreground transition-colors">
               {t('about')}
             </Link>
+            <Link href="/now" className="hover:text-foreground transition-colors">
+              {t('now')}
+            </Link>
             <a
               href="/feed.xml"
               target="_blank"
@@ -23,9 +26,6 @@ export function Footer() {
             >
               RSS
             </a>
-            <Link href="/now" className="hover:text-foreground transition-colors">
-              {t('now')}
-            </Link>
           </nav>
           <p>&copy; {new Date().getFullYear()} Wan Sim</p>
         </div>

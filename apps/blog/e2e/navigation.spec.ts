@@ -154,7 +154,7 @@ test.describe('Navigation', () => {
     test('should display About page content', async ({ page }) => {
       await page.goto('/ko/about');
 
-      await expect(page.getByRole('heading', { level: 1, name: 'About' })).toBeVisible();
+      await expect(page.getByRole('heading', { level: 1, name: '소개' })).toBeVisible();
     });
 
     test('should work in English', async ({ page }) => {

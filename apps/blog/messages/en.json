@@ -22,15 +22,15 @@
   "category": {
     "essay": {
       "title": "Essay",
-      "description": "Long-form writing"
+      "description": "Writing thoughts"
     },
     "articles": {
       "title": "Articles",
-      "description": "Technical articles"
+      "description": "Deep research"
     },
     "notes": {
       "title": "Notes",
-      "description": "Short memos and TIL"
+      "description": "Short memos"
     }
   },
   "post": {
@@ -50,8 +50,6 @@
     "email": "Email"
   },
   "now": {
-    "title": "Now",
-    "description": "These days...",
     "lastUpdated": "Last updated"
   }
 }

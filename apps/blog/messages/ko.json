@@ -22,15 +22,15 @@
   "category": {
     "essay": {
       "title": "에세이",
-      "description": "긴 호흡의 글"
+      "description": "생각 정리"
     },
     "articles": {
       "title": "아티클",
-      "description": "기술 아티클"
+      "description": "깊은 탐구"
     },
     "notes": {
       "title": "노트",
-      "description": "짧은 메모와 TIL"
+      "description": "짧은 메모"
     }
   },
   "post": {
@@ -50,8 +50,6 @@
     "email": "이메일"
   },
   "now": {
-    "title": "Now",
-    "description": "저는 요즘...",
     "lastUpdated": "마지막 업데이트"
   }
 }

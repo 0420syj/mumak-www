@@ -6,21 +6,21 @@ test.describe('Blog - Category and Post Pages', () => {
       await page.goto('/ko/essay');
 
       await expect(page.getByRole('heading', { level: 1, name: '에세이' })).toBeVisible();
-      await expect(page.getByText('긴 호흡의 글')).toBeVisible();
+      await expect(page.getByText('생각 정리')).toBeVisible();
     });
 
     test('should display articles category page', async ({ page }) => {
       await page.goto('/ko/articles');
 
       await expect(page.getByRole('heading', { level: 1, name: '아티클' })).toBeVisible();
-      await expect(page.getByText('기술 아티클')).toBeVisible();
+      await expect(page.getByText('깊은 탐구')).toBeVisible();
     });
 
     test('should display notes category page', async ({ page }) => {
       await page.goto('/ko/notes');
 
       await expect(page.getByRole('heading', { level: 1, name: '노트' })).toBeVisible();
-      await expect(page.getByText('짧은 메모와 TIL')).toBeVisible();
+      await expect(page.getByText('짧은 메모')).toBeVisible();
     });
 
     test('should display posts list on category page', async ({ page }) => {
@@ -35,7 +35,15 @@ test.describe('Blog - Category and Post Pages', () => {
       await page.goto('/en/essay');
 
       await expect(page.getByRole('heading', { level: 1, name: 'Essay' })).toBeVisible();
-      await expect(page.getByText('Long-form writing')).toBeVisible();
+      await expect(page.getByText('Writing thoughts')).toBeVisible();
+
+      await page.goto('/en/articles');
+      await expect(page.getByRole('heading', { level: 1, name: 'Articles' })).toBeVisible();
+      await expect(page.getByText('Deep research')).toBeVisible();
+
+      await page.goto('/en/notes');
+      await expect(page.getByRole('heading', { level: 1, name: 'Notes' })).toBeVisible();
+      await expect(page.getByText('Short memos')).toBeVisible();
     });
   });
 
@@ -78,6 +86,12 @@ test.describe('Blog - Category and Post Pages', () => {
       await page.goto('/ko/essay/non-existent-post');
 
       await expect(page.getByText('페이지를 찾을 수 없습니다')).toBeVisible();
+    });
+
+    test('should show 404 for non-existent post in English', async ({ page }) => {
+      await page.goto('/en/essay/non-existent-post');
+
+      await expect(page.getByText('Page not found')).toBeVisible();
     });
   });
 });
