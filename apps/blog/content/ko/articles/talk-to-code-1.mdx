@@ -1,0 +1,141 @@
+---
+title: '코드로 말하기 - 주석은 변명이다 (1)'
+date: '2025-12-03'
+description: 'Self-documenting을 넘어 Expressive Code로'
+tags: ['code', 'programming']
+draft: false
+---
+
+"이 코드는 ~한 이유로 이렇게 작성되었습니다." 우리는 습관적으로 주석을 단다. 하지만 곰곰이 생각해보면, 주석이 필요하다는 사실 자체가 **코드가 의도를 충분히 전달하지 못했다는 실패의 반증**일지도 모른다.
+
+## 0\. Self-documenting, 그리고 Expressive Code
+
+Self-documenting Code(자체 문서화 코드)란, 별도의 주석이나 매뉴얼 없이 **코드 그 자체만으로 작성자의 의도와 로직의 흐름을 명확히 전달하는 코드**를 의미한다.
+
+하지만 우리는 여기서 한 발 더 나아가야 한다. 단순히 코드가 '설명서 역할'을 하는 소극적인 단계를 넘어,
+언어의 문법(Syntax)을 통해 비즈니스 로직의 감정과 문맥(Context)을 적극적으로 드러내는 Expressive Code(표현력 있는 코드)가 되어야 한다.
+
+잘 쓰인 코드는 수필처럼 읽혀야 한다. 변수명과 함수명이 단어가 되고, 로직의 흐름이 문장이 되어, 개발자가 코드를 읽어 내려갈 때 막힘없이 비즈니스 의도를 파악할 수 있어야 한다. 오늘은 주석을 지우고, 코드 자체를 가장 강력한 표현 수단으로 만드는 구체적인 패턴에 대해 이야기하려 한다.
+
+## 1\. 주석이 위험한 이유
+
+많은 개발자가 "주석은 많을수록 좋다"고 배운다. 하지만 현실은 다르다.
+
+- **거짓말을 한다:** 코드는 수정되었는데 주석은 업데이트되지 않아, 읽는 사람을 혼란에 빠뜨린다. (Rotten Comments)
+
+- **나쁜 코드를 변명한다:** 복잡하고 엉망인 로직을 설명하기 위해 주석을 단다. 주석을 쓸 시간에 로직을 리팩토링해야 한다.
+
+- **시각적 노이즈:** 코드를 읽는 흐름을 끊고 시선을 분산시킨다.
+
+진정한 유지보수성은 '친절한 설명'이 아니라, '설명이 필요 없는 명확함'에서 나온다.
+
+## 2\. 캡슐화로 문맥(Context) 가두기
+
+코드를 읽기 힘들게 만드는 주범 중 하나는 '**너무 넓은 스코프**'다. 특정 로직을 위해 잠시 사용되고 버려져야 할 임시 변수들이 널려 있으면, 독자는 "이 변수가 나중에도 쓰이나?"라고 고민하게 된다.
+
+이때 **IIFE(즉시 실행 함수)나 클로저**를 활용하면, 변수의 생명 주기를 로직 안으로 가두어 '노이즈'를 제거할 수 있다.
+
+### Bad: 스코프 오염
+
+```javascript
+// 할인율 계산을 위한 임시 변수들이 전역 혹은 상위 스코프에 노출됨
+let basePrice = 10000;
+let discount = 0;
+let tax = 1.1;
+
+if (user.isMember) {
+  discount = 0.1;
+}
+
+// 독자는 여기서 계산된 finalPrice가 어떻게 나왔는지 위를 다시 훑어야 함
+let finalPrice = basePrice * (1 - discount) * tax;
+```
+
+### Good: IIFE를 통한 의미 단위 캡슐화
+
+```javascript
+const finalPrice = (() => {
+  const basePrice = 10000;
+  const tax = 1.1;
+  // discount 로직이 복잡해져도 이 블록 안에서만 고민하면 됨
+  const discount = user.isMember ? 0.1 : 0;
+
+  return basePrice * (1 - discount) * tax;
+})();
+```
+
+이렇게 작성하면 `finalPrice`가 계산되는 과정(변수들)은 외부와 철저히 격리된다. 독자는 "아, 이 블록은 `finalPrice`를 만들기 위한 하나의 문맥이구나"라고 이해하고, 내부 구현을 굳이 보지 않고 넘어갈 수 있게 된다. 이것이 바로 코드의 구조로 의도를 표현하는 방식이다.
+
+## 3\. 메서드 체이닝: 코드를 문장처럼 만들기
+
+비즈니스 로직은 연속적인 흐름을 가진다. "주문을 검증하고, 재고를 확인한 뒤, 결제한다." 이 흐름을 코드에서 끊김 없이 표현하기 위해 `this`를 반환하는 **메서드 체이닝(Method Chaining)** 패턴은 매우 강력하다.
+
+### Bad: 주어의 반복, 끊기는 호흡
+
+```javascript
+const order = new Order();
+order.addItem(item);
+order.applyCoupon(coupon);
+order.validate();
+order.processPayment();
+// 코드가 수직으로 나열되어 '절차'처럼 보임
+```
+
+### Good: 유려한 문장 (Fluent Interface)
+
+```javascript
+class Order {
+  addItem(item) {
+    this.items.push(item);
+    return this; // 핵심: 나 자신을 반환
+  }
+
+  applyCoupon(coupon) {
+    this.coupon = coupon;
+    return this;
+  }
+
+  validate() {
+    if (this.items.length === 0) throw new Error('Empty');
+    return this;
+  }
+
+  processPayment() {
+    // 결제 로직
+  }
+}
+
+// 마치 영어 문장을 읽듯 자연스러운 흐름
+new Order().addItem(iphone).applyCoupon(welcomeCoupon).validate().processPayment();
+```
+
+이 방식은 코드의 '형태'가 비즈니스 로직의 '순서'와 완벽하게 일치하게 만든다. 호출하는 쪽에서는 내부 구현을 몰라도 `addItem` 하고 `applyCoupon` 한다는 의도를 직관적으로 파악할 수 있다.
+
+## 4\. 선언형 프로그래밍: '어떻게'가 아닌 '무엇'을
+
+반복문(`for`, `while`)은 코드가 "어떻게(How)" 동작하는지를 설명한다. 하지만 유지보수할 때 궁금한 것은 "그래서 무엇(What)을 하려는 건데?"이다. Expressive Code는 '과정'보다 '결과'를 표현한다.
+
+```javascript
+// Bad: 어떻게 필터링하는지 절차를 나열
+const activeUsers = [];
+for (let i = 0; i < users.length; i++) {
+  if (users[i].isActive && users[i].lastLogin > lastWeek) {
+    activeUsers.push(users[i]);
+  }
+}
+
+// Good: 무엇을 원하는지 선언
+const activeUsers = users.filter(user => user.isActive).filter(user => user.hasLoggedInRecently());
+```
+
+조건문을 메서드(`hasLoggedInRecently`)로 추출하고, 배열 메서드를 체이닝하면 주석 없이도 비즈니스 요구사항이 명확히 드러난다.
+
+## 결론: 코드는 사람을 위한 표현 수단이다
+
+컴퓨터는 0과 1만 있으면 된다. 우리가 고급 언어를 쓰고, 변수명을 고민하고, 아키텍처를 설계하는 이유는 오직 **미래의 나, 그리고 동료 개발자**를 위해서다.
+
+주석을 달기 전에 한 번 더 고민해 보자. "이 주석을 다는 대신, 함수 이름을 바꾸면 어떨까?" "이 로직을 캡슐화해서 숨기면 주석이 필요 없지 않을까?"
+
+가장 훌륭한 문서는 따로 정리된 위키가 아니라, 지금 모니터에 떠 있는 코드 그 자체여야 한다. 이제 코드를 설명하려 하지 말고, **코드 자체가 스스로를 표현하도록(Expressive)** 작성해 보자.
+
+다음 시리즈 [코드로 말하기 - Fluent Interface로 데이터의 여정을 보여주자 (2)](/ko/articles/talk-to-code-2)에서는 복잡한 변환 로직을 Fluent Interface(메서드 체이닝) 패턴으로 리팩토링하며, 코드의 구조 자체가 어떻게 설명을 대신할 수 있는지 알아본다.

@@ -1,0 +1,140 @@
+---
+title: 'Talk to Code - Comments are Excuses (1)'
+date: '2025-12-03'
+description: 'Beyond Self-documenting to Expressive Code'
+tags: ['code', 'programming']
+draft: false
+---
+
+"This code was written this way because..." We habitually add comments. But if we think about it carefully, the very fact that a comment is needed might be **proof of failure that the code could not sufficiently convey its intent**.
+
+## 0\. Self-documenting, and Expressive Code
+
+Self-documenting Code refers to **code that clearly conveys the author's intent and logic flow just by itself**, without separate comments or manuals.
+
+However, we must go one step further here. Beyond the passive stage where code simply acts as an 'instruction manual', it must become **'Expressive Code' that actively reveals the nuance and Context of the business logic through the language's Syntax**.
+
+Well-written code should read like an essay. Variable and function names become words, logic flows become sentences, so that the developer can grasp the business intent without obstruction when reading down the code. Today, I want to talk about specific patterns to delete comments and make the code itself the most powerful means of expression.
+
+## 1\. Why Comments are Dangerous
+
+Many developers are taught that "the more comments, the better." But reality is different.
+
+- **They lie:** The code has been modified but the comment hasn't been updated, confusing the reader. (Rotten Comments)
+
+- **They make excuses for bad code:** Adding comments to explain complex and messy logic. You should refactor the logic in the time it takes to write the comment.
+
+- **Visual Noise:** It breaks the flow of reading code and scatters attention.
+
+True maintainability comes not from 'kind explanations', but from '**clarity that requires no explanation**'.
+
+## 2\. Locking up Context with Encapsulation
+
+One of the main culprits making code hard to read is **'scope that is too wide'**. If temporary variables that should be used briefly for specific logic and then discarded are scattered around, the reader worries, "Is this variable used later?"
+
+At this time, if you utilize **IIFE (Immediately Invoked Function Expression) or Closures**, you can confine the variable's lifecycle within the logic and remove 'noise'.
+
+### Bad: Scope Pollution
+
+```javascript
+// Temporary variables for discount calculation are exposed to global or upper scope
+let basePrice = 10000;
+let discount = 0;
+let tax = 1.1;
+
+if (user.isMember) {
+  discount = 0.1;
+}
+
+// The reader has to scan up again to see how the finalPrice calculated here was derived
+let finalPrice = basePrice * (1 - discount) * tax;
+```
+
+### Good: Encapsulation of Meaning Units via IIFE
+
+```javascript
+const finalPrice = (() => {
+  const basePrice = 10000;
+  const tax = 1.1;
+  // Even if the discount logic becomes complex, you only need to worry within this block
+  const discount = user.isMember ? 0.1 : 0;
+
+  return basePrice * (1 - discount) * tax;
+})();
+```
+
+By writing it this way, the process (variables) by which `finalPrice` is calculated is thoroughly isolated from the outside. The reader understands, "Ah, this block is a single context for creating `finalPrice`," and can move on without necessarily looking at the internal implementation. This is exactly how to express intent through code structure.
+
+## 3\. Method Chaining: Making Code Like Sentences
+
+Business logic has a continuous flow. "Validate order, check stock, then pay." To express this flow without interruption in code, the **Method Chaining** pattern, which returns `this`, is very powerful.
+
+### Bad: Repetition of Subject, Interrupted Breath (Flow)
+
+```javascript
+const order = new Order();
+order.addItem(item);
+order.applyCoupon(coupon);
+order.validate();
+order.processPayment();
+// Code is listed vertically, looking like a 'procedure'
+```
+
+### Good: Fluent Sentences (Fluent Interface)
+
+```javascript
+class Order {
+  addItem(item) {
+    this.items.push(item);
+    return this; // Key: Returns itself
+  }
+
+  applyCoupon(coupon) {
+    this.coupon = coupon;
+    return this;
+  }
+
+  validate() {
+    if (this.items.length === 0) throw new Error('Empty');
+    return this;
+  }
+
+  processPayment() {
+    // Payment logic
+  }
+}
+
+// Natural flow just like reading an English sentence
+new Order().addItem(iphone).applyCoupon(welcomeCoupon).validate().processPayment();
+```
+
+This method makes the 'shape' of the code perfectly match the 'order' of the business logic. The calling side can intuitively grasp the intent to `addItem` and `applyCoupon` without knowing the internal implementation.
+
+## 4\. Declarative Programming: Not 'How', but 'What'
+
+Loops (`for`, `while`) explain "How" the code works. But when maintaining, the question is "So What are you trying to do?" Expressive Code expresses the 'result' rather than the 'process'.
+
+```javascript
+// Bad: Listing the procedures of how to filter
+const activeUsers = [];
+for (let i = 0; i < users.length; i++) {
+  if (users[i].isActive && users[i].lastLogin > lastWeek) {
+    activeUsers.push(users[i]);
+  }
+}
+
+// Good: Declaring what is wanted
+const activeUsers = users.filter(user => user.isActive).filter(user => user.hasLoggedInRecently());
+```
+
+If you extract conditionals into methods (`hasLoggedInRecently`) and chain array methods, business requirements are clearly revealed without comments.
+
+## Conclusion: Code is a Means of Expression for Humans
+
+Computers only need 0s and 1s. The reason we use high-level languages, worry about variable names, and design architecture is solely for **my future self, and fellow developers**.
+
+Let's think once more before adding a comment. "Instead of adding this comment, what if I change the function name?" "If I encapsulate and hide this logic, wouldn't the comment be unnecessary?"
+
+The best documentation is not a separately organized wiki, but the code itself floating on the monitor right now. Now, instead of trying to explain the code, let's write it so that **the code expresses itself (Expressive)**.
+
+Next series [Talk to Code - Show the Data Journey with Fluent Interfaces (2)](/en/articles/talk-to-code-2) will talk about refactoring complex transformation logic into Fluent Interface (method chaining) pattern, and how the code structure itself can replace explanations.
