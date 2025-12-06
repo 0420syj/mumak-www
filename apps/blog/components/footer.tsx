@@ -12,6 +12,9 @@ export function Footer() {
       <div className="container mx-auto px-4">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
           <nav className="flex items-center gap-6">
+            <Link href="/about" className="hover:text-foreground transition-colors">
+              {t('about')}
+            </Link>
             <a
               href="/feed.xml"
               target="_blank"
@@ -20,9 +23,6 @@ export function Footer() {
             >
               RSS
             </a>
-            <Link href="/about" className="hover:text-foreground transition-colors">
-              {t('about')}
-            </Link>
             <Link href="/now" className="hover:text-foreground transition-colors">
               {t('now')}
             </Link>

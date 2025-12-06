@@ -7,7 +7,7 @@
     "language": "언어"
   },
   "footer": {
-    "about": "About",
+    "about": "소개",
     "now": "Now"
   },
   "home": {
@@ -45,7 +45,7 @@
     "backHome": "홈으로 돌아가기"
   },
   "about": {
-    "title": "About",
+    "title": "소개",
     "description": "안녕하세요, 심완입니다.",
     "intro": "프론트엔드 개발자로 일하고 있습니다. 웹 기술과 사용자 경험에 관심이 많으며, 배운 것을 기록하는 것을 좋아합니다.",
     "contact": "연락처",
@@ -58,4 +58,3 @@
     "lastUpdated": "마지막 업데이트"
   }
 }
-

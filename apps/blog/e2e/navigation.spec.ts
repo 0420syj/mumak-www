@@ -116,8 +116,8 @@ test.describe('Navigation', () => {
       await page.goto('/ko');
 
       const footer = page.locator('footer');
+      await expect(footer.getByRole('link', { name: '소개' })).toBeVisible();
       await expect(footer.getByRole('link', { name: 'RSS' })).toBeVisible();
-      await expect(footer.getByRole('link', { name: 'About' })).toBeVisible();
       await expect(footer.getByRole('link', { name: 'Now' })).toBeVisible();
     });
 
@@ -125,10 +125,10 @@ test.describe('Navigation', () => {
       await page.goto('/ko');
 
       const footer = page.locator('footer');
-      await footer.getByRole('link', { name: 'About' }).click();
+      await footer.getByRole('link', { name: '소개' }).click();
       await page.waitForURL(/\/ko\/about$/);
 
-      await expect(page.getByRole('heading', { level: 1, name: 'About' })).toBeVisible();
+      await expect(page.getByRole('heading', { level: 1, name: '소개' })).toBeVisible();
     });
 
     test('should navigate to Now page from footer', async ({ page }) => {

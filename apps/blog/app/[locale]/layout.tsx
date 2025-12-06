@@ -8,7 +8,7 @@ import { notFound } from 'next/navigation';
 import { Footer } from '@/components/footer';
 import { Navigation } from '@/components/navigation';
 import { Providers } from '@/components/providers';
-import { type Locale, locales } from '@/i18n/config';
+import { locales, type Locale } from '@/i18n/config';
 import { routing } from '@/i18n/routing';
 
 const pretendard = localFont({
@@ -78,7 +78,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <body className={`${pretendard.variable} font-sans antialiased`}>
+      <body className={`${pretendard.className} antialiased`}>
         <Providers locale={locale} messages={messages}>
           <div className="min-h-screen flex flex-col">
             <Navigation />
