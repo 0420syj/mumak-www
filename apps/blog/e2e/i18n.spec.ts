@@ -13,7 +13,9 @@ test.describe('i18n - Internationalization', () => {
 
     // Check Korean UI elements
     await expect(page.getByRole('link', { name: 'Wan Sim' })).toBeVisible();
-    await expect(page.getByText('프론트엔드 개발자 심완입니다')).toBeVisible();
+    await expect(page.getByText('글을 써보고 싶어서 만든 블로그입니다.')).toBeVisible();
+    await expect(page.getByText('웹 기술과 사용자 경험에 관심이 많습니다.')).toBeVisible();
+    await expect(page.getByText('사사로운 일상부터 개발자로서 고민한 흔적들을 기록하고자 합니다.')).toBeVisible();
     await expect(page.getByText('최신 글')).toBeVisible();
   });
 
@@ -22,7 +24,9 @@ test.describe('i18n - Internationalization', () => {
 
     // Check English UI elements
     await expect(page.getByRole('link', { name: 'Wan Sim' })).toBeVisible();
-    await expect(page.getByText("I'm Wan Sim, a Frontend Developer")).toBeVisible();
+    await expect(page.getByText('Created this blog to write anything I want.')).toBeVisible();
+    await expect(page.getByText("I'm interested in web technologies and user experience.")).toBeVisible();
+    await expect(page.getByText("Gonna write about anything from daily life to developer's thoughts.")).toBeVisible();
     await expect(page.getByText('Latest Post')).toBeVisible();
   });
 
