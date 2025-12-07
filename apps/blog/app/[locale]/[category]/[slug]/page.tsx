@@ -1,12 +1,13 @@
 import type { Metadata } from 'next';
-import { MDXRemote } from 'next-mdx-remote-client/rsc';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { MDXRemote } from 'next-mdx-remote-client/rsc';
 import { notFound } from 'next/navigation';
 
-import { mdxComponents } from '@/mdx-components';
-import { type Locale, locales } from '@/i18n/config';
+import { locales, type Locale } from '@/i18n/config';
 import { Link } from '@/i18n/routing';
+import { formatDateForLocale } from '@/lib/date';
 import { getAllPostSlugs, getPost, isValidCategory } from '@/lib/posts';
+import { mdxComponents } from '@/mdx-components';
 
 interface PostPageProps {
   params: Promise<{ locale: string; category: string; slug: string }>;
@@ -60,12 +61,8 @@ export default async function PostPage({ params }: PostPageProps) {
       <article>
         <header className="mb-8">
           <div className="text-sm text-muted-foreground mb-2">
-            <time dateTime={post.meta.date}>
-              {new Date(post.meta.date).toLocaleDateString(locale, {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              })}
+            <time dateTime={formatDateForLocale(post.meta.date, locale).dateTime}>
+              {formatDateForLocale(post.meta.date, locale).text}
             </time>
           </div>
           <h1 className="text-4xl font-bold mb-4">{post.meta.title}</h1>

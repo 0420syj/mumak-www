@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
+import { Spotify } from '@/components/spotify';
 import { type Locale } from '@/i18n/config';
 import { Link } from '@/i18n/routing';
+import { formatDateForLocale } from '@/lib/date';
 import { getPosts, isValidCategory } from '@/lib/posts';
-
-import { Spotify } from '@/components/spotify';
 
 const HOME_POST_LIMIT = 4;
 
@@ -64,12 +64,8 @@ export default async function HomePage({ params }: HomePageProps) {
                     {translateCategory(featuredPost.category)}
                   </span>
                   <span>·</span>
-                  <time dateTime={featuredPost.date}>
-                    {new Date(featuredPost.date).toLocaleDateString(locale, {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
+                  <time dateTime={formatDateForLocale(featuredPost.date, locale).dateTime}>
+                    {formatDateForLocale(featuredPost.date, locale).text}
                   </time>
                 </div>
                 <h3 className="text-3xl font-bold group-hover:text-primary transition-colors">{featuredPost.title}</h3>
@@ -96,12 +92,8 @@ export default async function HomePage({ params }: HomePageProps) {
                   <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                     <span className="capitalize">{translateCategory(post.category)}</span>
                     <span>·</span>
-                    <time dateTime={post.date}>
-                      {new Date(post.date).toLocaleDateString(locale, {
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      })}
+                    <time dateTime={formatDateForLocale(post.date, locale).dateTime}>
+                      {formatDateForLocale(post.date, locale).text}
                     </time>
                   </div>
                   <h3 className="text-xl font-semibold mb-2">{post.title}</h3>

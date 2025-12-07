@@ -2,9 +2,10 @@ import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 
-import { type Locale, locales } from '@/i18n/config';
+import { locales, type Locale } from '@/i18n/config';
 import { Link } from '@/i18n/routing';
-import { type Category, getCategories, getPosts, isValidCategory } from '@/lib/posts';
+import { formatDateForLocale } from '@/lib/date';
+import { getCategories, getPosts, isValidCategory, type Category } from '@/lib/posts';
 
 interface CategoryPageProps {
   params: Promise<{ locale: string; category: string }>;
@@ -62,12 +63,8 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
             >
               <Link href={`/${category}/${post.slug}`}>
                 <div className="text-sm text-muted-foreground mb-2">
-                  <time dateTime={post.date}>
-                    {new Date(post.date).toLocaleDateString(locale, {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
+                  <time dateTime={formatDateForLocale(post.date, locale).dateTime}>
+                    {formatDateForLocale(post.date, locale).text}
                   </time>
                 </div>
                 <h2 className="text-xl font-semibold mb-2">{post.title}</h2>

@@ -4,6 +4,7 @@ import { MDXRemote } from 'next-mdx-remote-client/rsc';
 import { notFound } from 'next/navigation';
 
 import type { Locale } from '@/i18n/config';
+import { formatDateForLocale } from '@/lib/date';
 import { getPage } from '@/lib/posts';
 import { mdxComponents } from '@/mdx-components';
 
@@ -33,8 +34,6 @@ export default async function NowPage({ params }: NowPageProps) {
     notFound();
   }
 
-  const lastUpdatedDate = page.meta.lastUpdated ? new Date(page.meta.lastUpdated) : null;
-
   return (
     <article className="max-w-2xl mx-auto">
       <header className="mb-8">
@@ -48,9 +47,9 @@ export default async function NowPage({ params }: NowPageProps) {
 
       <footer className="mt-8 pt-4 border-t border-border text-sm text-muted-foreground">
         {t('lastUpdated')}:{' '}
-        {lastUpdatedDate
-          ? lastUpdatedDate.toLocaleDateString(locale, { year: 'numeric', month: 'long', day: 'numeric' })
-          : '—'}
+        <time dateTime={formatDateForLocale(page.meta.lastUpdated, locale).dateTime}>
+          {formatDateForLocale(page.meta.lastUpdated, locale).text}
+        </time>
       </footer>
     </article>
   );
