@@ -49,25 +49,25 @@ test.describe('Blog - Category and Post Pages', () => {
 
   test.describe('Post Detail Pages', () => {
     test('should display post content', async ({ page }) => {
-      await page.goto('/ko/essay/hello-world');
+      await page.goto('/ko/essay/first');
 
       // Should display the post title
-      await expect(page.getByRole('heading', { level: 1, name: '안녕하세요, 세상!' })).toBeVisible();
+      await expect(page.getByRole('heading', { level: 1, name: '나는 글 쓰는 걸 좋아한다' })).toBeVisible();
     });
 
     test('should render MDX content', async ({ page }) => {
-      await page.goto('/ko/essay/hello-world');
+      await page.goto('/ko/essay/first');
 
       // Should have prose styling
       const proseDiv = page.locator('div.prose');
       await expect(proseDiv).toBeVisible();
 
       // Should render headings from MDX
-      await expect(page.getByRole('heading', { name: '블로그를 시작하며' })).toBeVisible();
+      await expect(page.getByRole('heading', { name: '나는 글 쓰는 걸 좋아한다' })).toBeVisible();
     });
 
     test('should display back to list link', async ({ page }) => {
-      await page.goto('/ko/essay/hello-world');
+      await page.goto('/ko/essay/first');
 
       const backLink = page.getByRole('link', { name: '목록으로 돌아가기' });
       await expect(backLink).toBeVisible();
@@ -77,19 +77,19 @@ test.describe('Blog - Category and Post Pages', () => {
     });
 
     test('should work in English', async ({ page }) => {
-      await page.goto('/en/essay/hello-world');
+      await page.goto('/en/essay/first');
 
-      await expect(page.getByRole('heading', { level: 1, name: 'Hello, World!' })).toBeVisible();
+      await expect(page.getByRole('heading', { level: 1, name: 'I like writing' })).toBeVisible();
     });
 
     test('should show 404 for non-existent post', async ({ page }) => {
-      await page.goto('/ko/essay/non-existent-post');
+      await page.goto('/ko/essay/non-existent-essay');
 
       await expect(page.getByText('페이지를 찾을 수 없습니다')).toBeVisible();
     });
 
     test('should show 404 for non-existent post in English', async ({ page }) => {
-      await page.goto('/en/essay/non-existent-post');
+      await page.goto('/en/essay/non-existent-essay');
 
       await expect(page.getByText('Page not found')).toBeVisible();
     });

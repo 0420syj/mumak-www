@@ -96,7 +96,7 @@ test.describe('Navigation', () => {
     });
 
     test('should navigate back to list from post detail', async ({ page }) => {
-      await page.goto('/ko/essay/hello-world');
+      await page.goto('/ko/essay/first');
 
       await page.getByRole('link', { name: '목록으로 돌아가기' }).click();
       await page.waitForURL(/\/ko\/essay$/);
