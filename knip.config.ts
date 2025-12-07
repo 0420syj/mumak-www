@@ -4,12 +4,7 @@ const config: KnipConfig = {
   jest: false,
   workspaces: {
     'apps/mumak-next': {
-      entry: [
-        'app/**/*.{ts,tsx}',
-        'components/**/*.{ts,tsx}',
-        'next.config.mjs',
-        'postcss.config.mjs',
-      ],
+      entry: ['app/**/*.{ts,tsx}', 'components/**/*.{ts,tsx}', 'next.config.mjs', 'postcss.config.mjs'],
       project: ['**/*.{ts,tsx}'],
       ignore: [
         '.next/**',

@@ -8,7 +8,14 @@
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**", "out/**", "*.tsbuildinfo"],
-      "env": ["NEXT_PUBLIC_*", "VERCEL_*", "ANALYZE", "SPOTIFY_CLIENT_ID", "SPOTIFY_CLIENT_SECRET", "SPOTIFY_REFRESH_TOKEN"],
+      "env": [
+        "NEXT_PUBLIC_*",
+        "VERCEL_*",
+        "ANALYZE",
+        "SPOTIFY_CLIENT_ID",
+        "SPOTIFY_CLIENT_SECRET",
+        "SPOTIFY_REFRESH_TOKEN"
+      ],
       "passThroughEnv": ["NODE_ENV"]
     },
     "lint": {
