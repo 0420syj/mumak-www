@@ -1,13 +1,6 @@
 name: Deploy Blog
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'apps/blog/**'
-      - 'packages/ui/**'
-      - 'packages/typescript-config/**'
-      - 'pnpm-lock.yaml'
   workflow_dispatch:
 
 env:
