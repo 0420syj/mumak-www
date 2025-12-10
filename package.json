@@ -1,5 +1,6 @@
 {
   "name": "mumak-www",
+  "version": "1.1.0",
   "private": true,
   "scripts": {
     "build": "turbo run build",
@@ -13,6 +14,7 @@
     "test:coverage": "turbo run test:coverage",
     "test:ci": "turbo run test:ci",
     "test:e2e": "turbo run test:e2e",
+    "knip": "knip",
     "turbo:dry": "turbo run build test --dry-run",
     "turbo:dry:json": "turbo run build test --dry-run=json",
     "turbo:graph": "turbo run build --graph",
@@ -22,12 +24,13 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@playwright/test": "^1.54.2",
+    "@playwright/test": "^1.57.0",
     "eslint": "^9.39.1",
     "husky": "^9.0.11",
-    "lint-staged": "^16.2.6",
-    "prettier": "^3.6.2",
-    "turbo": "^2.6.1",
+    "knip": "^5.73.0",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.7.4",
+    "turbo": "^2.6.3",
     "typescript": "^5.9.3"
   },
   "lint-staged": {
@@ -37,7 +40,7 @@
     ]
   },
   "engines": {
-    "node": ">=22.12"
+    "node": ">=24.11"
   },
-  "packageManager": "pnpm@10.20.0"
+  "packageManager": "pnpm@10.24.0"
 }

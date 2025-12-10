@@ -1,0 +1,55 @@
+{
+  "common": {
+    "home": "홈",
+    "essay": "에세이",
+    "articles": "아티클",
+    "notes": "노트",
+    "language": "언어"
+  },
+  "footer": {
+    "about": "소개",
+    "now": "Now"
+  },
+  "home": {
+    "title": "Wan Sim",
+    "description": "생각과 기록을 담는 공간",
+    "intro": "글을 써보고 싶어서 만든 블로그입니다.\n웹 기술과 사용자 경험에 관심이 많습니다.\n사사로운 일상부터 개발자로서 고민한 흔적들을 기록하고자 합니다.",
+    "latestPosts": "최신 글",
+    "recentPosts": "이전 글",
+    "listeningTo": "Spotify에서 재생 중",
+    "lastPlayed": "Spotify에서 최근 재생"
+  },
+  "category": {
+    "essay": {
+      "title": "에세이",
+      "description": "생각 정리"
+    },
+    "articles": {
+      "title": "아티클",
+      "description": "깊은 탐구"
+    },
+    "notes": {
+      "title": "노트",
+      "description": "짧은 메모"
+    }
+  },
+  "post": {
+    "readMore": "더 읽기",
+    "backToList": "목록으로 돌아가기"
+  },
+  "notFound": {
+    "title": "페이지를 찾을 수 없습니다",
+    "description": "요청하신 페이지가 존재하지 않습니다.",
+    "backHome": "홈으로 돌아가기"
+  },
+  "about": {
+    "title": "소개",
+    "description": "안녕하세요, 심완입니다.",
+    "intro": "긍정과 효율을 지향하며, 솔직함을 미덕으로 삼는 소프트웨어 엔지니어입니다.\n이곳은 머릿속에 엉켜있는 생각들을 텍스트로 정갈하게 리팩토링하는 공간입니다.\n타인을 위한 정보보다는 저를 위한 기록에 가깝지만, 언제나 열려있습니다.\n\n제 소스 코드를 구경하듯 편하게 머물다 가세요.",
+    "contact": "연락처",
+    "email": "이메일"
+  },
+  "now": {
+    "lastUpdated": "마지막 업데이트"
+  }
+}

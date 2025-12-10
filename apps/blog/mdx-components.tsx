@@ -1,0 +1,40 @@
+import type { MDXComponents } from 'mdx/types';
+import Image from 'next/image';
+import Link from 'next/link';
+
+export const mdxComponents: MDXComponents = {
+  // Override default elements with custom styling
+  h1: ({ children }) => <h1 className="text-3xl font-bold mt-8 mb-4">{children}</h1>,
+  h2: ({ children }) => <h2 className="text-2xl font-semibold mt-6 mb-3">{children}</h2>,
+  h3: ({ children }) => <h3 className="text-xl font-semibold mt-4 mb-2">{children}</h3>,
+  p: ({ children }) => <p className="my-4 leading-relaxed">{children}</p>,
+  a: ({ href, children }) => (
+    <Link href={href || '#'} className="text-primary underline underline-offset-4 hover:text-primary/80">
+      {children}
+    </Link>
+  ),
+  ul: ({ children }) => <ul className="my-4 ml-6 list-disc space-y-2">{children}</ul>,
+  ol: ({ children }) => <ol className="my-4 ml-6 list-decimal space-y-2">{children}</ol>,
+  li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+  blockquote: ({ children }) => (
+    <blockquote className="my-4 border-l-4 border-muted pl-4 italic text-muted-foreground">{children}</blockquote>
+  ),
+  code: ({ children }) => <code className="px-1.5 py-0.5 bg-muted rounded text-sm font-mono">{children}</code>,
+  pre: ({ children }) => <pre className="my-4 p-4 bg-muted rounded-lg overflow-x-auto">{children}</pre>,
+  img: ({ src, alt }) => (
+    <Image src={src || ''} alt={alt || ''} width={800} height={400} className="my-4 rounded-lg" loading="lazy" />
+  ),
+  hr: () => <hr className="my-8 border-border" />,
+  table: ({ children }) => (
+    <div className="my-4 overflow-x-auto">
+      <table className="w-full border-collapse">{children}</table>
+    </div>
+  ),
+  th: ({ children }) => <th className="border border-border px-4 py-2 bg-muted font-semibold text-left">{children}</th>,
+  td: ({ children }) => <td className="border border-border px-4 py-2">{children}</td>,
+};
+
+// For @next/mdx compatibility (if needed in the future)
+export function useMDXComponents(): MDXComponents {
+  return mdxComponents;
+}

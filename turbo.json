@@ -8,7 +8,14 @@
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**", "out/**", "*.tsbuildinfo"],
-      "env": ["NEXT_PUBLIC_*", "VERCEL_*"],
+      "env": [
+        "NEXT_PUBLIC_*",
+        "VERCEL_*",
+        "ANALYZE",
+        "SPOTIFY_CLIENT_ID",
+        "SPOTIFY_CLIENT_SECRET",
+        "SPOTIFY_REFRESH_TOKEN"
+      ],
       "passThroughEnv": ["NODE_ENV"]
     },
     "lint": {
@@ -25,6 +32,10 @@
       "dependsOn": ["^check-types"],
       "inputs": ["$TURBO_DEFAULT$", "tsconfig*.json"],
       "outputs": [".turbo/**", "*.tsbuildinfo"]
+    },
+    "knip": {
+      "inputs": ["$TURBO_DEFAULT$", "knip.config.ts", "**/*.{ts,tsx,js,jsx}"],
+      "outputs": [".turbo/**"]
     },
     "format": {
       "inputs": ["$TURBO_DEFAULT$"],
@@ -44,7 +55,8 @@
         "jest.config.*",
         "vitest.config.*"
       ],
-      "outputs": ["coverage/**", "test-results/**", ".turbo/**"]
+      "outputs": ["coverage/**", "test-results/**", ".turbo/**"],
+      "env": ["SPOTIFY_CLIENT_ID", "SPOTIFY_CLIENT_SECRET", "SPOTIFY_REFRESH_TOKEN"]
     },
     "test:coverage": {
       "dependsOn": ["^build"],

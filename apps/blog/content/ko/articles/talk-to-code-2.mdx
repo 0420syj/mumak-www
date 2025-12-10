@@ -1,0 +1,153 @@
+---
+title: '코드로 말하기 - Fluent Interface로 데이터의 여정을 보여주자 (2)'
+date: '2025-12-06'
+description: 'Fluent Interface로 데이터의 여정을 보여주자'
+tags: ['code', 'programming']
+draft: false
+---
+
+지난 [코드로 말하기 - 주석은 변명이다 (1)](/ko/articles/talk-to-code-1)에서는 변수와 함수에 올바른 이름을 붙여 의도를 명확히 하는 방법에 대해 이야기했다. 이름을 잘 짓는 것만으로도 코드는 훨씬 더 친절해진다.
+
+하지만 비즈니스 로직이 복잡해지면 개별적인 이름만으로는 부족할 때가 있다. 데이터가 여러 단계의 가공을 거쳐야 할 때, **"이 데이터가 어떤 과정을 거쳐 결과물이 되는가?"**라는 흐름(Flow) 자체가 문서화되어야 하기 때문이다.
+
+이번 글에서는 복잡한 변환 로직을 Fluent Interface(메서드 체이닝) 패턴으로 리팩토링하며, 코드의 구조 자체가 어떻게 설명을 대신할 수 있는지 알아본다.
+
+## 1\. 문제 상황: 까다로운 숫자 입력 처리
+
+사용자가 입력한 숫자 문자열을 다루는 상황을 가정해 보자. 엑셀이나 금융 앱처럼, 사용자가 입력하는 숫자는 깔끔하지 않을 때가 많다.
+
+요구사항:
+
+천 단위 콤마: 1234567 → 1,234,567
+
+소수점 처리: .5라고 입력하면 0.5로 변환 (Leading Zero 추가)
+
+유효성 검사: 숫자와 점(.) 외의 문자는 제거
+
+처음에는 이를 해결하기 위해 각각의 기능을 수행하는 유틸리티 함수들을 만들어서 사용했다.
+
+## 2\. 첫 번째 시도: 함수 모음 (IIFE)
+
+관련된 함수들이 흩어져 있는 것이 싫어서, NumericStringSanitizer라는 이름으로 묶어(Namespacing) 보았다.
+
+```javascript
+const NumericStringSanitizer = (() => {
+  const stripNonNumeric = (v: string) => v.replace(/[^0-9.]/g, '');
+  const prependLeadingZero = (v: string) => v.startsWith('.') ? `0${v}` : v;
+  const addThousandsSeparator = (v: string) => Number(v).toLocaleString();
+
+  return {
+    sanitize: (v: string) => {
+      let result = stripNonNumeric(v);
+      result = prependLeadingZero(result);
+      return result;
+    },
+    format: (v: string) => addThousandsSeparator(v)
+  };
+})();
+```
+
+나쁘지 않아 보인다. 기능들이 한곳에 모였고 이름도 명확하다. 하지만 이 도구를 실제로 사용하는 쪽의 코드를 살펴보자.
+
+## 3\. 불편함의 발견: 끊어진 맥락
+
+이 모듈을 사용하여 "입력값을 다듬고 포맷팅해서 화면에 보여주는" 코드는 대략 이렇다.
+
+```javascript
+// 사용 예시
+const rawInput = event.target.value; // ".5000"
+
+// 1. 살균(Sanitize)
+const sanitized = NumericStringSanitizer.sanitize(rawInput);
+
+// 2. 포맷팅(Format)
+const formatted = NumericStringSanitizer.format(sanitized);
+
+// 3. 결과 사용
+updateDisplay(formatted);
+```
+
+이 코드의 문제점이 보이는가?
+
+중간 변수의 난립: sanitized, formatted 같은 중간 변수들이 계속 등장한다. 변수명을 짓는 것도 일이고, 코드가 길어진다.
+
+흐름의 단절: 데이터가 rawInput에서 시작해 formatted가 되기까지의 과정이 한눈에 들어오지 않는다. 코드를 읽는 시선이 위아래로 왔다 갔다 해야 한다.
+
+**"데이터의 흐름"**을 코드로 설명하기에는, 함수형 호출 방식이 다소 투박하게 느껴진다.
+
+## 4\. 진화: Class와 Method Chaining
+
+이 문제를 해결하기 위해 Fluent Interface 패턴을 도입해 본다. 객체지향의 클래스를 활용하되, 상태를 변경하고 this를 반환(Method Chaining)하여 파이프라인을 구축하는 것이다.
+
+```javascript
+class DecimalString {
+  private value: string;
+
+  private constructor(value: string) {
+    this.value = value;
+  }
+
+  static from(value: string) {
+    return new DecimalString(value);
+  }
+
+  // 1. 숫자와 점만 남기기
+  sanitize(): this {
+    this.value = this.value.replace(/[^0-9.]/g, '');
+    return this;
+  }
+
+  // 2. .5 -> 0.5 변환
+  prependLeadingZero(): this {
+    if (this.value.startsWith('.')) {
+      this.value = `0${this.value}`;
+    }
+    return this;
+  }
+
+  // 3. 천 단위 콤마
+  applyThousandsSeparator(): this {
+    if (!this.value) return this;
+    const parts = this.value.split('.');
+    parts[0] = Number(parts[0]).toLocaleString();
+    this.value = parts.join('.');
+    return this;
+  }
+
+  toString(): string {
+    return this.value;
+  }
+}
+```
+
+이제 이 클래스를 사용하는 코드를 보자.
+
+```javascript
+const result = DecimalString.from('.5000abc')
+  .sanitize() // 1. 이상한 문자 제거 (.5000)
+  .prependLeadingZero() // 2. 앞자리 0 추가 (0.5000)
+  .applyThousandsSeparator() // 3. 콤마 추가 (0,500)
+  .toString();
+```
+
+## 5\. 핵심 인사이트: 코드가 곧 데이터의 여정(Journey)이다
+
+위의 체이닝 코드를 보면 어떤 느낌이 드는가?
+
+왼쪽에서 오른쪽으로, 위에서 아래로: 우리가 글을 읽는 순서 그대로 데이터가 어떻게 변해가는지 보인다.
+
+불필요한 노이즈 제거: sanitized, formatted 같은 임시 변수가 사라졌다. 오직 '동사(행동)'만 남았다.
+
+이것이 바로 **"Self-Documenting Code"**의 또 다른 형태다.
+
+"메서드 체이닝은 데이터의 여정을 코드로 서술한다."
+
+이전 방식이 "이 함수에 이 값을 넣으세요"라고 설명하는 매뉴얼이었다면, Fluent Interface 방식은 "이 값은 씻겨지고(sanitized), 다듬어져서(prepended), 포장됩니다(separated)"라고 이야기하는 스토리텔링에 가깝다.
+
+## 결론: 코드는 데이터의 여정을 보여주는 강력한 수단이다
+
+이름(Naming)이 코드의 단어라면, 구조(Structure)는 코드의 문법이다. Fluent Interface를 통해 우리는 문법을 더 자연스럽게 만들어, 코드를 술술 읽히는 문장처럼 만들었다.
+
+하지만 모든 상황에서 DecimalString 하나만으로 충분할까? 만약 "금액(Currency)"을 다뤄야 한다면 어떨까? 금액은 소수점 처리가 다르고, 앞에 붙은 0(0100 → 100)은 제거해야 할 수도 있다.
+
+다음 [글](/ko/articles/talk-to-code-3)에서는 비슷한 구조를 유지하면서 서로 다른 도메인 규칙을 적용하는 Value Object에 대해 이야기해 보겠다.

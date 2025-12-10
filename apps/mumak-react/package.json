@@ -1,7 +1,7 @@
 {
   "name": "mumak-react",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite --port 3001",
@@ -25,27 +25,27 @@
   "dependencies": {
     "@mumak/ui": "workspace:*",
     "@tailwindcss/vite": "^4.1.17",
-    "lucide-react": "^0.554.0",
+    "lucide-react": "^0.556.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
   "devDependencies": {
     "@mumak/eslint-config": "workspace:*",
     "@mumak/typescript-config": "workspace:*",
-    "@playwright/test": "^1.54.2",
+    "@playwright/test": "^1.57.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
     "@types/node": "^24.10.1",
-    "@types/react": "^19.2.6",
-    "@types/react-dom": "^19.2.2",
-    "@vitejs/plugin-react": "^5.1.1",
-    "@vitest/coverage-v8": "^4.0.10",
-    "@vitest/ui": "^4.0.8",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^5.1.2",
+    "@vitest/coverage-v8": "^4.0.14",
+    "@vitest/ui": "^4.0.14",
     "eslint": "^9.39.1",
-    "jsdom": "^27.1.0",
+    "jsdom": "^27.3.0",
     "typescript": "~5.9.3",
-    "vite": "^7.1.12",
-    "vitest": "^4.0.8"
+    "vite": "^7.2.7",
+    "vitest": "^4.0.14"
   }
 }
