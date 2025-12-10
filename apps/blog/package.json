@@ -24,7 +24,7 @@
   "dependencies": {
     "@mumak/ui": "workspace:*",
     "gray-matter": "^4.0.3",
-    "lucide-react": "^0.555.0",
+    "lucide-react": "^0.556.0",
     "next": "^16.0.7",
     "next-intl": "^4.5.8",
     "next-mdx-remote-client": "^2.1.7",
