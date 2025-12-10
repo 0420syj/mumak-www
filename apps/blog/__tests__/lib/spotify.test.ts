@@ -177,6 +177,8 @@ describe('spotify', () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: false,
         status: 400,
+        statusText: 'Bad Request',
+        text: async () => '{"error":"invalid_grant"}',
       });
 
       const result = await getNowPlaying();

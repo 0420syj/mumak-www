@@ -11,6 +11,9 @@ import { Providers } from '@/components/providers';
 import { locales, type Locale } from '@/i18n/config';
 import { routing } from '@/i18n/routing';
 
+import { Analytics as VercelAnalytics } from '@vercel/analytics/next';
+import { SpeedInsights as VercelSpeedInsights } from '@vercel/speed-insights/next';
+
 const pretendard = localFont({
   src: '../../public/assets/fonts/PretendardVariable.woff2',
   fallback: ['ui-sans-serif', 'system-ui', 'sans-serif'],
@@ -25,7 +28,7 @@ export function generateStaticParams() {
   return routing.locales.map(locale => ({ locale }));
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://blog.mumak.dev';
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://wannysim.com';
 
 export const metadata: Metadata = {
   title: {
@@ -36,8 +39,8 @@ export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   openGraph: {
     type: 'website',
-    locale: 'ko_KR',
-    alternateLocale: ['en_US'],
+    locale: 'en_US',
+    alternateLocale: ['ko_KR'],
     siteName: 'Wan Sim',
     title: 'Wan Sim',
     description: 'A space for thoughts and records',
@@ -84,6 +87,8 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
             <Navigation />
             <main className="flex-1 container mx-auto px-4 py-8">{children}</main>
             <Footer />
+            <VercelAnalytics />
+            <VercelSpeedInsights />
           </div>
         </Providers>
       </body>
