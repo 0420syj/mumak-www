@@ -54,9 +54,15 @@ async function getAccessToken(): Promise<string | null> {
   const refreshToken = process.env.SPOTIFY_REFRESH_TOKEN;
 
   if (!clientId || !clientSecret || !refreshToken) {
+    console.error('[Spotify] 환경 변수 누락:', {
+      hasClientId: !!clientId,
+      hasClientSecret: !!clientSecret,
+      hasRefreshToken: !!refreshToken,
+    });
     return null;
   }
 
+  // Authorization Code Flow - client_secret 사용
   const basic = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
 
   const params = new URLSearchParams({
@@ -76,12 +82,19 @@ async function getAccessToken(): Promise<string | null> {
     });
 
     if (!response.ok) {
+      const errorData = await response.text();
+      console.error('[Spotify] 토큰 갱신 실패:', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorData,
+      });
       return null;
     }
 
     const data = (await response.json()) as SpotifyTokenResponse;
     return data.access_token;
-  } catch {
+  } catch (error) {
+    console.error('[Spotify] 토큰 요청 중 예외 발생:', error);
     return null;
   }
 }
@@ -90,6 +103,7 @@ export async function getNowPlaying(): Promise<NowPlaying | null> {
   const accessToken = await getAccessToken();
 
   if (!accessToken) {
+    console.error('[Spotify] Access token을 가져올 수 없음');
     return null;
   }
 
@@ -102,6 +116,14 @@ export async function getNowPlaying(): Promise<NowPlaying | null> {
     });
 
     if (response.status === 204 || response.status > 400) {
+      if (response.status > 400) {
+        const errorData = await response.text();
+        console.error('[Spotify] 현재 재생 중 API 에러:', {
+          status: response.status,
+          error: errorData,
+        });
+      }
+
       const recentlyPlayed = await fetch(RECENTLY_PLAYED_ENDPOINT, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
@@ -110,12 +132,18 @@ export async function getNowPlaying(): Promise<NowPlaying | null> {
       });
 
       if (recentlyPlayed.status !== 200) {
+        const errorData = await recentlyPlayed.text();
+        console.error('[Spotify] 최근 재생 API 에러:', {
+          status: recentlyPlayed.status,
+          error: errorData,
+        });
         return null;
       }
 
       const data = (await recentlyPlayed.json()) as SpotifyRecentlyPlayedResponse;
 
       if (!data.items || data.items.length === 0) {
+        console.log('[Spotify] 최근 재생 목록이 비어있음');
         return null;
       }
 
@@ -146,7 +174,8 @@ export async function getNowPlaying(): Promise<NowPlaying | null> {
       albumImageUrl: song.item.album.images[0]?.url || '',
       songUrl: song.item.external_urls.spotify,
     };
-  } catch {
+  } catch (error) {
+    console.error('[Spotify] API 호출 중 예외 발생:', error);
     return null;
   }
 }
