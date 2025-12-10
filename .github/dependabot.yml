@@ -28,7 +28,7 @@ updates:
       radix-ui:
         patterns:
           - '@radix-ui/react-*'
-    open-pull-requests-limit: 3
+    open-pull-requests-limit: 10
     reviewers:
       - '0420syj'
     assignees:
