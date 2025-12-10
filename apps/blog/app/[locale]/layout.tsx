@@ -39,8 +39,8 @@ export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   openGraph: {
     type: 'website',
-    locale: 'ko_KR',
-    alternateLocale: ['en_US'],
+    locale: 'en_US',
+    alternateLocale: ['ko_KR'],
     siteName: 'Wan Sim',
     title: 'Wan Sim',
     description: 'A space for thoughts and records',
