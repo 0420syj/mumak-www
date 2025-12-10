@@ -28,7 +28,7 @@ export function generateStaticParams() {
   return routing.locales.map(locale => ({ locale }));
 }
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://blog.mumak.dev';
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://wannysim.com';
 
 export const metadata: Metadata = {
   title: {

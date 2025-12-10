@@ -3,7 +3,7 @@ import type { MetadataRoute } from 'next';
 import { locales, type Locale } from '@/i18n/config';
 import { getCategories, getAllPostSlugs } from '@/lib/posts';
 
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://blog.mumak.dev';
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://wannysim.com';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const routes: MetadataRoute.Sitemap = [];
