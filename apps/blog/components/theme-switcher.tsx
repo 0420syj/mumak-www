@@ -4,14 +4,7 @@ import { LaptopIcon, MoonIcon, SunIcon } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 
-import { Button } from '@mumak/ui/components/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from '@mumak/ui/components/dropdown-menu';
+import { SwitcherDropdown } from './switcher-dropdown';
 
 type ThemeValue = 'light' | 'dark' | 'system';
 
@@ -47,23 +40,16 @@ export function ThemeSwitcher() {
   })();
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon-sm" aria-label="Change theme">
-          <TriggerIcon className="size-4" />
-        </Button>
-      </DropdownMenuTrigger>
-
-      <DropdownMenuContent align="end" sideOffset={8}>
-        <DropdownMenuRadioGroup value={selectedTheme} onValueChange={value => setTheme(value as ThemeValue)}>
-          {themeOptions.map(({ value, label, Icon }) => (
-            <DropdownMenuRadioItem key={value} value={value} className="flex items-center gap-2">
-              <Icon className="size-4" />
-              <span>{label}</span>
-            </DropdownMenuRadioItem>
-          ))}
-        </DropdownMenuRadioGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <SwitcherDropdown
+      ariaLabel="Change theme"
+      triggerIcon={TriggerIcon}
+      selectedValue={selectedTheme}
+      onValueChange={value => setTheme(value as ThemeValue)}
+      options={themeOptions.map(option => ({
+        value: option.value,
+        label: option.label,
+        icon: option.Icon,
+      }))}
+    />
   );
 }
