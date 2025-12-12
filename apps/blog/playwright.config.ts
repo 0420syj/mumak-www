@@ -60,7 +60,7 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: isCI ? 'pnpm build && pnpm start' : 'pnpm dev',
+    command: isCI ? `pnpm build && pnpm start --port ${PORT}` : 'pnpm dev',
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !isCI,
     timeout: 120_000,
