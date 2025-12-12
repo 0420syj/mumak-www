@@ -7,7 +7,6 @@ import { SocialLinks } from '@/components/social-links';
 jest.mock('@mumak/ui/components/button', () => ({
   Button: ({
     children,
-    asChild,
     className,
     ...props
   }: {
@@ -29,14 +28,14 @@ jest.mock('@mumak/ui/lib/utils', () => ({
 describe('SocialLinks', () => {
   describe('default variant', () => {
     it('should render social links', () => {
-      render(<SocialLinks readMoreLabel="Read more" />);
+      render(<SocialLinks />);
 
       expect(screen.getByText('GitHub')).toBeInTheDocument();
       expect(screen.getByText('LinkedIn')).toBeInTheDocument();
     });
 
     it('should render links with correct href', () => {
-      render(<SocialLinks readMoreLabel="Read more" />);
+      render(<SocialLinks />);
 
       const githubLink = screen.getByRole('link', { name: /github/i });
       const linkedinLink = screen.getByRole('link', { name: /linkedin/i });
@@ -46,7 +45,7 @@ describe('SocialLinks', () => {
     });
 
     it('should render links with external link attributes', () => {
-      render(<SocialLinks readMoreLabel="Read more" />);
+      render(<SocialLinks />);
 
       const links = screen.getAllByRole('link');
 
@@ -57,7 +56,7 @@ describe('SocialLinks', () => {
     });
 
     it('should render SVG icons', () => {
-      render(<SocialLinks readMoreLabel="Read more" />);
+      render(<SocialLinks />);
 
       const svgIcons = screen.getAllByRole('img');
       expect(svgIcons.length).toBeGreaterThan(0);
