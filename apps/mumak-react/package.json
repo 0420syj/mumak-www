@@ -26,8 +26,8 @@
     "@mumak/ui": "workspace:*",
     "@tailwindcss/vite": "^4.1.17",
     "lucide-react": "^0.559.0",
-    "react": "^19.2.1",
-    "react-dom": "^19.2.1"
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
   },
   "devDependencies": {
     "@mumak/eslint-config": "workspace:*",
