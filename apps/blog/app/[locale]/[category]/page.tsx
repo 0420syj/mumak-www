@@ -2,9 +2,8 @@ import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 
+import { PostCard } from '@/components/post-card';
 import { locales, type Locale } from '@/i18n/config';
-import { Link } from '@/i18n/routing';
-import { formatDateForLocale } from '@/lib/date';
 import { getCategories, getPosts, isValidCategory, type Category } from '@/lib/posts';
 
 interface CategoryPageProps {
@@ -57,21 +56,13 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
           <p className="text-muted-foreground">No posts yet.</p>
         ) : (
           posts.map(post => (
-            <article
+            <PostCard
               key={post.slug}
-              className="border border-border rounded-lg p-6 hover:bg-muted/50 transition-colors"
-            >
-              <Link href={`/${category}/${post.slug}`}>
-                <div className="text-sm text-muted-foreground mb-2">
-                  <time dateTime={formatDateForLocale(post.date, locale).dateTime}>
-                    {formatDateForLocale(post.date, locale).text}
-                  </time>
-                </div>
-                <h2 className="text-xl font-semibold mb-2">{post.title}</h2>
-                <p className="text-muted-foreground mb-3">{post.description}</p>
-                <span className="text-sm font-medium text-foreground">{tPost('readMore')} →</span>
-              </Link>
-            </article>
+              post={post}
+              locale={locale}
+              readMoreLabel={tPost('readMore')}
+              readingTimeUnit={tPost('readingTimeUnit')}
+            />
           ))
         )}
       </section>

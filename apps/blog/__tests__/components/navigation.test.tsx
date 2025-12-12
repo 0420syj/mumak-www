@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 import { Navigation } from '@/components/navigation';
 
@@ -35,6 +34,28 @@ jest.mock('@/components/theme-switcher', () => ({
   ThemeSwitcher: () => <div data-testid="theme-switcher">ThemeSwitcher</div>,
 }));
 
+// Mock @mumak/ui Sheet components - render all content for testing structure
+jest.mock('@mumak/ui/components/sheet', () => ({
+  Sheet: ({ children }: { children: React.ReactNode }) => <div data-testid="sheet">{children}</div>,
+  SheetTrigger: ({ children }: { children: React.ReactNode; asChild?: boolean }) => (
+    <div data-testid="sheet-trigger">{children}</div>
+  ),
+  SheetContent: ({ children, side, className }: { children: React.ReactNode; side?: string; className?: string }) => (
+    <div data-testid="sheet-content" data-side={side} className={className} role="dialog">
+      {children}
+    </div>
+  ),
+  SheetHeader: ({ children, className }: { children: React.ReactNode; className?: string }) => (
+    <div data-testid="sheet-header" className={className}>
+      {children}
+    </div>
+  ),
+  SheetTitle: ({ children }: { children: React.ReactNode }) => <h2 data-testid="sheet-title">{children}</h2>,
+  SheetClose: ({ children }: { children: React.ReactNode; asChild?: boolean }) => (
+    <div data-testid="sheet-close">{children}</div>
+  ),
+}));
+
 describe('Navigation', () => {
   it('should render logo', () => {
     render(<Navigation />);
@@ -45,10 +66,15 @@ describe('Navigation', () => {
   it('should render desktop navigation links', () => {
     render(<Navigation />);
 
-    const links = screen.getAllByRole('link', { name: '에세이' });
-    expect(links.length).toBeGreaterThan(0);
-    expect(screen.getAllByRole('link', { name: '아티클' }).length).toBeGreaterThan(0);
-    expect(screen.getAllByRole('link', { name: '노트' }).length).toBeGreaterThan(0);
+    // Desktop links (in the hidden md:flex container)
+    const essayLinks = screen.getAllByRole('link', { name: '에세이' });
+    expect(essayLinks.length).toBeGreaterThan(0);
+
+    const articleLinks = screen.getAllByRole('link', { name: '아티클' });
+    expect(articleLinks.length).toBeGreaterThan(0);
+
+    const noteLinks = screen.getAllByRole('link', { name: '노트' });
+    expect(noteLinks.length).toBeGreaterThan(0);
   });
 
   it('should render mobile menu trigger button', () => {
@@ -57,20 +83,34 @@ describe('Navigation', () => {
     expect(screen.getByRole('button', { name: 'Open navigation' })).toBeInTheDocument();
   });
 
-  it('should open dropdown menu when trigger is clicked', async () => {
-    const user = userEvent.setup();
+  it('should render Sheet component with left side', () => {
     render(<Navigation />);
 
-    const trigger = screen.getByRole('button', { name: 'Open navigation' });
-    await user.click(trigger);
+    const sheetContent = screen.getByTestId('sheet-content');
+    expect(sheetContent).toBeInTheDocument();
+    expect(sheetContent).toHaveAttribute('data-side', 'left');
+  });
 
-    // Dropdown menu should be visible
-    const menu = screen.getByRole('menu');
-    expect(menu).toBeInTheDocument();
+  it('should render navigation links inside Sheet', () => {
+    render(<Navigation />);
 
-    // Menu should contain navigation links (asChild renders <a> with role="link")
-    const menuLinks = menu.querySelectorAll('a');
-    expect(menuLinks.length).toBe(3);
+    const sheetContent = screen.getByTestId('sheet-content');
+
+    // Sheet should contain navigation links
+    const links = sheetContent.querySelectorAll('a');
+    expect(links.length).toBe(3);
+  });
+
+  it('should have accessible Sheet title for screen readers', () => {
+    render(<Navigation />);
+
+    const sheetTitle = screen.getByTestId('sheet-title');
+    expect(sheetTitle).toBeInTheDocument();
+    expect(sheetTitle).toHaveTextContent('Navigation');
+
+    // SheetHeader should have sr-only class for visual hiding
+    const sheetHeader = screen.getByTestId('sheet-header');
+    expect(sheetHeader).toHaveClass('sr-only');
   });
 
   it('should render theme switcher and locale switcher', () => {
@@ -78,5 +118,35 @@ describe('Navigation', () => {
 
     expect(screen.getByTestId('theme-switcher')).toBeInTheDocument();
     expect(screen.getByTestId('locale-switcher')).toBeInTheDocument();
+  });
+
+  it('should render hamburger menu on the left side (before logo)', () => {
+    const { container } = render(<Navigation />);
+
+    // The flex container should have hamburger menu first, then logo
+    const flexContainer = container.querySelector('.flex.items-center.gap-3');
+    const children = flexContainer?.children;
+
+    if (children) {
+      // First child should be the mobile menu (md:hidden)
+      const firstChild = children[0];
+      expect(firstChild).toHaveClass('md:hidden');
+
+      // Second child should be the logo link
+      const secondChild = children[1];
+      expect(secondChild?.textContent).toBe('Wan Sim');
+    }
+  });
+
+  it('should have correct link hrefs in mobile navigation', () => {
+    render(<Navigation />);
+
+    const sheetContent = screen.getByTestId('sheet-content');
+    const links = sheetContent.querySelectorAll('a');
+
+    const hrefs = Array.from(links).map(link => link.getAttribute('href'));
+    expect(hrefs).toContain('/essay');
+    expect(hrefs).toContain('/articles');
+    expect(hrefs).toContain('/notes');
   });
 });

@@ -5,12 +5,8 @@ import { useTranslations } from 'next-intl';
 import { Link, usePathname } from '@/i18n/routing';
 
 import { Button } from '@mumak/ui/components/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@mumak/ui/components/dropdown-menu';
+import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@mumak/ui/components/sheet';
+import { Menu } from 'lucide-react';
 
 import { LocaleSwitcher } from './locale-switcher';
 import { ThemeSwitcher } from './theme-switcher';
@@ -33,38 +29,38 @@ export function Navigation() {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-3 sm:gap-4">
             <div className="md:hidden">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
+              <Sheet>
+                <SheetTrigger asChild>
                   <Button variant="ghost" size="icon-sm" aria-label="Open navigation">
                     <span className="sr-only">Open navigation</span>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="size-5"
-                      aria-hidden
-                    >
-                      <line x1="4" x2="20" y1="6" y2="6" />
-                      <line x1="4" x2="20" y1="12" y2="12" />
-                      <line x1="4" x2="20" y1="18" y2="18" />
-                    </svg>
+                    <Menu className="size-5" aria-hidden />
                   </Button>
-                </DropdownMenuTrigger>
+                </SheetTrigger>
 
-                <DropdownMenuContent align="start" className="min-w-40">
-                  {navItems.map(item => (
-                    <DropdownMenuItem key={item.href} asChild>
-                      <Link href={item.href} className={isActive(item.href) ? 'font-medium' : ''}>
-                        {t(item.labelKey)}
-                      </Link>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
+                <SheetContent
+                  side="left"
+                  className="w-56 border-r p-6 data-[state=open]:duration-150 data-[state=closed]:duration-150"
+                >
+                  <SheetHeader className="sr-only">
+                    <SheetTitle>Navigation</SheetTitle>
+                  </SheetHeader>
+
+                  <nav className="flex flex-col gap-4">
+                    {navItems.map(item => (
+                      <SheetClose asChild key={item.href}>
+                        <Link
+                          href={item.href}
+                          className={`text-2xl font-semibold transition-colors ${
+                            isActive(item.href) ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
+                          }`}
+                        >
+                          {t(item.labelKey)}
+                        </Link>
+                      </SheetClose>
+                    ))}
+                  </nav>
+                </SheetContent>
+              </Sheet>
             </div>
 
             <Link href="/" className="text-xl font-bold">

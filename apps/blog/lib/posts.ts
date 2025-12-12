@@ -12,6 +12,7 @@ export interface PostMeta {
   category: string;
   tags?: string[];
   draft?: boolean;
+  readingTime: number;
 }
 
 export interface Post {
@@ -53,10 +54,26 @@ function getMdxFiles(dirPath: string): string[] {
   return fs.readdirSync(dirPath).filter(file => file.endsWith('.mdx'));
 }
 
+function calculateReadingTime(content: string): number {
+  // 한국어와 영어 혼합 텍스트를 위한 읽기 시간 계산
+  // 평균 읽기 속도: 분당 500자 (한국어) 또는 200단어 (영어)
+  const text = content.replace(/```[\s\S]*?```/g, '').replace(/`[^`]*`/g, '');
+  const koreanChars = (text.match(/[가-힣]/g) || []).length;
+  const words = text
+    .replace(/[가-힣]/g, '')
+    .split(/\s+/)
+    .filter(Boolean).length;
+
+  const koreanMinutes = koreanChars / 500;
+  const englishMinutes = words / 200;
+
+  return Math.max(1, Math.ceil(koreanMinutes + englishMinutes));
+}
+
 function parsePostFile(filePath: string, slug: string, category: string): PostMeta | null {
   try {
     const fileContent = fs.readFileSync(filePath, 'utf-8');
-    const { data } = matter(fileContent);
+    const { data, content } = matter(fileContent);
 
     return {
       slug,
@@ -66,6 +83,7 @@ function parsePostFile(filePath: string, slug: string, category: string): PostMe
       category,
       tags: data.tags || [],
       draft: data.draft || false,
+      readingTime: calculateReadingTime(content),
     };
   } catch {
     return null;
@@ -126,6 +144,7 @@ export function getPost(locale: Locale, category: string, slug: string): Post | 
       category,
       tags: data.tags || [],
       draft: data.draft || false,
+      readingTime: calculateReadingTime(content),
     };
 
     return {

@@ -5,13 +5,8 @@ import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 
 import { Button } from '@mumak/ui/components/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from '@mumak/ui/components/dropdown-menu';
+
+import { SwitcherDropdown } from './switcher-dropdown';
 
 type ThemeValue = 'light' | 'dark' | 'system';
 
@@ -20,6 +15,15 @@ const themeOptions: Array<{ value: ThemeValue; label: string; Icon: typeof SunIc
   { value: 'dark', label: 'Dark', Icon: MoonIcon },
   { value: 'system', label: 'System', Icon: LaptopIcon },
 ];
+
+function ThemeIcon() {
+  return (
+    <>
+      <SunIcon className="size-4 block dark:hidden" aria-hidden />
+      <MoonIcon className="size-4 hidden dark:block" aria-hidden />
+    </>
+  );
+}
 
 export function ThemeSwitcher() {
   const { theme, resolvedTheme, setTheme } = useTheme();
@@ -31,39 +35,33 @@ export function ThemeSwitcher() {
 
   const selectedTheme: ThemeValue = mounted && theme ? (theme as ThemeValue) : 'system';
 
-  const TriggerIcon = (() => {
-    if (!mounted) {
-      return SunIcon;
-    }
+  const effectiveTheme: ThemeValue = mounted
+    ? selectedTheme === 'system'
+      ? ((resolvedTheme as ThemeValue | undefined) ?? 'system')
+      : selectedTheme
+    : 'system';
 
-    const effectiveTheme: ThemeValue =
-      selectedTheme === 'system' ? ((resolvedTheme as ThemeValue | undefined) ?? 'system') : selectedTheme;
+  const TriggerIcon = effectiveTheme === 'system' ? LaptopIcon : effectiveTheme === 'dark' ? MoonIcon : SunIcon;
 
-    if (effectiveTheme === 'system') {
-      return LaptopIcon;
-    }
-
-    return effectiveTheme === 'dark' ? MoonIcon : SunIcon;
-  })();
+  if (!mounted) {
+    return (
+      <Button variant="ghost" size="icon-sm" aria-label="Change theme">
+        <ThemeIcon />
+      </Button>
+    );
+  }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon-sm" aria-label="Change theme">
-          <TriggerIcon className="size-4" />
-        </Button>
-      </DropdownMenuTrigger>
-
-      <DropdownMenuContent align="end" sideOffset={8}>
-        <DropdownMenuRadioGroup value={selectedTheme} onValueChange={value => setTheme(value as ThemeValue)}>
-          {themeOptions.map(({ value, label, Icon }) => (
-            <DropdownMenuRadioItem key={value} value={value} className="flex items-center gap-2">
-              <Icon className="size-4" />
-              <span>{label}</span>
-            </DropdownMenuRadioItem>
-          ))}
-        </DropdownMenuRadioGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <SwitcherDropdown
+      ariaLabel="Change theme"
+      triggerIcon={TriggerIcon}
+      selectedValue={selectedTheme}
+      onValueChange={value => setTheme(value as ThemeValue)}
+      options={themeOptions.map(option => ({
+        value: option.value,
+        label: option.label,
+        icon: option.Icon,
+      }))}
+    />
   );
 }

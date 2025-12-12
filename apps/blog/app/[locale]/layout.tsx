@@ -10,6 +10,8 @@ import { Navigation } from '@/components/navigation';
 import { Providers } from '@/components/providers';
 import { locales, type Locale } from '@/i18n/config';
 import { routing } from '@/i18n/routing';
+import { themeViewport } from '@/lib/theme/theme-config';
+import { ThemeMetaSyncScript } from '@/lib/theme/theme-meta-sync';
 
 import { Analytics as VercelAnalytics } from '@vercel/analytics/next';
 import { SpeedInsights as VercelSpeedInsights } from '@vercel/speed-insights/next';
@@ -63,6 +65,8 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport = themeViewport;
+
 interface LocaleLayoutProps {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
@@ -81,6 +85,9 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
 
   return (
     <html lang={locale} suppressHydrationWarning>
+      <head>
+        <ThemeMetaSyncScript />
+      </head>
       <body className={`${pretendard.className} antialiased`}>
         <Providers locale={locale} messages={messages}>
           <div className="min-h-screen flex flex-col">
