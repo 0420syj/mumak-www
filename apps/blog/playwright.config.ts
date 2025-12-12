@@ -60,9 +60,8 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: isCI ? `pnpm build && PORT=${PORT} node .next/standalone/apps/blog/server.js` : 'pnpm dev',
+    command: 'pnpm dev',
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !isCI,
-    timeout: 120_000,
   },
 });
