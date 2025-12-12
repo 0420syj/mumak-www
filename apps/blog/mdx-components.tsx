@@ -2,6 +2,8 @@ import type { MDXComponents } from 'mdx/types';
 import Image from 'next/image';
 import Link from 'next/link';
 
+import { SocialLinks } from '@/components/social-links';
+
 export const mdxComponents: MDXComponents = {
   // Override default elements with custom styling
   h1: ({ children }) => <h1 className="text-3xl font-bold mt-8 mb-4">{children}</h1>,
@@ -32,6 +34,8 @@ export const mdxComponents: MDXComponents = {
   ),
   th: ({ children }) => <th className="border border-border px-4 py-2 bg-muted font-semibold text-left">{children}</th>,
   td: ({ children }) => <td className="border border-border px-4 py-2">{children}</td>,
+  // Custom components
+  SocialLinks,
 };
 
 // For @next/mdx compatibility (if needed in the future)
