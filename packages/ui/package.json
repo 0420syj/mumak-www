@@ -61,7 +61,7 @@
   "devDependencies": {
     "@mumak/eslint-config": "workspace:*",
     "@mumak/typescript-config": "workspace:*",
-    "@tailwindcss/postcss": "^4.1.17",
+    "@tailwindcss/postcss": "^4.1.18",
     "@turbo/gen": "^2.6.3",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.7",
