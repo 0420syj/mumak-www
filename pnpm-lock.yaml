@@ -48,8 +48,8 @@ importers:
         specifier: ^4.0.3
         version: 4.0.3
       lucide-react:
-        specifier: ^0.559.0
-        version: 0.559.0(react@19.2.3)
+        specifier: ^0.560.0
+        version: 0.560.0(react@19.2.3)
       next:
         specifier: ^16.0.8
         version: 16.0.8(@babel/core@7.28.5)(@playwright/test@1.57.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -124,8 +124,8 @@ importers:
         specifier: workspace:*
         version: link:../../packages/ui
       lucide-react:
-        specifier: ^0.559.0
-        version: 0.559.0(react@19.2.3)
+        specifier: ^0.560.0
+        version: 0.560.0(react@19.2.3)
       next:
         specifier: ^16.0.8
         version: 16.0.8(@babel/core@7.28.5)(@playwright/test@1.57.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -191,8 +191,8 @@ importers:
         specifier: ^4.1.17
         version: 4.1.17(vite@7.2.7(@types/node@24.10.1)(jiti@2.6.1)(lightningcss@1.30.2)(yaml@2.8.1))
       lucide-react:
-        specifier: ^0.559.0
-        version: 0.559.0(react@19.2.3)
+        specifier: ^0.560.0
+        version: 0.560.0(react@19.2.3)
       react:
         specifier: ^19.2.3
         version: 19.2.3
@@ -395,8 +395,8 @@ importers:
         specifier: ^1.4.2
         version: 1.4.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       lucide-react:
-        specifier: ^0.559.0
-        version: 0.559.0(react@19.2.3)
+        specifier: ^0.560.0
+        version: 0.560.0(react@19.2.3)
       next-themes:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -5053,8 +5053,8 @@ packages:
     resolution: {integrity: sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==}
     engines: {node: '>=12'}
 
-  lucide-react@0.559.0:
-    resolution: {integrity: sha512-3ymrkBPXWk3U2bwUDg6TdA6hP5iGDMgPEAMLhchEgTQmA+g0Zk24tOtKtXMx35w1PizTmsBC3RhP88QYm+7mHQ==}
+  lucide-react@0.560.0:
+    resolution: {integrity: sha512-NwKoUA/aBShsdL8WE5lukV2F/tjHzQRlonQs7fkNGI1sCT0Ay4a9Ap3ST2clUUkcY+9eQ0pBe2hybTQd2fmyDA==}
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
@@ -11958,7 +11958,7 @@ snapshots:
 
   lru-cache@7.18.3: {}
 
-  lucide-react@0.559.0(react@19.2.3):
+  lucide-react@0.560.0(react@19.2.3):
     dependencies:
       react: 19.2.3
 
