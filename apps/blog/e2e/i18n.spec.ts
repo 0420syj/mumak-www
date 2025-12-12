@@ -36,9 +36,11 @@ test.describe('i18n - Internationalization', () => {
     // Verify we're on Korean page
     await expect(page.getByText('최신 글')).toBeVisible();
 
-    // Click English link
+    // Click English link (uses DropdownMenuRadioItem -> menuitemradio role)
     await page.getByRole('button', { name: 'Change language' }).click();
-    await page.getByRole('menuitem', { name: 'English' }).click();
+    const englishOption = page.getByRole('menuitemradio', { name: 'English' });
+    await expect(englishOption).toBeVisible();
+    await englishOption.click();
 
     // Verify we're on English page
     await page.waitForURL(/\/en/);
@@ -51,12 +53,16 @@ test.describe('i18n - Internationalization', () => {
 
     // Click English
     await page.getByRole('button', { name: 'Change language' }).click();
-    await page.getByRole('menuitem', { name: 'English' }).click();
+    const englishOption = page.getByRole('menuitemradio', { name: 'English' });
+    await expect(englishOption).toBeVisible();
+    await englishOption.click();
     await page.waitForURL(/\/en/);
 
     // Click Korean back
     await page.getByRole('button', { name: 'Change language' }).click();
-    await page.getByRole('menuitem', { name: '한국어' }).click();
+    const koreanOption = page.getByRole('menuitemradio', { name: '한국어' });
+    await expect(koreanOption).toBeVisible();
+    await koreanOption.click();
     await page.waitForURL(/\/ko/);
 
     // Should be back on Korean home

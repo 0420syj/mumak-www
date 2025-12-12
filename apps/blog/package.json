@@ -1,6 +1,6 @@
 {
   "name": "blog",
-  "version": "1.1.1",
+  "version": "1.1.3",
   "type": "module",
   "private": true,
   "scripts": {
@@ -26,18 +26,18 @@
     "@vercel/analytics": "^1.6.1",
     "@vercel/speed-insights": "^1.3.1",
     "gray-matter": "^4.0.3",
-    "lucide-react": "^0.556.0",
-    "next": "16.0.10",
+    "lucide-react": "^0.560.0",
+    "next": "^16.0.10",
     "next-intl": "^4.5.8",
     "next-mdx-remote-client": "^2.1.7",
     "next-themes": "^0.4.6",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3"
   },
   "devDependencies": {
     "@mumak/eslint-config": "workspace:*",
     "@mumak/typescript-config": "workspace:*",
-    "@next/bundle-analyzer": "^16.0.8",
+    "@next/bundle-analyzer": "^16.0.10",
     "@playwright/test": "^1.57.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",

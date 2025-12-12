@@ -35,7 +35,8 @@
   },
   "post": {
     "readMore": "더 읽기",
-    "backToList": "목록으로 돌아가기"
+    "backToList": "목록으로 돌아가기",
+    "readingTimeUnit": "분"
   },
   "notFound": {
     "title": "페이지를 찾을 수 없습니다",

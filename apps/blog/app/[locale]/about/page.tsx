@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
+import { SocialLinks } from '@/components/social-links';
+
 interface AboutPageProps {
   params: Promise<{ locale: string }>;
 }
@@ -27,6 +29,10 @@ export default async function AboutPage({ params }: AboutPageProps) {
         <h1 className="text-3xl font-bold mb-2">{t('title')}</h1>
         <p className="text-lg text-muted-foreground">{t('description')}</p>
       </header>
+
+      <div className="mb-8">
+        <SocialLinks variant="default" />
+      </div>
 
       <div className="prose prose-neutral dark:prose-invert">
         <p className="whitespace-pre-wrap leading-relaxed">{t('intro')}</p>

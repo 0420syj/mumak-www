@@ -35,7 +35,8 @@
   },
   "post": {
     "readMore": "Read more",
-    "backToList": "Back to list"
+    "backToList": "Back to list",
+    "readingTimeUnit": " min"
   },
   "notFound": {
     "title": "Page Not Found",
