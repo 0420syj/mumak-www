@@ -91,6 +91,21 @@ describe('Posts Data Access Layer', () => {
         expect(post).toHaveProperty('category');
       });
     });
+
+    it('should include readingTime in PostMeta', () => {
+      const posts = getPosts('ko');
+      posts.forEach((post: PostMeta) => {
+        expect(post).toHaveProperty('readingTime');
+        expect(typeof post.readingTime).toBe('number');
+      });
+    });
+
+    it('should have readingTime of at least 1 minute', () => {
+      const posts = getPosts('ko');
+      posts.forEach((post: PostMeta) => {
+        expect(post.readingTime).toBeGreaterThanOrEqual(1);
+      });
+    });
   });
 
   describe('getPost', () => {
@@ -115,6 +130,20 @@ describe('Posts Data Access Layer', () => {
     it('should return null for invalid category', () => {
       const post = getPost('ko', 'invalid-category', 'some-slug');
       expect(post).toBeNull();
+    });
+
+    it('should include readingTime in post meta', () => {
+      const posts = getPosts('ko', 'essay');
+      if (posts.length > 0) {
+        const firstPost = posts[0];
+        if (firstPost) {
+          const post = getPost('ko', 'essay', firstPost.slug);
+          expect(post).not.toBeNull();
+          expect(post?.meta).toHaveProperty('readingTime');
+          expect(typeof post?.meta.readingTime).toBe('number');
+          expect(post?.meta.readingTime).toBeGreaterThanOrEqual(1);
+        }
+      }
     });
   });
 
