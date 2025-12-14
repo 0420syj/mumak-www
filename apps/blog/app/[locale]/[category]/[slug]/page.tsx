@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation';
 import { locales, type Locale } from '@/i18n/config';
 import { Link } from '@/i18n/routing';
 import { formatDateForLocale } from '@/lib/date';
+import { generateBlogPostingJsonLd, JsonLdScript } from '@/lib/json-ld';
 import { getAllPostSlugs, getPost, isValidCategory } from '@/lib/posts';
 import { mdxComponents } from '@/mdx-components';
 
@@ -55,9 +56,15 @@ export default async function PostPage({ params }: PostPageProps) {
   }
 
   const t = await getTranslations('post');
+  const blogPostingJsonLd = generateBlogPostingJsonLd({
+    post: post.meta,
+    locale,
+    category,
+  });
 
   return (
     <div className="max-w-3xl mx-auto">
+      <JsonLdScript data={blogPostingJsonLd} />
       <article>
         <header className="mb-8">
           <div className="text-sm text-muted-foreground mb-2">

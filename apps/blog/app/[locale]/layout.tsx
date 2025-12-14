@@ -10,6 +10,7 @@ import { Navigation } from '@/components/navigation';
 import { Providers } from '@/components/providers';
 import { locales, type Locale } from '@/i18n/config';
 import { routing } from '@/i18n/routing';
+import { generateWebSiteJsonLd, JsonLdScript } from '@/lib/json-ld';
 import { themeViewport } from '@/lib/theme/theme-config';
 import { ThemeMetaSyncScript } from '@/lib/theme/theme-meta-sync';
 
@@ -83,10 +84,13 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
 
   const messages = await getMessages();
 
+  const websiteJsonLd = generateWebSiteJsonLd({ locale });
+
   return (
     <html lang={locale} suppressHydrationWarning>
       <head>
         <ThemeMetaSyncScript />
+        <JsonLdScript data={websiteJsonLd} />
       </head>
       <body className={`${pretendard.className} antialiased`}>
         <Providers locale={locale} messages={messages}>
