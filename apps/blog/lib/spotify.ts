@@ -78,7 +78,7 @@ async function getAccessToken(): Promise<string | null> {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: params.toString(),
-      cache: 'no-store',
+      next: { revalidate: 30 },
     });
 
     if (!response.ok) {
@@ -112,7 +112,7 @@ export async function getNowPlaying(): Promise<NowPlaying | null> {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
-      cache: 'no-store',
+      next: { revalidate: 30 },
     });
 
     if (response.status === 204 || response.status > 400) {
@@ -128,7 +128,7 @@ export async function getNowPlaying(): Promise<NowPlaying | null> {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
-        cache: 'no-store',
+        next: { revalidate: 30 },
       });
 
       if (recentlyPlayed.status !== 200) {
