@@ -18,6 +18,33 @@ jest.mock('next/image', () => ({
 const mockGetTranslations = jest.requireMock('next-intl/server').getTranslations as jest.MockedFunction<any>;
 const mockGetNowPlaying = getNowPlaying as jest.MockedFunction<typeof getNowPlaying>;
 
+describe('SpotifySkeleton', () => {
+  it('로딩 상태의 skeleton UI를 렌더링해야 함', async () => {
+    const { SpotifySkeleton } = await import('@/components/spotify');
+
+    const { container } = render(<SpotifySkeleton />);
+
+    const skeleton = container.firstChild as HTMLElement;
+    expect(skeleton).toHaveClass('animate-pulse');
+    expect(skeleton).toHaveClass('w-full');
+    expect(skeleton).toHaveClass('max-w-sm');
+
+    // skeleton placeholder 요소들 확인
+    const placeholders = container.querySelectorAll('.bg-muted');
+    expect(placeholders.length).toBe(4); // 이미지 1개 + 텍스트 라인 3개
+  });
+
+  it('layout shift 방지를 위한 고정 너비가 적용되어야 함', async () => {
+    const { SpotifySkeleton } = await import('@/components/spotify');
+
+    const { container } = render(<SpotifySkeleton />);
+
+    const skeleton = container.firstChild as HTMLElement;
+    expect(skeleton).toHaveClass('w-full');
+    expect(skeleton).toHaveClass('max-w-sm');
+  });
+});
+
 describe('Spotify', () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -88,5 +115,29 @@ describe('Spotify', () => {
     expect(screen.getByText('Last Played on Spotify')).toBeInTheDocument();
     expect(screen.getByText('Recent Song')).toBeInTheDocument();
     expect(screen.getByText('Recent Artist')).toBeInTheDocument();
+  });
+
+  it('layout shift 방지를 위한 고정 너비가 적용되어야 함', async () => {
+    const { Spotify } = await import('@/components/spotify');
+
+    mockGetTranslations.mockResolvedValue((key: string) => {
+      if (key === 'listeningTo') return 'Listening to Spotify';
+      if (key === 'lastPlayed') return 'Last Played on Spotify';
+      return '';
+    });
+    mockGetNowPlaying.mockResolvedValue({
+      isPlaying: true,
+      title: 'Test Song',
+      artist: 'Test Artist',
+      album: 'Test Album',
+      albumImageUrl: 'https://i.scdn.co/test.jpg',
+      songUrl: 'https://open.spotify.com/track/test',
+    });
+
+    const { container } = render(await Spotify());
+
+    const link = container.querySelector('a');
+    expect(link).toHaveClass('w-full');
+    expect(link).toHaveClass('max-w-sm');
   });
 });

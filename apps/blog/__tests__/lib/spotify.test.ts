@@ -214,5 +214,117 @@ describe('spotify', () => {
 
       expect(result).toBeNull();
     });
+
+    it('fetch 호출 시 revalidate 캐싱 옵션이 적용되어야 함', async () => {
+      process.env.SPOTIFY_CLIENT_ID = 'test-client-id';
+      process.env.SPOTIFY_CLIENT_SECRET = 'test-client-secret';
+      process.env.SPOTIFY_REFRESH_TOKEN = 'test-refresh-token';
+
+      const mockTokenResponse = {
+        access_token: 'test-access-token',
+        token_type: 'Bearer',
+        expires_in: 3600,
+      };
+
+      const mockCurrentlyPlaying = {
+        is_playing: true,
+        item: {
+          name: 'Test Song',
+          artists: [{ name: 'Test Artist' }],
+          album: {
+            name: 'Test Album',
+            images: [{ url: 'https://i.scdn.co/test-image.jpg' }],
+          },
+          external_urls: {
+            spotify: 'https://open.spotify.com/track/test',
+          },
+        },
+      };
+
+      (global.fetch as jest.Mock)
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockTokenResponse,
+        })
+        .mockResolvedValueOnce({
+          status: 200,
+          json: async () => mockCurrentlyPlaying,
+        });
+
+      await getNowPlaying();
+
+      // 토큰 요청에 revalidate 옵션 확인
+      expect(global.fetch).toHaveBeenNthCalledWith(
+        1,
+        'https://accounts.spotify.com/api/token',
+        expect.objectContaining({
+          next: { revalidate: 30 },
+        })
+      );
+
+      // 현재 재생 중 API 요청에 revalidate 옵션 확인
+      expect(global.fetch).toHaveBeenNthCalledWith(
+        2,
+        'https://api.spotify.com/v1/me/player/currently-playing',
+        expect.objectContaining({
+          next: { revalidate: 30 },
+        })
+      );
+    });
+
+    it('최근 재생 API 호출 시에도 revalidate 캐싱 옵션이 적용되어야 함', async () => {
+      process.env.SPOTIFY_CLIENT_ID = 'test-client-id';
+      process.env.SPOTIFY_CLIENT_SECRET = 'test-client-secret';
+      process.env.SPOTIFY_REFRESH_TOKEN = 'test-refresh-token';
+
+      const mockTokenResponse = {
+        access_token: 'test-access-token',
+        token_type: 'Bearer',
+        expires_in: 3600,
+      };
+
+      const mockRecentlyPlayed = {
+        items: [
+          {
+            track: {
+              name: 'Recently Played Song',
+              artists: [{ name: 'Recent Artist' }],
+              album: {
+                name: 'Recent Album',
+                images: [{ url: 'https://i.scdn.co/recent-image.jpg' }],
+              },
+              external_urls: {
+                spotify: 'https://open.spotify.com/track/recent',
+              },
+            },
+            played_at: '2024-01-01T00:00:00Z',
+          },
+        ],
+      };
+
+      (global.fetch as jest.Mock)
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockTokenResponse,
+        })
+        .mockResolvedValueOnce({
+          status: 204,
+        })
+        .mockResolvedValueOnce({
+          status: 200,
+          json: async () => mockRecentlyPlayed,
+        });
+
+      await getNowPlaying();
+
+      // 최근 재생 API 요청에 revalidate 옵션 확인
+      expect(global.fetch).toHaveBeenNthCalledWith(
+        3,
+        'https://api.spotify.com/v1/me/player/recently-played?limit=1',
+        expect.objectContaining({
+          next: { revalidate: 30 },
+        })
+      );
+    });
   });
 });
