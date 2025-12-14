@@ -18,6 +18,7 @@ test.describe('Navigation', () => {
       await page.keyboard.press('Tab');
       await page.keyboard.press('Enter');
 
+      // eslint-disable-next-line no-useless-escape
       await expect(page).toHaveURL(/\#main-content$/);
     });
   });

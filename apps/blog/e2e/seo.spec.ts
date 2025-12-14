@@ -7,7 +7,7 @@ test.describe('SEO - JSON-LD Structured Data', () => {
     const jsonLdScripts = await page.locator('script[type="application/ld+json"]').all();
     expect(jsonLdScripts.length).toBeGreaterThan(0);
 
-    const jsonLdContent = await jsonLdScripts[0].textContent();
+    const jsonLdContent = await jsonLdScripts[0]?.textContent();
     const jsonLd = JSON.parse(jsonLdContent!);
 
     expect(jsonLd['@context']).toBe('https://schema.org');
@@ -20,7 +20,7 @@ test.describe('SEO - JSON-LD Structured Data', () => {
     await page.goto('/en');
 
     const jsonLdScripts = await page.locator('script[type="application/ld+json"]').all();
-    const jsonLdContent = await jsonLdScripts[0].textContent();
+    const jsonLdContent = await jsonLdScripts[0]?.textContent();
     const jsonLd = JSON.parse(jsonLdContent!);
 
     expect(jsonLd.inLanguage).toBe('en-US');
@@ -33,8 +33,8 @@ test.describe('SEO - JSON-LD Structured Data', () => {
     expect(jsonLdScripts.length).toBe(2);
 
     const blogPostingScript = jsonLdScripts[1];
-    const jsonLdContent = await blogPostingScript.textContent();
-    const jsonLd = JSON.parse(jsonLdContent!);
+    const jsonLdContent = await blogPostingScript?.textContent();
+    const jsonLd = JSON.parse(jsonLdContent ?? '');
 
     expect(jsonLd['@type']).toBe('BlogPosting');
     expect(jsonLd.headline).toBeTruthy();
