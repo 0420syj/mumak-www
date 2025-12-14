@@ -50,7 +50,7 @@ describe('Spotify', () => {
     jest.clearAllMocks();
   });
 
-  it('곡 정보가 없으면 렌더링하지 않아야 함', async () => {
+  it('곡 정보가 없으면 빈 플레이스홀더를 렌더링해야 함 (CLS 방지)', async () => {
     const { Spotify } = await import('@/components/spotify');
 
     mockGetTranslations.mockResolvedValue((key: string) => {
@@ -60,8 +60,13 @@ describe('Spotify', () => {
     });
     mockGetNowPlaying.mockResolvedValue(null);
 
-    const component = await Spotify();
-    expect(component).toBeNull();
+    const { container } = render(await Spotify());
+
+    // 빈 플레이스홀더가 렌더링되어야 함 (CLS 방지)
+    const placeholder = container.firstChild as HTMLElement;
+    expect(placeholder).toHaveClass('w-full');
+    expect(placeholder).toHaveClass('max-w-sm');
+    expect(placeholder).toHaveAttribute('aria-hidden', 'true');
   });
 
   it('현재 재생 중인 곡 정보를 표시해야 함', async () => {

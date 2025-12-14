@@ -1,6 +1,28 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('Navigation', () => {
+  test.describe('Accessibility', () => {
+    test('should show skip to content link on tab', async ({ page }) => {
+      await page.goto('/ko');
+
+      await page.keyboard.press('Tab');
+
+      const skipLink = page.getByRole('link', { name: 'Skip to content' });
+      await expect(skipLink).toBeVisible();
+      await expect(skipLink).toBeFocused();
+    });
+
+    test('should skip to main content when skip link is clicked', async ({ page }) => {
+      await page.goto('/ko');
+
+      await page.keyboard.press('Tab');
+      await page.keyboard.press('Enter');
+
+      // eslint-disable-next-line no-useless-escape
+      await expect(page).toHaveURL(/\#main-content$/);
+    });
+  });
+
   test.describe('Header Navigation', () => {
     test('should display logo and navigate to home', async ({ page }) => {
       await page.goto('/ko/essay');
