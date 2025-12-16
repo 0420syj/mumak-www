@@ -1,22 +1,22 @@
 import '@testing-library/jest-dom';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 
-import { getNowPlaying } from '@/lib/spotify';
-
-jest.mock('next-intl/server', () => ({
-  getTranslations: jest.fn(),
+jest.mock('next-intl', () => ({
+  useTranslations: () => (key: string) => {
+    if (key === 'listeningTo') return 'Listening to Spotify';
+    if (key === 'lastPlayed') return 'Last Played on Spotify';
+    return '';
+  },
 }));
 
-jest.mock('@/lib/spotify');
 jest.mock('next/image', () => ({
   __esModule: true,
   // eslint-disable-next-line @next/next/no-img-element
   default: ({ src, alt }: { src: string; alt: string }) => <img src={src} alt={alt} />,
 }));
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const mockGetTranslations = jest.requireMock('next-intl/server').getTranslations as jest.MockedFunction<any>;
-const mockGetNowPlaying = getNowPlaying as jest.MockedFunction<typeof getNowPlaying>;
+const mockFetch = jest.fn();
+global.fetch = mockFetch;
 
 describe('SpotifySkeleton', () => {
   it('로딩 상태의 skeleton UI를 렌더링해야 함', async () => {
@@ -50,45 +50,59 @@ describe('Spotify', () => {
     jest.clearAllMocks();
   });
 
+  it('초기 로딩 시 skeleton을 표시해야 함', async () => {
+    const { Spotify } = await import('@/components/spotify');
+
+    mockFetch.mockImplementation(() => new Promise(() => {})); // 응답 보류
+
+    const { container } = render(<Spotify />);
+
+    const skeleton = container.firstChild as HTMLElement;
+    expect(skeleton).toHaveClass('animate-pulse');
+  });
+
   it('곡 정보가 없으면 빈 플레이스홀더를 렌더링해야 함 (CLS 방지)', async () => {
     const { Spotify } = await import('@/components/spotify');
 
-    mockGetTranslations.mockResolvedValue((key: string) => {
-      if (key === 'listeningTo') return 'Listening to Spotify';
-      if (key === 'lastPlayed') return 'Last Played on Spotify';
-      return '';
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(null),
     });
-    mockGetNowPlaying.mockResolvedValue(null);
 
-    const { container } = render(await Spotify());
+    const { container } = render(<Spotify />);
 
-    // 빈 플레이스홀더가 렌더링되어야 함 (CLS 방지)
+    await waitFor(() => {
+      const placeholder = container.firstChild as HTMLElement;
+      expect(placeholder).toHaveAttribute('aria-hidden', 'true');
+    });
+
     const placeholder = container.firstChild as HTMLElement;
     expect(placeholder).toHaveClass('w-full');
     expect(placeholder).toHaveClass('max-w-sm');
-    expect(placeholder).toHaveAttribute('aria-hidden', 'true');
   });
 
   it('현재 재생 중인 곡 정보를 표시해야 함', async () => {
     const { Spotify } = await import('@/components/spotify');
 
-    mockGetTranslations.mockResolvedValue((key: string) => {
-      if (key === 'listeningTo') return 'Listening to Spotify';
-      if (key === 'lastPlayed') return 'Last Played on Spotify';
-      return '';
-    });
-    mockGetNowPlaying.mockResolvedValue({
-      isPlaying: true,
-      title: 'Test Song',
-      artist: 'Test Artist',
-      album: 'Test Album',
-      albumImageUrl: 'https://i.scdn.co/test.jpg',
-      songUrl: 'https://open.spotify.com/track/test',
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          isPlaying: true,
+          title: 'Test Song',
+          artist: 'Test Artist',
+          album: 'Test Album',
+          albumImageUrl: 'https://i.scdn.co/test.jpg',
+          songUrl: 'https://open.spotify.com/track/test',
+        }),
     });
 
-    const { container } = render(await Spotify());
+    const { container } = render(<Spotify />);
 
-    expect(screen.getByText('Listening to Spotify')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Listening to Spotify')).toBeInTheDocument();
+    });
+
     expect(screen.getByText('Test Song')).toBeInTheDocument();
     expect(screen.getByText('Test Artist')).toBeInTheDocument();
 
@@ -101,23 +115,25 @@ describe('Spotify', () => {
   it('최근 재생 곡 정보를 표시해야 함', async () => {
     const { Spotify } = await import('@/components/spotify');
 
-    mockGetTranslations.mockResolvedValue((key: string) => {
-      if (key === 'listeningTo') return 'Listening to Spotify';
-      if (key === 'lastPlayed') return 'Last Played on Spotify';
-      return '';
-    });
-    mockGetNowPlaying.mockResolvedValue({
-      isPlaying: false,
-      title: 'Recent Song',
-      artist: 'Recent Artist',
-      album: 'Recent Album',
-      albumImageUrl: 'https://i.scdn.co/recent.jpg',
-      songUrl: 'https://open.spotify.com/track/recent',
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          isPlaying: false,
+          title: 'Recent Song',
+          artist: 'Recent Artist',
+          album: 'Recent Album',
+          albumImageUrl: 'https://i.scdn.co/recent.jpg',
+          songUrl: 'https://open.spotify.com/track/recent',
+        }),
     });
 
-    render(await Spotify());
+    render(<Spotify />);
 
-    expect(screen.getByText('Last Played on Spotify')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Last Played on Spotify')).toBeInTheDocument();
+    });
+
     expect(screen.getByText('Recent Song')).toBeInTheDocument();
     expect(screen.getByText('Recent Artist')).toBeInTheDocument();
   });
@@ -125,21 +141,24 @@ describe('Spotify', () => {
   it('layout shift 방지를 위한 고정 너비가 적용되어야 함', async () => {
     const { Spotify } = await import('@/components/spotify');
 
-    mockGetTranslations.mockResolvedValue((key: string) => {
-      if (key === 'listeningTo') return 'Listening to Spotify';
-      if (key === 'lastPlayed') return 'Last Played on Spotify';
-      return '';
-    });
-    mockGetNowPlaying.mockResolvedValue({
-      isPlaying: true,
-      title: 'Test Song',
-      artist: 'Test Artist',
-      album: 'Test Album',
-      albumImageUrl: 'https://i.scdn.co/test.jpg',
-      songUrl: 'https://open.spotify.com/track/test',
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          isPlaying: true,
+          title: 'Test Song',
+          artist: 'Test Artist',
+          album: 'Test Album',
+          albumImageUrl: 'https://i.scdn.co/test.jpg',
+          songUrl: 'https://open.spotify.com/track/test',
+        }),
     });
 
-    const { container } = render(await Spotify());
+    const { container } = render(<Spotify />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Test Song')).toBeInTheDocument();
+    });
 
     const link = container.querySelector('a');
     expect(link).toHaveClass('w-full');

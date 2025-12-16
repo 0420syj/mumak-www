@@ -1,9 +1,8 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { Suspense } from 'react';
 
 import { PostCard } from '@/components/post-card';
-import { Spotify, SpotifySkeleton } from '@/components/spotify';
+import { Spotify } from '@/components/spotify';
 import { type Locale } from '@/i18n/config';
 import { getPosts, isValidCategory } from '@/lib/posts';
 
@@ -49,9 +48,7 @@ export default async function HomePage({ params }: HomePageProps) {
         </div>
 
         <div className="w-full md:w-auto">
-          <Suspense fallback={<SpotifySkeleton />}>
-            <Spotify />
-          </Suspense>
+          <Spotify />
         </div>
       </section>
 
