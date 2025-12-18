@@ -1,7 +1,10 @@
-import { getTranslations } from 'next-intl/server';
-import Image from 'next/image';
+'use client';
 
-import { getNowPlaying } from '@/lib/spotify';
+import { useTranslations } from 'next-intl';
+import Image from 'next/image';
+import { useEffect, useState } from 'react';
+
+import type { NowPlaying } from '@/lib/spotify';
 
 export function SpotifySkeleton() {
   return (
@@ -29,9 +32,46 @@ function SpotifyEmpty() {
   );
 }
 
-export async function Spotify() {
-  const t = await getTranslations('home');
-  const song = await getNowPlaying();
+export function Spotify() {
+  const t = useTranslations('home');
+  const [song, setSong] = useState<NowPlaying | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function fetchNowPlaying() {
+      try {
+        const response = await fetch('/api/spotify/now-playing', {
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          setSong(null);
+          return;
+        }
+
+        const data = (await response.json()) as NowPlaying | null;
+        setSong(data);
+      } catch {
+        if (!controller.signal.aborted) {
+          setSong(null);
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    fetchNowPlaying();
+
+    return () => controller.abort();
+  }, []);
+
+  if (isLoading) {
+    return <SpotifySkeleton />;
+  }
 
   if (!song) {
     return <SpotifyEmpty />;

@@ -1,6 +1,6 @@
 {
   "name": "mumak-www",
-  "version": "1.1.7",
+  "version": "1.1.8",
   "private": true,
   "scripts": {
     "build": "turbo run build",
@@ -27,9 +27,9 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.57.0",
-    "eslint": "^9.39.1",
+    "eslint": "^9.39.2",
     "husky": "^9.0.11",
-    "knip": "^5.73.3",
+    "knip": "^5.75.1",
     "lint-staged": "^16.2.7",
     "prettier": "^3.7.4",
     "turbo": "^2.6.3",
@@ -44,5 +44,5 @@
   "engines": {
     "node": ">=24.11"
   },
-  "packageManager": "pnpm@10.25.0"
+  "packageManager": "pnpm@10.26.0"
 }

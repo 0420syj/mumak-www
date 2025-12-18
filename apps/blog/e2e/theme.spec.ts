@@ -1,4 +1,28 @@
-import { expect, test } from '@playwright/test';
+import { expect, Locator, Page, test } from '@playwright/test';
+
+/**
+ * 버튼 클릭 후 드롭다운 메뉴가 열릴 때까지 대기
+ * webkit에서 hydration이 느려서 클릭이 무시될 수 있음
+ */
+async function clickAndWaitForMenu(trigger: Locator, page: Page) {
+  // hydration 완료 대기 - 버튼이 interactive 상태가 될 때까지
+  await expect(trigger).toBeEnabled({ timeout: 10_000 });
+
+  // 클릭 후 메뉴가 열릴 때까지 재시도
+  await expect(async () => {
+    await trigger.click();
+    await expect(page.getByRole('menu')).toBeVisible({ timeout: 1_000 });
+  }).toPass({ timeout: 15_000 });
+}
+
+/**
+ * 드롭다운 메뉴에서 옵션 선택
+ */
+async function selectThemeOption(page: Page, optionName: string) {
+  const option = page.getByRole('menuitemradio', { name: optionName });
+  await expect(option).toBeVisible({ timeout: 5_000 });
+  await option.click();
+}
 
 test.describe('Theme switcher', () => {
   test('changes theme via dropdown', async ({ page }) => {
@@ -6,12 +30,12 @@ test.describe('Theme switcher', () => {
 
     const trigger = page.getByRole('button', { name: 'Change theme' });
 
-    await trigger.click();
-    await page.getByRole('menuitemradio', { name: 'Dark' }).click();
+    await clickAndWaitForMenu(trigger, page);
+    await selectThemeOption(page, 'Dark');
     await expect(page.locator('html')).toHaveClass(/dark/);
 
-    await trigger.click();
-    await page.getByRole('menuitemradio', { name: 'Light' }).click();
+    await clickAndWaitForMenu(trigger, page);
+    await selectThemeOption(page, 'Light');
     await expect(page.locator('html')).not.toHaveClass(/dark/);
     await expect(page.locator('html')).toHaveClass(/light/);
   });
@@ -23,12 +47,8 @@ test.describe('Theme color meta tag sync', () => {
 
     // Switch to dark theme
     const trigger = page.getByRole('button', { name: 'Change theme' });
-    await trigger.click();
-
-    // Wait for menu to appear and click Dark option
-    const darkOption = page.getByRole('menuitemradio', { name: 'Dark' });
-    await expect(darkOption).toBeVisible();
-    await darkOption.click();
+    await clickAndWaitForMenu(trigger, page);
+    await selectThemeOption(page, 'Dark');
 
     // Wait for theme to be applied
     await expect(page.locator('html')).toHaveClass(/dark/);
@@ -43,18 +63,13 @@ test.describe('Theme color meta tag sync', () => {
 
     // Switch to dark first, then to light to ensure we're testing the sync
     const trigger = page.getByRole('button', { name: 'Change theme' });
-    await trigger.click();
-
-    const darkOption = page.getByRole('menuitemradio', { name: 'Dark' });
-    await expect(darkOption).toBeVisible();
-    await darkOption.click();
+    await clickAndWaitForMenu(trigger, page);
+    await selectThemeOption(page, 'Dark');
     await expect(page.locator('html')).toHaveClass(/dark/);
 
     // Switch to light
-    await trigger.click();
-    const lightOption = page.getByRole('menuitemradio', { name: 'Light' });
-    await expect(lightOption).toBeVisible();
-    await lightOption.click();
+    await clickAndWaitForMenu(trigger, page);
+    await selectThemeOption(page, 'Light');
     await expect(page.locator('html')).toHaveClass(/light/);
 
     // Check theme-color meta tag - should have light color
