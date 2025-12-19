@@ -112,7 +112,7 @@ export async function getNowPlaying(): Promise<NowPlaying | null> {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
-      next: { revalidate: 30 },
+      cache: 'no-store',
     });
 
     if (response.status === 204 || response.status > 400) {
@@ -128,7 +128,7 @@ export async function getNowPlaying(): Promise<NowPlaying | null> {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
-        next: { revalidate: 30 },
+        cache: 'no-store',
       });
 
       if (recentlyPlayed.status !== 200) {

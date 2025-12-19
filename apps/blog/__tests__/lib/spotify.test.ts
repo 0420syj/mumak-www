@@ -221,7 +221,7 @@ describe('spotify', () => {
       expect(result).toBeNull();
     });
 
-    it('should apply the revalidate caching option when fetching', async () => {
+    it('should disable caching for real-time data when fetching', async () => {
       process.env.SPOTIFY_CLIENT_ID = 'test-client-id';
       process.env.SPOTIFY_CLIENT_SECRET = 'test-client-secret';
       process.env.SPOTIFY_REFRESH_TOKEN = 'test-refresh-token';
@@ -268,17 +268,17 @@ describe('spotify', () => {
         })
       );
 
-      // 현재 재생 중 API 요청에 revalidate 옵션 확인
+      // 현재 재생 중 API 요청에 cache: 'no-store' 옵션 확인 (실시간 데이터)
       expect(global.fetch).toHaveBeenNthCalledWith(
         2,
         'https://api.spotify.com/v1/me/player/currently-playing',
         expect.objectContaining({
-          next: { revalidate: 30 },
+          cache: 'no-store',
         })
       );
     });
 
-    it('should apply the revalidate caching option when fetching the recently played song', async () => {
+    it('should disable caching for real-time data when fetching the recently played song', async () => {
       process.env.SPOTIFY_CLIENT_ID = 'test-client-id';
       process.env.SPOTIFY_CLIENT_SECRET = 'test-client-secret';
       process.env.SPOTIFY_REFRESH_TOKEN = 'test-refresh-token';
@@ -323,12 +323,12 @@ describe('spotify', () => {
 
       await getNowPlaying();
 
-      // 최근 재생 API 요청에 revalidate 옵션 확인
+      // 최근 재생 API 요청에 cache: 'no-store' 옵션 확인 (실시간 데이터)
       expect(global.fetch).toHaveBeenNthCalledWith(
         3,
         'https://api.spotify.com/v1/me/player/recently-played?limit=1',
         expect.objectContaining({
-          next: { revalidate: 30 },
+          cache: 'no-store',
         })
       );
     });

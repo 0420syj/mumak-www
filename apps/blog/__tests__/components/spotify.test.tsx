@@ -19,7 +19,7 @@ const mockFetch = jest.fn();
 global.fetch = mockFetch;
 
 describe('SpotifySkeleton', () => {
-  it('로딩 상태의 skeleton UI를 렌더링해야 함', async () => {
+  it('should render skeleton UI in loading state', async () => {
     const { SpotifySkeleton } = await import('@/components/spotify');
 
     const { container } = render(<SpotifySkeleton />);
@@ -34,7 +34,7 @@ describe('SpotifySkeleton', () => {
     expect(placeholders.length).toBe(4); // 이미지 1개 + 텍스트 라인 3개
   });
 
-  it('layout shift 방지를 위한 고정 너비가 적용되어야 함', async () => {
+  it('should apply fixed width for layout shift prevention', async () => {
     const { SpotifySkeleton } = await import('@/components/spotify');
 
     const { container } = render(<SpotifySkeleton />);
@@ -50,7 +50,7 @@ describe('Spotify', () => {
     jest.clearAllMocks();
   });
 
-  it('초기 로딩 시 skeleton을 표시해야 함', async () => {
+  it('should display skeleton when loading', async () => {
     const { Spotify } = await import('@/components/spotify');
 
     mockFetch.mockImplementation(() => new Promise(() => {})); // 응답 보류
@@ -61,7 +61,7 @@ describe('Spotify', () => {
     expect(skeleton).toHaveClass('animate-pulse');
   });
 
-  it('곡 정보가 없으면 빈 플레이스홀더를 렌더링해야 함 (CLS 방지)', async () => {
+  it('should render empty placeholder when no song is playing (CLS prevention)', async () => {
     const { Spotify } = await import('@/components/spotify');
 
     mockFetch.mockResolvedValue({
@@ -81,7 +81,7 @@ describe('Spotify', () => {
     expect(placeholder).toHaveClass('max-w-sm');
   });
 
-  it('현재 재생 중인 곡 정보를 표시해야 함', async () => {
+  it('should display current playing song information', async () => {
     const { Spotify } = await import('@/components/spotify');
 
     mockFetch.mockResolvedValue({
@@ -112,7 +112,7 @@ describe('Spotify', () => {
     expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   });
 
-  it('최근 재생 곡 정보를 표시해야 함', async () => {
+  it('should display recent played song information', async () => {
     const { Spotify } = await import('@/components/spotify');
 
     mockFetch.mockResolvedValue({
@@ -138,7 +138,7 @@ describe('Spotify', () => {
     expect(screen.getByText('Recent Artist')).toBeInTheDocument();
   });
 
-  it('layout shift 방지를 위한 고정 너비가 적용되어야 함', async () => {
+  it('should apply fixed width for layout shift prevention', async () => {
     const { Spotify } = await import('@/components/spotify');
 
     mockFetch.mockResolvedValue({

@@ -32,7 +32,7 @@ export async function SpotifyServer({ listeningToLabel, lastPlayedLabel }: Spoti
       className="flex items-center gap-4 p-4 rounded-lg border border-border hover:bg-muted/50 transition-colors w-full max-w-sm"
     >
       <div className="relative w-16 h-16 shrink-0 rounded-md overflow-hidden">
-        <Image src={song.albumImageUrl} alt={song.album} fill className="object-cover" sizes="64px" />
+        <Image src={song.albumImageUrl} alt={song.album} fill className="object-cover" sizes="64px" priority />
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-xs font-medium text-muted-foreground mb-1">
