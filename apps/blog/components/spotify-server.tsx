@@ -9,7 +9,13 @@ interface SpotifyServerProps {
 }
 
 export async function SpotifyServer({ listeningToLabel, lastPlayedLabel }: SpotifyServerProps) {
-  const song = await getNowPlaying();
+  let song = null;
+
+  try {
+    song = await getNowPlaying();
+  } catch (error) {
+    console.error('[SpotifyServer] Error fetching now playing:', error);
+  }
 
   if (!song) {
     return (
