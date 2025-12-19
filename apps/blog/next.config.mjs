@@ -31,7 +31,13 @@ const nextConfig = {
   compress: true,
   poweredByHeader: false,
   experimental: {
-    optimizePackageImports: ['next-mdx-remote-client', '@mumak/ui'],
+    optimizePackageImports: [
+      'next-mdx-remote-client',
+      '@mumak/ui',
+      'lucide-react',
+      'next-themes',
+      'next-intl',
+    ],
   },
   async headers() {
     return [
