@@ -8,17 +8,21 @@ jest.mock('@mumak/ui/components/button', () => ({
   Button: ({
     children,
     className,
+    asChild,
     ...props
   }: {
     children: React.ReactNode;
     asChild?: boolean;
     className?: string;
     [key: string]: unknown;
-  }) => (
-    <div data-testid="button" className={className} {...props}>
-      {children}
-    </div>
-  ),
+  }) => {
+    void asChild; // Radix UI prop - prevent passing to DOM
+    return (
+      <div data-testid="button" className={className} {...props}>
+        {children}
+      </div>
+    );
+  },
 }));
 
 jest.mock('@mumak/ui/lib/utils', () => ({
