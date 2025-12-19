@@ -34,9 +34,9 @@ updates:
           - '@radix-ui/react-*'
     open-pull-requests-limit: 10
     reviewers:
-      - '0420syj'
+      - 'wannysim'
     assignees:
-      - '0420syj'
+      - 'wannysim'
     commit-message:
       prefix: 'chore'
       include: 'scope'
@@ -52,9 +52,9 @@ updates:
       timezone: 'Asia/Seoul'
     open-pull-requests-limit: 3
     reviewers:
-      - '0420syj'
+      - 'wannysim'
     assignees:
-      - '0420syj'
+      - 'wannysim'
     commit-message:
       prefix: 'ci'
       include: 'scope'

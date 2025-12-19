@@ -19,7 +19,7 @@ const ICON_PATHS: Record<string, string> = {
 export const socialLinks: SocialLink[] = [
   {
     name: 'GitHub',
-    url: 'https://github.com/0420syj',
+    url: 'https://github.com/wannysim',
     iconSlug: 'github',
     ariaLabel: 'Visit GitHub profile',
   },
