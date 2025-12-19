@@ -2,6 +2,15 @@
 
 개인 프로젝트를 관리하는 Turborepo 모노레포입니다.
 
+## `apps/blog`
+
+개인 블로그입니다.
+
+[![Dependabot Updates](https://github.com/wannysim/mumak-www/actions/workflows/dependabot/dependabot-updates/badge.svg)](https://github.com/wannysim/mumak-www/actions/workflows/dependabot/dependabot-updates)[![CI](https://github.com/wannysim/mumak-www/actions/workflows/ci.yml/badge.svg)](https://github.com/wannysim/mumak-www/actions/workflows/ci.yml)
+[![E2E Tests](https://github.com/wannysim/mumak-www/actions/workflows/e2e.yml/badge.svg)](https://github.com/wannysim/mumak-www/actions/workflows/e2e.yml)
+[![codecov](https://codecov.io/github/wannysim/mumak-www/graph/badge.svg?token=QA0BJSHKID)](https://codecov.io/github/wannysim/mumak-www)
+![Vercel Deploy](https://deploy-badge.vercel.app/vercel/mumak-www-blog?logo=next.js&name=wannysim.com)
+
 ## 🚀 시작하기
 
 ### 필수 요구사항
