@@ -21,14 +21,14 @@ export function Footer() {
               <Link href="/now" className="hover:text-foreground transition-colors">
                 {t('now')}
               </Link>
-              <a
+              <Link
                 href="/feed.xml"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-foreground transition-colors"
               >
                 RSS
-              </a>
+              </Link>
             </nav>
             <SocialLinks variant="compact" />
           </div>

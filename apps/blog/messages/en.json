@@ -52,5 +52,9 @@
   },
   "now": {
     "lastUpdated": "Last updated"
+  },
+  "feed": {
+    "title": "Wan Sim",
+    "description": "A space for thoughts and records"
   }
 }

@@ -32,6 +32,43 @@ jest.mock('next/image', () => ({
   },
 }));
 
+// Mock next-intl/server
+jest.mock('next-intl/server', () => ({
+  getTranslations: jest.fn(({ locale, namespace }: { locale: string; namespace?: string }) => {
+    const messages: Record<string, Record<string, Record<string, string> | string>> = {
+      ko: {
+        feed: {
+          title: 'Wan Sim - 블로그',
+          description: '생각과 기록을 담는 공간',
+        },
+      },
+      en: {
+        feed: {
+          title: 'Wan Sim',
+          description: 'A space for thoughts and records',
+        },
+      },
+    };
+
+    return Promise.resolve((key: string): string => {
+      const localeMessages = messages[locale] || messages.en;
+      if (!localeMessages) return key;
+
+      const namespaceMessages = namespace
+        ? (localeMessages[namespace] as Record<string, string> | undefined)
+        : undefined;
+
+      if (namespaceMessages && typeof namespaceMessages === 'object') {
+        return (namespaceMessages[key] as string) || key;
+      }
+
+      return key;
+    });
+  }),
+  getLocale: jest.fn(() => Promise.resolve('ko')),
+  setRequestLocale: jest.fn(),
+}));
+
 // Global test utilities
 global.ResizeObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),

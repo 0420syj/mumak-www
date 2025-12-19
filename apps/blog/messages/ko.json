@@ -52,5 +52,9 @@
   },
   "now": {
     "lastUpdated": "마지막 업데이트"
+  },
+  "feed": {
+    "title": "Wan Sim - 블로그",
+    "description": "생각과 기록을 담는 공간"
   }
 }
