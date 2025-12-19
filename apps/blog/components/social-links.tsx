@@ -4,8 +4,9 @@ import { cn } from '@mumak/ui/lib/utils';
 import { getIcon, socialLinks, type SocialLink } from '@/lib/social-links';
 
 interface SocialLinksProps {
-  variant?: 'default' | 'compact';
+  variant?: 'default' | 'compact' | 'minimal';
   className?: string;
+  noWrapper?: boolean;
 }
 
 function Icon({ slug, className }: { slug: string; className?: string }) {
@@ -19,41 +20,60 @@ function Icon({ slug, className }: { slug: string; className?: string }) {
   );
 }
 
-export function SocialLinks({ variant = 'default', className }: SocialLinksProps) {
+export function SocialLinks({ variant = 'default', className, noWrapper = false }: SocialLinksProps) {
   const isCompact = variant === 'compact';
+  const isMinimal = variant === 'minimal';
 
-  return (
-    <div className={cn('flex items-center gap-2', className)}>
-      {socialLinks.map(({ name, url, iconSlug, ariaLabel }: SocialLink) => {
-        const label = ariaLabel || `Visit ${name}`;
+  const links = socialLinks.map(({ name, url, iconSlug, ariaLabel }: SocialLink) => {
+    const label = ariaLabel || `Visit ${name}`;
 
-        if (isCompact) {
-          return (
-            <Button
-              key={name}
-              variant="ghost"
-              size="icon-sm"
-              asChild
-              aria-label={label}
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <a href={url} target="_blank" rel="noopener noreferrer">
-                <Icon slug={iconSlug} className="size-4" />
-                <span className="sr-only">{label}</span>
-              </a>
-            </Button>
-          );
-        }
+    if (isMinimal) {
+      return (
+        <a
+          key={name}
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={label}
+          className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <Icon slug={iconSlug} className="size-4" aria-hidden="true" />
+          <span className="sr-only">{label}</span>
+        </a>
+      );
+    }
 
-        return (
-          <Button key={name} variant="outline" size="sm" asChild aria-label={label} className="gap-2">
-            <a href={url} target="_blank" rel="noopener noreferrer">
-              <Icon slug={iconSlug} className="size-4" />
-              <span>{name}</span>
-            </a>
-          </Button>
-        );
-      })}
-    </div>
-  );
+    if (isCompact) {
+      return (
+        <Button
+          key={name}
+          variant="ghost"
+          size="icon-sm"
+          asChild
+          aria-label={label}
+          className="text-muted-foreground hover:text-foreground"
+        >
+          <a href={url} target="_blank" rel="noopener noreferrer">
+            <Icon slug={iconSlug} className="size-4" />
+            <span className="sr-only">{label}</span>
+          </a>
+        </Button>
+      );
+    }
+
+    return (
+      <Button key={name} variant="outline" size="sm" asChild aria-label={label} className="gap-2">
+        <a href={url} target="_blank" rel="noopener noreferrer">
+          <Icon slug={iconSlug} className="size-4" />
+          <span>{name}</span>
+        </a>
+      </Button>
+    );
+  });
+
+  if (noWrapper) {
+    return <>{links}</>;
+  }
+
+  return <div className={cn('flex items-center gap-2', className)}>{links}</div>;
 }
