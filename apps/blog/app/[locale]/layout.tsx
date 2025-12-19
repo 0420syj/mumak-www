@@ -5,6 +5,7 @@ import { getMessages, setRequestLocale } from 'next-intl/server';
 import localFont from 'next/font/local';
 import { notFound } from 'next/navigation';
 
+import { VercelAnalytics } from '@/components/analytics';
 import { Footer } from '@/components/footer';
 import { Navigation } from '@/components/navigation';
 import { Providers } from '@/components/providers';
@@ -13,9 +14,6 @@ import { routing } from '@/i18n/routing';
 import { generateWebSiteJsonLd, JsonLdScript } from '@/lib/json-ld';
 import { themeViewport } from '@/lib/theme/theme-config';
 import { ThemeMetaSyncScript } from '@/lib/theme/theme-meta-sync';
-
-import { Analytics as VercelAnalytics } from '@vercel/analytics/next';
-import { SpeedInsights as VercelSpeedInsights } from '@vercel/speed-insights/next';
 
 const pretendard = localFont({
   src: '../../public/assets/fonts/PretendardVariable.woff2',
@@ -107,7 +105,6 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
             </main>
             <Footer />
             <VercelAnalytics />
-            <VercelSpeedInsights />
           </div>
         </Providers>
       </body>
