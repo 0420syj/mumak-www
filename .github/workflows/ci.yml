@@ -81,7 +81,12 @@ jobs:
         run: pnpm turbo run lint check-types format:check ${{ steps.affected.outputs.filter }}
 
       - name: Test
-        run: pnpm turbo run test ${{ steps.affected.outputs.filter }}
+        run: pnpm turbo run test:ci ${{ steps.affected.outputs.filter }}
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Build
         run: pnpm turbo run build ${{ steps.affected.outputs.filter }}
