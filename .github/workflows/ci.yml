@@ -10,6 +10,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+
 jobs:
   ci:
     name: CI Pipeline
@@ -41,15 +45,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
-      - name: Setup Turborepo cache
-        uses: actions/cache@v5
-        with:
-          path: .turbo
-          key: ${{ runner.os }}-turbo-${{ hashFiles('**/turbo.json', '**/package.json') }}-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-turbo-${{ hashFiles('**/turbo.json', '**/package.json') }}-
-            ${{ runner.os }}-turbo-
-
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -57,8 +52,13 @@ jobs:
         id: affected
         run: |
           if [ "${{ github.event_name }}" == "pull_request" ]; then
-            echo "filter=--filter=[HEAD^1]" >> $GITHUB_OUTPUT
-            echo "dry_run_filter=--filter=[HEAD^1] --dry-run=json" >> $GITHUB_OUTPUT
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+            HEAD_SHA="${{ github.sha }}"
+            # Include changed packages and their dependents (apps that depend on changed packages)
+            echo "filter=--filter=[${BASE_SHA}...${HEAD_SHA}]..." >> $GITHUB_OUTPUT
+            echo "dry_run_filter=--filter=[${BASE_SHA}...${HEAD_SHA}]... --dry-run=json" >> $GITHUB_OUTPUT
+            echo "base_sha=${BASE_SHA}" >> $GITHUB_OUTPUT
+            echo "head_sha=${HEAD_SHA}" >> $GITHUB_OUTPUT
           else
             echo "filter=" >> $GITHUB_OUTPUT
             echo "dry_run_filter=--dry-run=json" >> $GITHUB_OUTPUT
@@ -66,6 +66,11 @@ jobs:
 
       - name: Analyze affected tasks (dry-run)
         run: |
+          echo "=== Affected packages ==="
+          if [ -n "${{ steps.affected.outputs.base_sha }}" ]; then
+            echo "Range: ${{ steps.affected.outputs.base_sha }}...${{ steps.affected.outputs.head_sha }}"
+          fi
+          echo ""
           echo "=== Lint affected packages ==="
           pnpm turbo run lint ${{ steps.affected.outputs.dry_run_filter }}
           echo ""
@@ -86,5 +91,12 @@ jobs:
         run: |
           echo "## Turborepo CI Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Filter Used" >> $GITHUB_STEP_SUMMARY
+          if [ -n "${{ steps.affected.outputs.base_sha }}" ]; then
+            echo "PR range: \`${{ steps.affected.outputs.base_sha }}...${{ steps.affected.outputs.head_sha }}\`" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Full build (push to main/develop)" >> $GITHUB_STEP_SUMMARY
+          fi
+          echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Affected Packages" >> $GITHUB_STEP_SUMMARY
-          pnpm turbo run build --filter=[HEAD^1] --dry-run >> $GITHUB_STEP_SUMMARY || echo "All packages" >> $GITHUB_STEP_SUMMARY
+          pnpm turbo run build ${{ steps.affected.outputs.dry_run_filter }} 2>/dev/null | head -50 >> $GITHUB_STEP_SUMMARY || echo "All packages" >> $GITHUB_STEP_SUMMARY

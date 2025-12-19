@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "next dev --port 3000",
     "build": "next build",
-    "start": "next start",
+    "start": "next start --port 3000",
+    "start:e2e": "next start --port 3000",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "check-types": "tsc --noEmit",
