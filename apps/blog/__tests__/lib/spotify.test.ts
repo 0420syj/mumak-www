@@ -2,20 +2,26 @@ import { getNowPlaying } from '@/lib/spotify';
 
 describe('spotify', () => {
   const originalEnv = process.env;
+  const originalConsoleError = console.error;
+  const originalConsoleLog = console.log;
 
   beforeEach(() => {
     jest.resetModules();
     process.env = { ...originalEnv };
     global.fetch = jest.fn();
+    console.error = jest.fn();
+    console.log = jest.fn();
   });
 
   afterEach(() => {
     process.env = originalEnv;
     jest.restoreAllMocks();
+    console.error = originalConsoleError;
+    console.log = originalConsoleLog;
   });
 
   describe('getNowPlaying', () => {
-    it('환경변수가 없으면 null을 반환해야 함', async () => {
+    it('should return null if environment variables are not set', async () => {
       delete process.env.SPOTIFY_CLIENT_ID;
       delete process.env.SPOTIFY_CLIENT_SECRET;
       delete process.env.SPOTIFY_REFRESH_TOKEN;
@@ -25,7 +31,7 @@ describe('spotify', () => {
       expect(result).toBeNull();
     });
 
-    it('현재 재생 중인 곡이 있으면 해당 정보를 반환해야 함', async () => {
+    it('should return the current playing song if it is set', async () => {
       process.env.SPOTIFY_CLIENT_ID = 'test-client-id';
       process.env.SPOTIFY_CLIENT_SECRET = 'test-client-secret';
       process.env.SPOTIFY_REFRESH_TOKEN = 'test-refresh-token';
@@ -73,7 +79,7 @@ describe('spotify', () => {
       });
     });
 
-    it('현재 재생 중인 곡이 없으면 최근 재생 곡을 반환해야 함', async () => {
+    it('should return the recently played song if the current playing song is not set', async () => {
       process.env.SPOTIFY_CLIENT_ID = 'test-client-id';
       process.env.SPOTIFY_CLIENT_SECRET = 'test-client-secret';
       process.env.SPOTIFY_REFRESH_TOKEN = 'test-refresh-token';
@@ -128,7 +134,7 @@ describe('spotify', () => {
       });
     });
 
-    it('여러 아티스트가 있으면 쉼표로 구분해야 함', async () => {
+    it('should return the artist names separated by a comma if there are multiple artists', async () => {
       process.env.SPOTIFY_CLIENT_ID = 'test-client-id';
       process.env.SPOTIFY_CLIENT_SECRET = 'test-client-secret';
       process.env.SPOTIFY_REFRESH_TOKEN = 'test-refresh-token';
@@ -169,7 +175,7 @@ describe('spotify', () => {
       expect(result?.artist).toBe('Artist 1, Artist 2');
     });
 
-    it('토큰 요청이 실패하면 null을 반환해야 함', async () => {
+    it('should return null if the token request fails', async () => {
       process.env.SPOTIFY_CLIENT_ID = 'test-client-id';
       process.env.SPOTIFY_CLIENT_SECRET = 'test-client-secret';
       process.env.SPOTIFY_REFRESH_TOKEN = 'test-refresh-token';
@@ -186,7 +192,7 @@ describe('spotify', () => {
       expect(result).toBeNull();
     });
 
-    it('최근 재생 곡이 없으면 null을 반환해야 함', async () => {
+    it('should return null if the recently played song is not set', async () => {
       process.env.SPOTIFY_CLIENT_ID = 'test-client-id';
       process.env.SPOTIFY_CLIENT_SECRET = 'test-client-secret';
       process.env.SPOTIFY_REFRESH_TOKEN = 'test-refresh-token';
@@ -215,7 +221,7 @@ describe('spotify', () => {
       expect(result).toBeNull();
     });
 
-    it('fetch 호출 시 revalidate 캐싱 옵션이 적용되어야 함', async () => {
+    it('should apply the revalidate caching option when fetching', async () => {
       process.env.SPOTIFY_CLIENT_ID = 'test-client-id';
       process.env.SPOTIFY_CLIENT_SECRET = 'test-client-secret';
       process.env.SPOTIFY_REFRESH_TOKEN = 'test-refresh-token';
@@ -272,7 +278,7 @@ describe('spotify', () => {
       );
     });
 
-    it('최근 재생 API 호출 시에도 revalidate 캐싱 옵션이 적용되어야 함', async () => {
+    it('should apply the revalidate caching option when fetching the recently played song', async () => {
       process.env.SPOTIFY_CLIENT_ID = 'test-client-id';
       process.env.SPOTIFY_CLIENT_SECRET = 'test-client-secret';
       process.env.SPOTIFY_REFRESH_TOKEN = 'test-refresh-token';

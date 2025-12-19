@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 import type { NowPlaying } from '@/lib/spotify';
+import Link from 'next/link';
 
 export function SpotifySkeleton() {
   return (
@@ -78,7 +79,7 @@ export function Spotify() {
   }
 
   return (
-    <a
+    <Link
       href={song.songUrl}
       target="_blank"
       rel="noopener noreferrer"
@@ -94,6 +95,6 @@ export function Spotify() {
         <p className="font-semibold truncate text-sm">{song.title}</p>
         <p className="text-sm text-muted-foreground truncate">{song.artist}</p>
       </div>
-    </a>
+    </Link>
   );
 }

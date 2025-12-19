@@ -186,7 +186,7 @@ test.describe('Navigation', () => {
 
       const footer = page.locator('footer');
       const rssLink = footer.getByRole('link', { name: 'RSS' });
-      await expect(rssLink).toHaveAttribute('href', '/feed.xml');
+      await expect(rssLink).toHaveAttribute('href', '/ko/feed.xml');
     });
 
     test('should display social links', async ({ page }) => {

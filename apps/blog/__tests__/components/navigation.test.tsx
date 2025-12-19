@@ -16,13 +16,15 @@ jest.mock('next-intl', () => ({
 }));
 
 // Mock i18n routing
+const mockUsePathname = jest.fn(() => '/');
+
 jest.mock('@/i18n/routing', () => ({
   Link: ({ children, href, className }: { children: React.ReactNode; href: string; className?: string }) => (
     <a href={href} className={className}>
       {children}
     </a>
   ),
-  usePathname: () => '/',
+  usePathname: () => mockUsePathname(),
 }));
 
 // Mock child components
@@ -57,6 +59,10 @@ jest.mock('@mumak/ui/components/sheet', () => ({
 }));
 
 describe('Navigation', () => {
+  beforeEach(() => {
+    mockUsePathname.mockReturnValue('/');
+  });
+
   it('should render logo', () => {
     render(<Navigation />);
 
@@ -148,5 +154,79 @@ describe('Navigation', () => {
     expect(hrefs).toContain('/essay');
     expect(hrefs).toContain('/articles');
     expect(hrefs).toContain('/notes');
+  });
+
+  describe('active state styling', () => {
+    it('should apply active styles to mobile navigation link when pathname matches', () => {
+      mockUsePathname.mockReturnValue('/essay');
+
+      render(<Navigation />);
+
+      const sheetContent = screen.getByTestId('sheet-content');
+      const essayLink = Array.from(sheetContent.querySelectorAll('a')).find(
+        link => link.getAttribute('href') === '/essay'
+      );
+
+      expect(essayLink).toHaveClass('text-foreground');
+      expect(essayLink).not.toHaveClass('text-muted-foreground');
+    });
+
+    it('should apply inactive styles to mobile navigation link when pathname does not match', () => {
+      mockUsePathname.mockReturnValue('/');
+
+      render(<Navigation />);
+
+      const sheetContent = screen.getByTestId('sheet-content');
+      const essayLink = Array.from(sheetContent.querySelectorAll('a')).find(
+        link => link.getAttribute('href') === '/essay'
+      );
+
+      expect(essayLink).toHaveClass('text-muted-foreground');
+      expect(essayLink).toHaveClass('hover:text-foreground');
+      expect(essayLink).not.toHaveClass('text-foreground');
+    });
+
+    it('should apply active styles to desktop navigation link when pathname matches', () => {
+      mockUsePathname.mockReturnValue('/articles');
+
+      const { container } = render(<Navigation />);
+
+      const desktopNav = container.querySelector('.hidden.md\\:flex');
+      const articleLink = Array.from(desktopNav?.querySelectorAll('a') || []).find(
+        link => link.getAttribute('href') === '/articles'
+      );
+
+      expect(articleLink).toHaveClass('bg-muted');
+      expect(articleLink).toHaveClass('font-medium');
+      expect(articleLink).not.toHaveClass('hover:bg-muted/50');
+    });
+
+    it('should apply inactive styles to desktop navigation link when pathname does not match', () => {
+      mockUsePathname.mockReturnValue('/');
+
+      const { container } = render(<Navigation />);
+
+      const desktopNav = container.querySelector('.hidden.md\\:flex');
+      const essayLink = Array.from(desktopNav?.querySelectorAll('a') || []).find(
+        link => link.getAttribute('href') === '/essay'
+      );
+
+      expect(essayLink).toHaveClass('hover:bg-muted/50');
+      expect(essayLink).not.toHaveClass('bg-muted');
+      expect(essayLink).not.toHaveClass('font-medium');
+    });
+
+    it('should handle nested paths correctly for active state', () => {
+      mockUsePathname.mockReturnValue('/essay/some-post');
+
+      render(<Navigation />);
+
+      const sheetContent = screen.getByTestId('sheet-content');
+      const essayLink = Array.from(sheetContent.querySelectorAll('a')).find(
+        link => link.getAttribute('href') === '/essay'
+      );
+
+      expect(essayLink).toHaveClass('text-foreground');
+    });
   });
 });
