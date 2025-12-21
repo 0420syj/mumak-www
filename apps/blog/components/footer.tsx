@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server';
 
 import { Link } from '@/i18n/routing';
 
+import { Copyright } from './copyright';
 import { SocialLinks } from './social-links';
 
 export async function Footer() {
@@ -31,7 +32,9 @@ export async function Footer() {
             </Link>
             <SocialLinks variant="minimal" noWrapper />
           </nav>
-          <p>&copy; {new Date().getFullYear()} Wan Sim</p>
+          <p>
+            <Copyright />
+          </p>
         </div>
       </div>
     </footer>
