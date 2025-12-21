@@ -1,14 +1,12 @@
-'use client';
-
 import { Rss } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { getTranslations } from 'next-intl/server';
 
 import { Link } from '@/i18n/routing';
 
 import { SocialLinks } from './social-links';
 
-export function Footer() {
-  const t = useTranslations('footer');
+export async function Footer() {
+  const t = await getTranslations('footer');
 
   return (
     <footer className="border-t border-border py-6">

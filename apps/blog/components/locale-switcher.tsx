@@ -3,8 +3,8 @@
 import { GlobeIcon } from 'lucide-react';
 import { useLocale } from 'next-intl';
 
+import { Locale } from '@/i18n/config';
 import { usePathname, useRouter } from '@/i18n/routing';
-import { Locale } from '../i18n/config';
 import { SwitcherDropdown } from './switcher-dropdown';
 
 const localeNames: Record<Locale, string> = {
