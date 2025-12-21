@@ -28,17 +28,11 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 31536000,
   },
-  cacheComponents: false,
+  cacheComponents: true,
   compress: true,
   poweredByHeader: false,
   experimental: {
-    optimizePackageImports: [
-      'next-mdx-remote-client',
-      '@mumak/ui',
-      'lucide-react',
-      'next-themes',
-      'next-intl',
-    ],
+    optimizePackageImports: ['next-mdx-remote-client', '@mumak/ui', 'lucide-react', 'next-themes', 'next-intl'],
   },
   async headers() {
     return [
