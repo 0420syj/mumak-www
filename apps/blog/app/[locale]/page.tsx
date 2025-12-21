@@ -3,8 +3,8 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Suspense } from 'react';
 
 import { PostCard } from '@/components/post-card';
-import { SpotifySkeleton } from '@/components/spotify';
 import { SpotifyServer } from '@/components/spotify-server';
+import { SpotifySkeleton } from '@/components/spotify-skeleton';
 import { type Locale } from '@/i18n/config';
 import { getPosts, isValidCategory } from '@/lib/posts';
 
