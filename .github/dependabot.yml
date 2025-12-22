@@ -9,6 +9,11 @@ updates:
       time: '09:00'
       timezone: 'Asia/Seoul'
     groups:
+      turbo:
+        patterns:
+          - 'turbo'
+          - '@turbo/*'
+          - 'eslint-plugin-turbo'
       vitest:
         patterns:
           - 'vitest'
