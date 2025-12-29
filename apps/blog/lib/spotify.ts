@@ -1,3 +1,5 @@
+import { connection } from 'next/server';
+
 interface SpotifyTokenResponse {
   access_token: string;
   token_type: string;
@@ -215,6 +217,9 @@ async function fetchNowPlayingData(accessToken: string): Promise<NowPlaying | nu
 }
 
 export async function getNowPlaying(): Promise<NowPlaying | null> {
+  // 동적 렌더링으로 전환 (Date.now() 사용 전에 호출 필요)
+  await connection();
+
   const accessToken = await getAccessToken();
 
   if (!accessToken) {

@@ -1,5 +1,10 @@
 import '@testing-library/jest-dom';
 
+// Mock next/server
+jest.mock('next/server', () => ({
+  connection: jest.fn().mockResolvedValue(undefined),
+}));
+
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
   useRouter() {

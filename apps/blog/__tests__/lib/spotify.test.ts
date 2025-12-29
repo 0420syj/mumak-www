@@ -1,3 +1,8 @@
+// next/server mock
+jest.mock('next/server', () => ({
+  connection: jest.fn().mockResolvedValue(undefined),
+}));
+
 import { getNowPlaying, __resetTokenCacheForTesting } from '@/lib/spotify';
 
 describe('spotify', () => {
