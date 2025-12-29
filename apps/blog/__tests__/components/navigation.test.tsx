@@ -1,19 +1,18 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 
 import { Navigation } from '@/components/navigation';
 
-// Mock next-intl
-jest.mock('next-intl', () => ({
-  useTranslations: () => (key: string) => {
+// Mock next-intl/server
+jest.mock('next-intl/server', () => ({
+  getTranslations: jest.fn(async () => (key: string) => {
     const translations: Record<string, string> = {
       essay: '에세이',
       articles: '아티클',
       notes: '노트',
     };
     return translations[key] || key;
-  },
+  }),
 }));
 
 // Mock i18n routing
@@ -23,7 +22,6 @@ jest.mock('@/i18n/routing', () => ({
       {children}
     </a>
   ),
-  usePathname: () => '/',
 }));
 
 // Mock child components
@@ -35,46 +33,57 @@ jest.mock('@/components/theme-switcher', () => ({
   ThemeSwitcher: () => <div data-testid="theme-switcher">ThemeSwitcher</div>,
 }));
 
+jest.mock('@/components/mobile-menu', () => ({
+  MobileMenu: ({ items }: { items: { label: string; href: string }[] }) => (
+    <div data-testid="mobile-menu">
+      {items.map(item => (
+        <span key={item.href}>{item.label}</span>
+      ))}
+    </div>
+  ),
+}));
+
+jest.mock('@/components/nav-links', () => ({
+  NavLinks: ({ items }: { items: { label: string; href: string }[] }) => (
+    <div data-testid="nav-links">
+      {items.map(item => (
+        <span key={item.href}>{item.label}</span>
+      ))}
+    </div>
+  ),
+}));
+
 describe('Navigation', () => {
-  it('should render logo', () => {
-    render(<Navigation />);
+  it('should render logo', async () => {
+    const jsx = await Navigation();
+    render(jsx);
 
     expect(screen.getByRole('link', { name: 'Wan Sim' })).toBeInTheDocument();
   });
 
-  it('should render desktop navigation links', () => {
-    render(<Navigation />);
+  it('should render desktop navigation links via NavLinks', async () => {
+    const jsx = await Navigation();
+    render(jsx);
 
-    const links = screen.getAllByRole('link', { name: '에세이' });
-    expect(links.length).toBeGreaterThan(0);
-    expect(screen.getAllByRole('link', { name: '아티클' }).length).toBeGreaterThan(0);
-    expect(screen.getAllByRole('link', { name: '노트' }).length).toBeGreaterThan(0);
+    const navLinks = screen.getByTestId('nav-links');
+    expect(navLinks).toBeInTheDocument();
+    expect(navLinks).toHaveTextContent('에세이');
+    expect(navLinks).toHaveTextContent('아티클');
+    expect(navLinks).toHaveTextContent('노트');
   });
 
-  it('should render mobile menu trigger button', () => {
-    render(<Navigation />);
+  it('should render mobile menu via MobileMenu', async () => {
+    const jsx = await Navigation();
+    render(jsx);
 
-    expect(screen.getByRole('button', { name: 'Open navigation' })).toBeInTheDocument();
+    const mobileMenu = screen.getByTestId('mobile-menu');
+    expect(mobileMenu).toBeInTheDocument();
+    expect(mobileMenu).toHaveTextContent('에세이');
   });
 
-  it('should open dropdown menu when trigger is clicked', async () => {
-    const user = userEvent.setup();
-    render(<Navigation />);
-
-    const trigger = screen.getByRole('button', { name: 'Open navigation' });
-    await user.click(trigger);
-
-    // Dropdown menu should be visible
-    const menu = screen.getByRole('menu');
-    expect(menu).toBeInTheDocument();
-
-    // Menu should contain navigation links (asChild renders <a> with role="link")
-    const menuLinks = menu.querySelectorAll('a');
-    expect(menuLinks.length).toBe(3);
-  });
-
-  it('should render theme switcher and locale switcher', () => {
-    render(<Navigation />);
+  it('should render theme switcher and locale switcher', async () => {
+    const jsx = await Navigation();
+    render(jsx);
 
     expect(screen.getByTestId('theme-switcher')).toBeInTheDocument();
     expect(screen.getByTestId('locale-switcher')).toBeInTheDocument();

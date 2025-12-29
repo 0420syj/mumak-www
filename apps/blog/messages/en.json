@@ -35,7 +35,8 @@
   },
   "post": {
     "readMore": "Read more",
-    "backToList": "Back to list"
+    "backToList": "Back to list",
+    "readingTimeUnit": " min"
   },
   "notFound": {
     "title": "Page Not Found",
@@ -51,5 +52,9 @@
   },
   "now": {
     "lastUpdated": "Last updated"
+  },
+  "feed": {
+    "title": "Wan Sim",
+    "description": "A space for thoughts and records"
   }
 }

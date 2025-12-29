@@ -7,6 +7,6 @@
       "@mumak/ui/*": ["../../packages/ui/src/*"]
     }
   },
-  "include": ["src", "vite.config.ts", "vitest.config.js"],
+  "include": ["src", "vite.config.ts", "vitest.config.js", "playwright.config.ts"],
   "exclude": ["node_modules"]
 }

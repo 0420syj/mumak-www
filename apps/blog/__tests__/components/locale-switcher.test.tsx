@@ -15,42 +15,18 @@ jest.mock('next-intl', () => ({
   },
 }));
 
-// Mock next/navigation
-jest.mock('next/navigation', () => ({
-  usePathname: () => '/ko',
-}));
+const replace = jest.fn();
 
-// Mock i18n routing
 jest.mock('@/i18n/routing', () => ({
-  Link: ({
-    children,
-    href,
-    locale,
-    'aria-current': ariaCurrent,
-    className,
-    role,
-  }: {
-    children: React.ReactNode;
-    href: string;
-    locale: string;
-    'aria-current'?: 'true' | 'false' | 'page' | 'step' | 'location' | 'date' | 'time' | undefined;
-    className?: string;
-    role?: string;
-  }) => (
-    <a
-      href={`/${locale}${href === '/ko' || href === '/en' ? '' : href}`}
-      data-locale={locale}
-      aria-current={ariaCurrent}
-      className={className}
-      role={role}
-    >
-      {children}
-    </a>
-  ),
   usePathname: () => '/',
+  useRouter: () => ({ replace }),
 }));
 
 describe('LocaleSwitcher', () => {
+  beforeEach(() => {
+    replace.mockClear();
+  });
+
   it('should render trigger button', () => {
     render(<LocaleSwitcher />);
 
@@ -63,23 +39,24 @@ describe('LocaleSwitcher', () => {
 
     await user.click(screen.getByRole('button', { name: 'Change language' }));
 
-    expect(screen.getByRole('menuitem', { name: '한국어' })).toBeInTheDocument();
-    expect(screen.getByRole('menuitem', { name: 'English' })).toBeInTheDocument();
+    expect(screen.getByRole('menuitemradio', { name: /한국어/ })).toBeInTheDocument();
+    expect(screen.getByRole('menuitemradio', { name: /English/ })).toBeInTheDocument();
   });
 
-  it('should have correct locale links and highlight current locale', async () => {
+  it('should highlight current locale and call router.replace on change', async () => {
     const user = userEvent.setup();
     render(<LocaleSwitcher />);
 
     await user.click(screen.getByRole('button', { name: 'Change language' }));
 
-    const koLink = screen.getByRole('menuitem', { name: '한국어' });
-    const enLink = screen.getByRole('menuitem', { name: 'English' });
+    const koItem = screen.getByRole('menuitemradio', { name: /한국어/ });
+    const enItem = screen.getByRole('menuitemradio', { name: /English/ });
 
-    expect(koLink).toHaveAttribute('data-locale', 'ko');
-    expect(enLink).toHaveAttribute('data-locale', 'en');
+    expect(koItem).toHaveAttribute('aria-checked', 'true');
+    expect(enItem).toHaveAttribute('aria-checked', 'false');
 
-    expect(koLink).toHaveAttribute('aria-current');
-    expect(enLink).not.toHaveAttribute('aria-current');
+    await user.click(enItem);
+
+    expect(replace).toHaveBeenCalledWith('/', { locale: 'en' });
   });
 });

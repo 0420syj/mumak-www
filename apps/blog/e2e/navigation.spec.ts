@@ -1,6 +1,28 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('Navigation', () => {
+  test.describe('Accessibility', () => {
+    test('should show skip to content link on tab', async ({ page }) => {
+      await page.goto('/ko');
+
+      await page.keyboard.press('Tab');
+
+      const skipLink = page.getByRole('link', { name: 'Skip to content' });
+      await expect(skipLink).toBeVisible();
+      await expect(skipLink).toBeFocused();
+    });
+
+    test('should skip to main content when skip link is clicked', async ({ page }) => {
+      await page.goto('/ko');
+
+      await page.keyboard.press('Tab');
+      await page.keyboard.press('Enter');
+
+      // eslint-disable-next-line no-useless-escape
+      await expect(page).toHaveURL(/\#main-content$/);
+    });
+  });
+
   test.describe('Header Navigation', () => {
     test('should display logo and navigate to home', async ({ page }) => {
       await page.goto('/ko/essay');
@@ -50,23 +72,27 @@ test.describe('Navigation', () => {
       await expect(nav.getByRole('link', { name: 'Notes' })).toBeVisible();
     });
 
-    test('should open mobile dropdown menu with links', async ({ page }) => {
+    test('should open mobile sheet menu with links', async ({ page }) => {
       await page.setViewportSize({ width: 480, height: 900 });
       await page.goto('/ko');
 
       const trigger = page.getByRole('button', { name: 'Open navigation' });
       await trigger.click();
 
-      await expect(page.getByRole('menuitem', { name: '에세이' })).toBeVisible();
-      await expect(page.getByRole('menuitem', { name: '아티클' })).toBeVisible();
-      await expect(page.getByRole('menuitem', { name: '노트' })).toBeVisible();
+      // Sheet opens as dialog
+      const sheet = page.getByRole('dialog');
+      await expect(sheet).toBeVisible();
 
-      await page.getByRole('menuitem', { name: '에세이' }).click();
+      await expect(sheet.getByRole('link', { name: '에세이' })).toBeVisible();
+      await expect(sheet.getByRole('link', { name: '아티클' })).toBeVisible();
+      await expect(sheet.getByRole('link', { name: '노트' })).toBeVisible();
+
+      await sheet.getByRole('link', { name: '에세이' }).click();
       await page.waitForURL(/\/ko\/essay$/);
       await expect(page).toHaveURL(/\/ko\/essay$/);
     });
 
-    test('mobile header keeps switchers visible and dropdown can close with escape', async ({ page }) => {
+    test('mobile header keeps switchers visible and sheet can close with escape', async ({ page }) => {
       await page.setViewportSize({ width: 480, height: 900 });
       await page.goto('/ko');
 
@@ -75,10 +101,24 @@ test.describe('Navigation', () => {
 
       const trigger = page.getByRole('button', { name: 'Open navigation' });
       await trigger.click();
-      await expect(page.getByRole('menu')).toBeVisible();
+      await expect(page.getByRole('dialog')).toBeVisible();
 
       await page.keyboard.press('Escape');
-      await expect(page.getByRole('menu')).not.toBeVisible();
+      await expect(page.getByRole('dialog')).not.toBeVisible();
+    });
+
+    test('mobile sheet opens from the left side', async ({ page }) => {
+      await page.setViewportSize({ width: 480, height: 900 });
+      await page.goto('/ko');
+
+      const trigger = page.getByRole('button', { name: 'Open navigation' });
+      await trigger.click();
+
+      const sheet = page.getByRole('dialog');
+      await expect(sheet).toBeVisible();
+
+      // Sheet should have left-0 positioning (opens from left)
+      await expect(sheet).toHaveCSS('left', '0px');
     });
   });
 
@@ -86,9 +126,9 @@ test.describe('Navigation', () => {
     test('should navigate from post list to post detail', async ({ page }) => {
       await page.goto('/ko/essay');
 
-      // Click on first post link
-      const firstPostLink = page.locator('article').first().getByRole('link');
-      await firstPostLink.click();
+      // PostCard wraps article with Link, so we click on the article's parent link
+      const firstPostCard = page.locator('article').first();
+      await firstPostCard.click();
 
       // Should be on post detail page
       await page.waitForURL(/\/ko\/essay\/.+/);
@@ -146,7 +186,31 @@ test.describe('Navigation', () => {
 
       const footer = page.locator('footer');
       const rssLink = footer.getByRole('link', { name: 'RSS' });
-      await expect(rssLink).toHaveAttribute('href', '/feed.xml');
+      await expect(rssLink).toHaveAttribute('href', '/ko/feed.xml');
+    });
+
+    test('should display social links', async ({ page }) => {
+      await page.goto('/ko');
+
+      const footer = page.locator('footer');
+      const githubLink = footer.getByRole('link', { name: /github/i });
+      const linkedinLink = footer.getByRole('link', { name: /linkedin/i });
+
+      await expect(githubLink).toBeVisible();
+      await expect(linkedinLink).toBeVisible();
+    });
+
+    test('social links should open in new tab', async ({ page }) => {
+      await page.goto('/ko');
+
+      const footer = page.locator('footer');
+      const githubLink = footer.getByRole('link', { name: /github/i });
+      const linkedinLink = footer.getByRole('link', { name: /linkedin/i });
+
+      await expect(githubLink).toHaveAttribute('target', '_blank');
+      await expect(linkedinLink).toHaveAttribute('target', '_blank');
+      await expect(githubLink).toHaveAttribute('rel', 'noopener noreferrer');
+      await expect(linkedinLink).toHaveAttribute('rel', 'noopener noreferrer');
     });
   });
 

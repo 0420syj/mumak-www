@@ -8,42 +8,33 @@
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**", "dist/**", "out/**", "*.tsbuildinfo"],
-      "env": [
-        "NEXT_PUBLIC_*",
-        "VERCEL_*",
-        "ANALYZE",
-        "SPOTIFY_CLIENT_ID",
-        "SPOTIFY_CLIENT_SECRET",
-        "SPOTIFY_REFRESH_TOKEN"
-      ],
-      "passThroughEnv": ["NODE_ENV"]
+      "env": ["NEXT_PUBLIC_*", "ANALYZE"],
+      "passThroughEnv": ["NODE_ENV", "SPOTIFY_CLIENT_ID", "SPOTIFY_CLIENT_SECRET", "SPOTIFY_REFRESH_TOKEN"]
     },
     "lint": {
-      "dependsOn": ["^lint"],
       "inputs": ["$TURBO_DEFAULT$", "eslint.config.js"],
-      "outputs": [".turbo/**"]
+      "outputs": []
     },
     "lint:fix": {
-      "dependsOn": ["^lint:fix"],
       "inputs": ["$TURBO_DEFAULT$", "eslint.config.js"],
-      "outputs": [".turbo/**", "**/*.{ts,tsx,js,jsx}"]
+      "cache": false
     },
     "check-types": {
-      "dependsOn": ["^check-types"],
+      "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", "tsconfig*.json"],
-      "outputs": [".turbo/**", "*.tsbuildinfo"]
+      "outputs": ["*.tsbuildinfo"]
     },
     "knip": {
       "inputs": ["$TURBO_DEFAULT$", "knip.config.ts", "**/*.{ts,tsx,js,jsx}"],
-      "outputs": [".turbo/**"]
+      "outputs": []
     },
     "format": {
       "inputs": ["$TURBO_DEFAULT$"],
-      "outputs": [".turbo/**", "**/*.{ts,tsx,md,json,js,jsx}"]
+      "cache": false
     },
     "format:check": {
       "inputs": ["$TURBO_DEFAULT$"],
-      "outputs": [".turbo/**"]
+      "outputs": []
     },
     "test": {
       "dependsOn": ["^build"],
@@ -55,24 +46,26 @@
         "jest.config.*",
         "vitest.config.*"
       ],
-      "outputs": ["coverage/**", "test-results/**", ".turbo/**"],
-      "env": ["SPOTIFY_CLIENT_ID", "SPOTIFY_CLIENT_SECRET", "SPOTIFY_REFRESH_TOKEN"]
+      "outputs": ["coverage/**"],
+      "passThroughEnv": ["SPOTIFY_CLIENT_ID", "SPOTIFY_CLIENT_SECRET", "SPOTIFY_REFRESH_TOKEN"]
     },
     "test:coverage": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", "**/*.{ts,tsx,js,jsx}"],
-      "outputs": ["coverage/**", ".turbo/**"]
+      "outputs": ["coverage/**"],
+      "passThroughEnv": ["SPOTIFY_CLIENT_ID", "SPOTIFY_CLIENT_SECRET", "SPOTIFY_REFRESH_TOKEN"]
     },
     "test:ci": {
       "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", "**/*.{ts,tsx,js,jsx}"],
-      "outputs": ["coverage/**", ".turbo/**"]
+      "outputs": ["coverage/**"],
+      "passThroughEnv": ["SPOTIFY_CLIENT_ID", "SPOTIFY_CLIENT_SECRET", "SPOTIFY_REFRESH_TOKEN"]
     },
     "test:e2e": {
-      "dependsOn": ["^build"],
-      "passThroughEnv": ["PLAYWRIGHT_*", "CI", "GOOGLE_*", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET"],
+      "dependsOn": ["build"],
       "inputs": ["$TURBO_DEFAULT$", "**/*.{ts,tsx,js,jsx}", "e2e/**/*", "playwright.config.*"],
-      "outputs": ["test-results/**", "playwright-report/**", ".turbo/**"]
+      "outputs": ["test-results/**", "playwright-report/**"],
+      "passThroughEnv": ["PLAYWRIGHT_*", "CI", "SPOTIFY_CLIENT_ID", "SPOTIFY_CLIENT_SECRET", "SPOTIFY_REFRESH_TOKEN"]
     },
     "clean": {
       "cache": false
