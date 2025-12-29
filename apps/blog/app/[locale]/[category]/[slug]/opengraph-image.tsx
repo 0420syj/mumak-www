@@ -1,3 +1,6 @@
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
+
 import { ImageResponse } from 'next/og';
 
 import { locales, type Locale } from '@/i18n/config';
@@ -17,12 +20,31 @@ export function generateStaticParams() {
   });
 }
 
+async function loadFont(): Promise<ArrayBuffer> {
+  const fontPath = join(process.cwd(), 'public', 'assets', 'fonts', 'PretendardVariable.woff2');
+  const fontData = await readFile(fontPath);
+  return fontData.buffer.slice(fontData.byteOffset, fontData.byteOffset + fontData.byteLength);
+}
+
 interface Props {
   params: Promise<{ locale: string; category: string; slug: string }>;
 }
 
 export default async function Image({ params }: Props) {
   const { locale, category, slug } = await params;
+
+  const fontData = await loadFont();
+  const fontOptions = {
+    ...size,
+    fonts: [
+      {
+        name: 'Pretendard',
+        data: fontData,
+        style: 'normal' as const,
+        weight: 400 as const,
+      },
+    ],
+  };
 
   if (!isValidCategory(category)) {
     return new ImageResponse(
@@ -36,11 +58,12 @@ export default async function Image({ params }: Props) {
           backgroundColor: '#0a0a0a',
           color: '#fafafa',
           fontSize: 48,
+          fontFamily: 'Pretendard',
         }}
       >
         Not Found
       </div>,
-      size
+      fontOptions
     );
   }
 
@@ -58,11 +81,12 @@ export default async function Image({ params }: Props) {
           backgroundColor: '#0a0a0a',
           color: '#fafafa',
           fontSize: 48,
+          fontFamily: 'Pretendard',
         }}
       >
         Not Found
       </div>,
-      size
+      fontOptions
     );
   }
 
@@ -77,6 +101,7 @@ export default async function Image({ params }: Props) {
         padding: 80,
         backgroundColor: '#0a0a0a',
         color: '#fafafa',
+        fontFamily: 'Pretendard',
       }}
     >
       <div
@@ -151,6 +176,6 @@ export default async function Image({ params }: Props) {
         </div>
       </div>
     </div>,
-    size
+    fontOptions
   );
 }

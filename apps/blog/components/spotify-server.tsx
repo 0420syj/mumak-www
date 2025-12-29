@@ -13,8 +13,8 @@ export async function SpotifyServer({ listeningToLabel, lastPlayedLabel }: Spoti
 
   try {
     song = await getNowPlaying();
-  } catch (error) {
-    console.error('[SpotifyServer] Error fetching now playing:', error);
+  } catch {
+    // PPR 빌드 시 발생하는 에러는 무시
   }
 
   if (!song) {
