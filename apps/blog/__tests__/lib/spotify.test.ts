@@ -1,4 +1,4 @@
-import { getNowPlaying } from '@/lib/spotify';
+import { getNowPlaying, __resetTokenCacheForTesting } from '@/lib/spotify';
 
 describe('spotify', () => {
   const originalEnv = process.env;
@@ -11,6 +11,8 @@ describe('spotify', () => {
     global.fetch = jest.fn();
     console.error = jest.fn();
     console.log = jest.fn();
+    // 테스트 간 토큰 캐시 초기화
+    __resetTokenCacheForTesting();
   });
 
   afterEach(() => {
@@ -259,12 +261,12 @@ describe('spotify', () => {
 
       await getNowPlaying();
 
-      // 토큰 요청에 revalidate 옵션 확인
+      // 토큰 요청에 cache: 'no-store' 옵션 확인
       expect(global.fetch).toHaveBeenNthCalledWith(
         1,
         'https://accounts.spotify.com/api/token',
         expect.objectContaining({
-          next: { revalidate: 30 },
+          cache: 'no-store',
         })
       );
 
@@ -331,6 +333,110 @@ describe('spotify', () => {
           cache: 'no-store',
         })
       );
+    });
+
+    it('should retry with a new token when 401 error occurs', async () => {
+      process.env.SPOTIFY_CLIENT_ID = 'test-client-id';
+      process.env.SPOTIFY_CLIENT_SECRET = 'test-client-secret';
+      process.env.SPOTIFY_REFRESH_TOKEN = 'test-refresh-token';
+
+      const mockExpiredTokenResponse = {
+        access_token: 'expired-access-token',
+        token_type: 'Bearer',
+        expires_in: 3600,
+      };
+
+      const mockNewTokenResponse = {
+        access_token: 'new-access-token',
+        token_type: 'Bearer',
+        expires_in: 3600,
+      };
+
+      const mockCurrentlyPlaying = {
+        is_playing: true,
+        item: {
+          name: 'Test Song',
+          artists: [{ name: 'Test Artist' }],
+          album: {
+            name: 'Test Album',
+            images: [{ url: 'https://i.scdn.co/test-image.jpg' }],
+          },
+          external_urls: {
+            spotify: 'https://open.spotify.com/track/test',
+          },
+        },
+      };
+
+      (global.fetch as jest.Mock)
+        // 첫 번째 토큰 요청 (만료된 토큰 반환)
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockExpiredTokenResponse,
+        })
+        // 첫 번째 API 요청 (401 에러)
+        .mockResolvedValueOnce({
+          status: 401,
+          text: async () => '{"error":{"status":401,"message":"The access token expired"}}',
+        })
+        // 새 토큰 요청
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockNewTokenResponse,
+        })
+        // 재시도 API 요청 (성공)
+        .mockResolvedValueOnce({
+          status: 200,
+          json: async () => mockCurrentlyPlaying,
+        });
+
+      const result = await getNowPlaying();
+
+      expect(result).toEqual({
+        isPlaying: true,
+        title: 'Test Song',
+        artist: 'Test Artist',
+        album: 'Test Album',
+        albumImageUrl: 'https://i.scdn.co/test-image.jpg',
+        songUrl: 'https://open.spotify.com/track/test',
+      });
+
+      // 총 4번의 fetch 호출 확인 (토큰 → 401 → 새 토큰 → 성공)
+      expect(global.fetch).toHaveBeenCalledTimes(4);
+    });
+
+    it('should return null if 401 error persists after token refresh', async () => {
+      process.env.SPOTIFY_CLIENT_ID = 'test-client-id';
+      process.env.SPOTIFY_CLIENT_SECRET = 'test-client-secret';
+      process.env.SPOTIFY_REFRESH_TOKEN = 'test-refresh-token';
+
+      const mockTokenResponse = {
+        access_token: 'test-access-token',
+        token_type: 'Bearer',
+        expires_in: 3600,
+      };
+
+      (global.fetch as jest.Mock)
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockTokenResponse,
+        })
+        .mockResolvedValueOnce({
+          status: 401,
+          text: async () => '{"error":{"status":401,"message":"The access token expired"}}',
+        })
+        .mockResolvedValueOnce({
+          ok: true,
+          json: async () => mockTokenResponse,
+        })
+        .mockResolvedValueOnce({
+          status: 401,
+          text: async () => '{"error":{"status":401,"message":"The access token expired"}}',
+        });
+
+      const result = await getNowPlaying();
+
+      expect(result).toBeNull();
+      expect(console.error).toHaveBeenCalledWith('[Spotify] 토큰 갱신 후에도 401 에러 발생');
     });
   });
 });
