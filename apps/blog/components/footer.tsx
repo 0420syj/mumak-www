@@ -22,6 +22,7 @@ export async function Footer() {
             </Link>
             <Link
               href="/feed.xml"
+              prefetch={false}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="RSS"
