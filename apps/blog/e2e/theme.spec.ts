@@ -41,6 +41,84 @@ test.describe('Theme switcher', () => {
   });
 });
 
+test.describe('Theme persistence across locale changes', () => {
+  test('theme should persist when changing language', async ({ page }) => {
+    await page.goto('/ko');
+
+    // 1. 테마를 Light로 변경
+    const themeTrigger = page.getByRole('button', { name: 'Change theme' });
+    await clickAndWaitForMenu(themeTrigger, page);
+    await selectThemeOption(page, 'Light');
+    await expect(page.locator('html')).toHaveClass(/light/);
+
+    // 2. 언어를 English로 변경
+    const localeTrigger = page.getByRole('button', { name: 'Change language' });
+    await localeTrigger.click();
+    await page.getByRole('menuitemradio', { name: 'English' }).click();
+    await page.waitForURL(/\/en/);
+
+    // 3. 테마가 Light로 유지되는지 확인
+    await expect(page.locator('html')).toHaveClass(/light/);
+    await expect(page.locator('html')).not.toHaveClass(/dark/);
+
+    // 4. 다시 Korean으로 변경
+    await localeTrigger.click();
+    await page.getByRole('menuitemradio', { name: '한국어' }).click();
+    await page.waitForURL(/\/ko/);
+
+    // 5. 테마가 여전히 Light로 유지되는지 확인
+    await expect(page.locator('html')).toHaveClass(/light/);
+    await expect(page.locator('html')).not.toHaveClass(/dark/);
+  });
+
+  test('dark theme should persist when switching locales', async ({ page }) => {
+    await page.goto('/en');
+
+    // Dark 테마로 설정
+    const themeTrigger = page.getByRole('button', { name: 'Change theme' });
+    await clickAndWaitForMenu(themeTrigger, page);
+    await selectThemeOption(page, 'Dark');
+    await expect(page.locator('html')).toHaveClass(/dark/);
+
+    // Korean으로 변경
+    const localeTrigger = page.getByRole('button', { name: 'Change language' });
+    await localeTrigger.click();
+    await page.getByRole('menuitemradio', { name: '한국어' }).click();
+    await page.waitForURL(/\/ko/);
+
+    // Dark 테마 유지 확인
+    await expect(page.locator('html')).toHaveClass(/dark/);
+
+    // 다시 English로 변경
+    await localeTrigger.click();
+    await page.getByRole('menuitemradio', { name: 'English' }).click();
+    await page.waitForURL(/\/en/);
+
+    // 여전히 Dark 유지
+    await expect(page.locator('html')).toHaveClass(/dark/);
+  });
+
+  test('system theme should persist when changing language', async ({ page }) => {
+    await page.goto('/ko');
+
+    // System 테마로 설정 (기본값이지만 명시적으로 설정)
+    const themeTrigger = page.getByRole('button', { name: 'Change theme' });
+    await clickAndWaitForMenu(themeTrigger, page);
+    await selectThemeOption(page, 'System');
+
+    // 언어 변경
+    const localeTrigger = page.getByRole('button', { name: 'Change language' });
+    await localeTrigger.click();
+    await page.getByRole('menuitemradio', { name: 'English' }).click();
+    await page.waitForURL(/\/en/);
+
+    // 드롭다운에서 System이 선택되어 있는지 확인
+    await clickAndWaitForMenu(themeTrigger, page);
+    const systemOption = page.getByRole('menuitemradio', { name: 'System' });
+    await expect(systemOption).toHaveAttribute('aria-checked', 'true');
+  });
+});
+
 test.describe('Theme color meta tag sync', () => {
   test('theme-color meta tag syncs with dark theme', async ({ page }) => {
     await page.goto('/ko');
