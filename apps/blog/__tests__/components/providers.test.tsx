@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 
-import { Providers } from '@/components/providers';
+import { IntlProvider, ThemeProvider } from '@/components/providers';
 
 // Mock next-intl
 jest.mock('next-intl', () => ({
@@ -27,95 +27,54 @@ jest.mock('next-themes', () => ({
     children,
     attribute,
     defaultTheme,
+    storageKey,
   }: {
     children: React.ReactNode;
     attribute: string;
     defaultTheme: string;
+    storageKey: string;
     enableSystem: boolean;
     disableTransitionOnChange: boolean;
     enableColorScheme: boolean;
   }) => (
-    <div data-testid="theme-provider" data-attribute={attribute} data-default-theme={defaultTheme}>
+    <div
+      data-testid="theme-provider"
+      data-attribute={attribute}
+      data-default-theme={defaultTheme}
+      data-storage-key={storageKey}
+    >
       {children}
     </div>
   ),
 }));
 
-describe('Providers', () => {
-  const mockMessages = {
-    home: { title: 'Test Title' },
-    common: { test: 'Test' },
-  };
-
+describe('ThemeProvider', () => {
   it('should render children correctly', () => {
     render(
-      <Providers locale="ko" messages={mockMessages}>
+      <ThemeProvider>
         <div data-testid="child-content">Test Content</div>
-      </Providers>
+      </ThemeProvider>
     );
 
     expect(screen.getByTestId('child-content')).toBeInTheDocument();
     expect(screen.getByText('Test Content')).toBeInTheDocument();
   });
 
-  it('should wrap children with NextIntlClientProvider', () => {
+  it('should wrap children with NextThemesProvider', () => {
     render(
-      <Providers locale="ko" messages={mockMessages}>
+      <ThemeProvider>
         <div>Content</div>
-      </Providers>
-    );
-
-    expect(screen.getByTestId('intl-provider')).toBeInTheDocument();
-  });
-
-  it('should wrap children with ThemeProvider', () => {
-    render(
-      <Providers locale="ko" messages={mockMessages}>
-        <div>Content</div>
-      </Providers>
+      </ThemeProvider>
     );
 
     expect(screen.getByTestId('theme-provider')).toBeInTheDocument();
   });
 
-  it('should pass correct locale to NextIntlClientProvider', () => {
-    render(
-      <Providers locale="en" messages={mockMessages}>
-        <div>Content</div>
-      </Providers>
-    );
-
-    const intlProvider = screen.getByTestId('intl-provider');
-    expect(intlProvider).toHaveAttribute('data-locale', 'en');
-  });
-
-  it('should use Asia/Seoul timezone for Korean locale', () => {
-    render(
-      <Providers locale="ko" messages={mockMessages}>
-        <div>Content</div>
-      </Providers>
-    );
-
-    const intlProvider = screen.getByTestId('intl-provider');
-    expect(intlProvider).toHaveAttribute('data-timezone', 'Asia/Seoul');
-  });
-
-  it('should use UTC timezone for non-Korean locale', () => {
-    render(
-      <Providers locale="en" messages={mockMessages}>
-        <div>Content</div>
-      </Providers>
-    );
-
-    const intlProvider = screen.getByTestId('intl-provider');
-    expect(intlProvider).toHaveAttribute('data-timezone', 'UTC');
-  });
-
   it('should configure ThemeProvider with class attribute', () => {
     render(
-      <Providers locale="ko" messages={mockMessages}>
+      <ThemeProvider>
         <div>Content</div>
-      </Providers>
+      </ThemeProvider>
     );
 
     const themeProvider = screen.getByTestId('theme-provider');
@@ -124,12 +83,112 @@ describe('Providers', () => {
 
   it('should set system as default theme', () => {
     render(
-      <Providers locale="ko" messages={mockMessages}>
+      <ThemeProvider>
         <div>Content</div>
-      </Providers>
+      </ThemeProvider>
     );
 
     const themeProvider = screen.getByTestId('theme-provider');
     expect(themeProvider).toHaveAttribute('data-default-theme', 'system');
+  });
+
+  it('should use "theme" as storage key', () => {
+    render(
+      <ThemeProvider>
+        <div>Content</div>
+      </ThemeProvider>
+    );
+
+    const themeProvider = screen.getByTestId('theme-provider');
+    expect(themeProvider).toHaveAttribute('data-storage-key', 'theme');
+  });
+});
+
+describe('IntlProvider', () => {
+  const mockMessages = {
+    home: { title: 'Test Title' },
+    common: { test: 'Test' },
+  };
+
+  it('should render children correctly', () => {
+    render(
+      <IntlProvider locale="ko" messages={mockMessages}>
+        <div data-testid="child-content">Test Content</div>
+      </IntlProvider>
+    );
+
+    expect(screen.getByTestId('child-content')).toBeInTheDocument();
+    expect(screen.getByText('Test Content')).toBeInTheDocument();
+  });
+
+  it('should wrap children with NextIntlClientProvider', () => {
+    render(
+      <IntlProvider locale="ko" messages={mockMessages}>
+        <div>Content</div>
+      </IntlProvider>
+    );
+
+    expect(screen.getByTestId('intl-provider')).toBeInTheDocument();
+  });
+
+  it('should pass correct locale to NextIntlClientProvider', () => {
+    render(
+      <IntlProvider locale="en" messages={mockMessages}>
+        <div>Content</div>
+      </IntlProvider>
+    );
+
+    const intlProvider = screen.getByTestId('intl-provider');
+    expect(intlProvider).toHaveAttribute('data-locale', 'en');
+  });
+
+  it('should use Asia/Seoul timezone for Korean locale', () => {
+    render(
+      <IntlProvider locale="ko" messages={mockMessages}>
+        <div>Content</div>
+      </IntlProvider>
+    );
+
+    const intlProvider = screen.getByTestId('intl-provider');
+    expect(intlProvider).toHaveAttribute('data-timezone', 'Asia/Seoul');
+  });
+
+  it('should use UTC timezone for non-Korean locale', () => {
+    render(
+      <IntlProvider locale="en" messages={mockMessages}>
+        <div>Content</div>
+      </IntlProvider>
+    );
+
+    const intlProvider = screen.getByTestId('intl-provider');
+    expect(intlProvider).toHaveAttribute('data-timezone', 'UTC');
+  });
+
+  it('should set html lang attribute on mount', () => {
+    render(
+      <IntlProvider locale="ko" messages={mockMessages}>
+        <div>Content</div>
+      </IntlProvider>
+    );
+
+    expect(document.documentElement.lang).toBe('ko');
+  });
+
+  it('should update html lang attribute when locale changes', () => {
+    const { rerender } = render(
+      <IntlProvider locale="ko" messages={mockMessages}>
+        <div>Content</div>
+      </IntlProvider>
+    );
+
+    expect(document.documentElement.lang).toBe('ko');
+
+    rerender(
+      <IntlProvider locale="en" messages={mockMessages}>
+        <div>Content</div>
+      </IntlProvider>
+    );
+
+    expect(document.documentElement.lang).toBe('en');
   });
 });
