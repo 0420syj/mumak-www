@@ -3,7 +3,6 @@ import '@mumak/ui/globals.css';
 import localFont from 'next/font/local';
 
 import { ThemeProvider } from '@/components/providers';
-import { themeViewport } from '@/lib/theme/theme-config';
 import { ThemeMetaSyncScript } from '@/lib/theme/theme-meta-sync';
 
 const pretendard = localFont({
@@ -16,7 +15,7 @@ const pretendard = localFont({
   adjustFontFallback: false,
 });
 
-export const viewport = themeViewport;
+export { themeViewport as viewport } from '@/lib/theme/theme-config';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
