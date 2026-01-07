@@ -5,7 +5,8 @@ updates:
     directory: '/'
     target-branch: 'develop'
     schedule:
-      interval: 'daily'
+      interval: 'weekly'
+      day: 'wednesday'
       time: '09:00'
       timezone: 'Asia/Seoul'
     groups:
