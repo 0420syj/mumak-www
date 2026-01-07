@@ -6,6 +6,7 @@ import { VercelAnalytics } from '@/components/analytics';
 import { Footer } from '@/components/footer';
 import { Navigation } from '@/components/navigation';
 import { IntlProvider } from '@/components/providers';
+import { HeaderSpacer, SmartHeader } from '@/components/smart-header';
 import { locales, type Locale } from '@/i18n/config';
 import { routing } from '@/i18n/routing';
 import { JsonLdScript, generateWebSiteJsonLd } from '@/lib/json-ld';
@@ -77,7 +78,10 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
         Skip to content
       </a>
       <div className="min-h-screen flex flex-col">
-        <Navigation />
+        <SmartHeader>
+          <Navigation />
+        </SmartHeader>
+        <HeaderSpacer />
         <main id="main-content" className="flex-1 container mx-auto px-4 py-8">
           {children}
         </main>

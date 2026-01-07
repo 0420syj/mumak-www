@@ -1,6 +1,183 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('Navigation', () => {
+  test.describe('Smart Header - Scroll Behavior', () => {
+    // SmartHeader만 선택하는 locator (data-visible 속성으로 구분)
+    const getSmartHeader = (page: import('@playwright/test').Page) => page.locator('header[data-visible]');
+
+    // 스크롤 및 상태 변경 대기를 위한 헬퍼 함수
+    const scrollTo = async (page: import('@playwright/test').Page, y: number) => {
+      await page.evaluate(scrollY => {
+        window.scrollTo({ top: scrollY, behavior: 'instant' });
+        window.dispatchEvent(new Event('scroll'));
+      }, y);
+    };
+
+    const waitForHeaderState = async (
+      page: import('@playwright/test').Page,
+      expectedVisible: string,
+      timeout = 2000
+    ) => {
+      await page.waitForFunction(
+        expected => {
+          const header = document.querySelector('header[data-visible]');
+          return header?.dataset.visible === expected;
+        },
+        expectedVisible,
+        { timeout }
+      );
+    };
+
+    test('should hide header when scrolling down', async ({ page }) => {
+      await page.goto('/ko/essay/retrospect-2025');
+
+      const header = getSmartHeader(page);
+      await expect(header).toBeVisible();
+
+      // 스크롤 다운 (점진적으로)
+      await scrollTo(page, 100);
+      await page.waitForTimeout(100);
+      await scrollTo(page, 300);
+
+      await waitForHeaderState(page, 'false');
+      await expect(header).toHaveAttribute('data-visible', 'false');
+    });
+
+    test('should show header when scrolling up', async ({ page }) => {
+      await page.goto('/ko/essay/retrospect-2025');
+
+      const header = getSmartHeader(page);
+
+      // 아래로 스크롤
+      await scrollTo(page, 100);
+      await page.waitForTimeout(100);
+      await scrollTo(page, 400);
+      await waitForHeaderState(page, 'false');
+
+      // 위로 스크롤
+      await scrollTo(page, 200);
+      await waitForHeaderState(page, 'true');
+
+      await expect(header).toHaveAttribute('data-visible', 'true');
+    });
+
+    test('should always show header at top of page', async ({ page }) => {
+      await page.goto('/ko/essay/retrospect-2025');
+
+      const header = getSmartHeader(page);
+
+      // 아래로 스크롤 후 최상단으로
+      await scrollTo(page, 100);
+      await page.waitForTimeout(100);
+      await scrollTo(page, 400);
+      await waitForHeaderState(page, 'false');
+
+      await scrollTo(page, 0);
+      await waitForHeaderState(page, 'true');
+
+      await expect(header).toHaveAttribute('data-visible', 'true');
+      await expect(header).toHaveAttribute('data-at-top', 'true');
+    });
+
+    test('should have shadow when scrolled (not at top)', async ({ page }) => {
+      await page.goto('/ko/essay/retrospect-2025');
+
+      const header = getSmartHeader(page);
+
+      // threshold 초과 후 위로 스크롤
+      await scrollTo(page, 100);
+      await page.waitForTimeout(100);
+      await scrollTo(page, 200);
+      await page.waitForTimeout(100);
+      await scrollTo(page, 100);
+
+      await waitForHeaderState(page, 'true');
+
+      await expect(header).toHaveAttribute('data-at-top', 'false');
+      // 클래스 확인 (공백/개행 포함 가능)
+      const hasClass = await header.evaluate(el => el.classList.contains('shadow-sm'));
+      expect(hasClass).toBe(true);
+    });
+
+    test('should work on mobile viewport', async ({ page }) => {
+      await page.setViewportSize({ width: 375, height: 667 });
+      await page.goto('/ko/essay/retrospect-2025');
+
+      const header = getSmartHeader(page);
+      await expect(header).toBeVisible();
+
+      // 스크롤 다운
+      await scrollTo(page, 100);
+      await page.waitForTimeout(100);
+      await scrollTo(page, 400);
+      await waitForHeaderState(page, 'false');
+
+      // 스크롤 업
+      await scrollTo(page, 200);
+      await waitForHeaderState(page, 'true');
+
+      await expect(header).toHaveAttribute('data-visible', 'true');
+    });
+
+    test('should work on tablet viewport', async ({ page }) => {
+      await page.setViewportSize({ width: 768, height: 1024 });
+      await page.goto('/ko/essay/retrospect-2025');
+
+      const header = getSmartHeader(page);
+
+      // 스크롤 다운
+      await scrollTo(page, 100);
+      await page.waitForTimeout(100);
+      await scrollTo(page, 500);
+      await waitForHeaderState(page, 'false');
+
+      // 스크롤 업
+      await scrollTo(page, 300);
+      await waitForHeaderState(page, 'true');
+
+      await expect(header).toHaveAttribute('data-visible', 'true');
+    });
+
+    test('should work on desktop viewport', async ({ page }) => {
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await page.goto('/ko/essay/retrospect-2025');
+
+      const header = getSmartHeader(page);
+
+      // 스크롤 다운
+      await scrollTo(page, 100);
+      await page.waitForTimeout(100);
+      await scrollTo(page, 600);
+      await waitForHeaderState(page, 'false');
+
+      // 스크롤 업
+      await scrollTo(page, 400);
+      await waitForHeaderState(page, 'true');
+
+      await expect(header).toHaveAttribute('data-visible', 'true');
+    });
+
+    test('navigation links should still work after scroll', async ({ page }) => {
+      await page.goto('/ko/essay/retrospect-2025');
+
+      const header = getSmartHeader(page);
+
+      // 스크롤 후 헤더 표시
+      await scrollTo(page, 100);
+      await page.waitForTimeout(100);
+      await scrollTo(page, 200);
+      await page.waitForTimeout(100);
+      await scrollTo(page, 100);
+      await waitForHeaderState(page, 'true');
+
+      // 네비게이션 링크 클릭
+      await header.getByRole('link', { name: '에세이' }).click();
+      await page.waitForURL(/\/ko\/essay$/);
+
+      await expect(page).toHaveURL(/\/ko\/essay$/);
+    });
+  });
+
   test.describe('Accessibility', () => {
     test('should show skip to content link on tab', async ({ page }) => {
       await page.goto('/ko');
