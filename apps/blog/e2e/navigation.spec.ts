@@ -20,7 +20,7 @@ test.describe('Navigation', () => {
     ) => {
       await page.waitForFunction(
         expected => {
-          const header = document.querySelector('header[data-visible]');
+          const header = document.querySelector('header[data-visible]') as HTMLElement | null;
           return header?.dataset.visible === expected;
         },
         expectedVisible,
