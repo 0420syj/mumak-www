@@ -1,0 +1,200 @@
+import '@testing-library/jest-dom';
+import { fireEvent, render, screen } from '@testing-library/react';
+
+import type { NowPlaying } from '@/lib/spotify';
+
+jest.mock('next/image', () => ({
+  __esModule: true,
+  default: ({ src, alt, priority, fill }: { src: string; alt: string; priority?: boolean; fill?: boolean }) => (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src={src} alt={alt} data-priority={priority ? 'true' : 'false'} data-fill={fill ? 'true' : 'false'} />
+  ),
+}));
+
+jest.mock('next/link', () => ({
+  __esModule: true,
+  default: ({
+    href,
+    children,
+    onClick,
+    ...props
+  }: {
+    href: string;
+    children: React.ReactNode;
+    onClick?: (e: React.MouseEvent) => void;
+  }) => (
+    <a href={href} onClick={onClick} {...props}>
+      {children}
+    </a>
+  ),
+}));
+
+const mockSongData: NowPlaying = {
+  isPlaying: true,
+  title: 'Test Song',
+  artist: 'Test Artist',
+  album: 'Test Album',
+  albumImageUrl: 'https://i.scdn.co/test.jpg',
+  songUrl: 'https://open.spotify.com/track/test',
+};
+
+describe('SpotifyVinyl', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should render song information correctly', async () => {
+    const { SpotifyVinyl } = await import('@/components/spotify-vinyl');
+
+    render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
+
+    expect(screen.getByText('Listening to')).toBeInTheDocument();
+    expect(screen.getByText('Test Song')).toBeInTheDocument();
+    expect(screen.getByText('Test Artist')).toBeInTheDocument();
+  });
+
+  it('should render album cover image', async () => {
+    const { SpotifyVinyl } = await import('@/components/spotify-vinyl');
+
+    render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
+
+    const coverImage = screen.getByAltText('Test Album cover art');
+    expect(coverImage).toBeInTheDocument();
+    expect(coverImage).toHaveAttribute('src', 'https://i.scdn.co/test.jpg');
+  });
+
+  it('should have correct accessibility attributes', async () => {
+    const { SpotifyVinyl } = await import('@/components/spotify-vinyl');
+
+    const { container } = render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
+
+    const button = container.querySelector('[role="button"]');
+    expect(button).toHaveAttribute('aria-label', 'Toggle vinyl player');
+    expect(button).toHaveAttribute('aria-pressed', 'false');
+    expect(button).toHaveAttribute('tabindex', '0');
+  });
+
+  it('should toggle LP open state on click', async () => {
+    const { SpotifyVinyl } = await import('@/components/spotify-vinyl');
+
+    const { container } = render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
+
+    const button = container.querySelector('[role="button"]') as HTMLElement;
+    expect(button).toHaveAttribute('aria-pressed', 'false');
+
+    fireEvent.click(button);
+    expect(button).toHaveAttribute('aria-pressed', 'true');
+
+    fireEvent.click(button);
+    expect(button).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('should toggle LP on Enter key press', async () => {
+    const { SpotifyVinyl } = await import('@/components/spotify-vinyl');
+
+    const { container } = render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
+
+    const button = container.querySelector('[role="button"]') as HTMLElement;
+    expect(button).toHaveAttribute('aria-pressed', 'false');
+
+    fireEvent.keyDown(button, { key: 'Enter' });
+    expect(button).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('should toggle LP on Space key press', async () => {
+    const { SpotifyVinyl } = await import('@/components/spotify-vinyl');
+
+    const { container } = render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
+
+    const button = container.querySelector('[role="button"]') as HTMLElement;
+    expect(button).toHaveAttribute('aria-pressed', 'false');
+
+    fireEvent.keyDown(button, { key: ' ' });
+    expect(button).toHaveAttribute('aria-pressed', 'true');
+  });
+
+  it('should render Spotify link with correct attributes', async () => {
+    const { SpotifyVinyl } = await import('@/components/spotify-vinyl');
+
+    const { container } = render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
+
+    const link = container.querySelector('a');
+    expect(link).toHaveAttribute('href', 'https://open.spotify.com/track/test');
+    expect(link).toHaveAttribute('target', '_blank');
+    expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+  });
+
+  it('should stop propagation when clicking on song link', async () => {
+    const { SpotifyVinyl } = await import('@/components/spotify-vinyl');
+
+    const { container } = render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
+
+    const button = container.querySelector('[role="button"]') as HTMLElement;
+    const link = container.querySelector('a') as HTMLElement;
+
+    // Click link - should not toggle LP
+    fireEvent.click(link);
+    expect(button).toHaveAttribute('aria-pressed', 'false');
+  });
+
+  it('should show playing indicator when isPlaying is true and LP is closed', async () => {
+    const { SpotifyVinyl } = await import('@/components/spotify-vinyl');
+
+    const { container } = render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
+
+    // Playing indicator should be visible (Disc3 icon container)
+    const playingIndicator = container.querySelector('.animate-pulse');
+    expect(playingIndicator).toBeInTheDocument();
+  });
+
+  it('should hide playing indicator when isPlaying is false', async () => {
+    const { SpotifyVinyl } = await import('@/components/spotify-vinyl');
+
+    const notPlayingData = { ...mockSongData, isPlaying: false };
+    const { container } = render(<SpotifyVinyl data={notPlayingData} statusLabel="Last played" />);
+
+    // Playing indicator should not be visible
+    const playingIndicator = container.querySelector('.animate-pulse');
+    expect(playingIndicator).not.toBeInTheDocument();
+  });
+
+  it('should hide playing indicator when LP is open', async () => {
+    const { SpotifyVinyl } = await import('@/components/spotify-vinyl');
+
+    const { container } = render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
+
+    const button = container.querySelector('[role="button"]') as HTMLElement;
+    fireEvent.click(button);
+
+    // Playing indicator should be hidden when LP is open
+    const playingIndicator = container.querySelector('.animate-pulse');
+    expect(playingIndicator).not.toBeInTheDocument();
+  });
+
+  it('should truncate long title and artist name', async () => {
+    const { SpotifyVinyl } = await import('@/components/spotify-vinyl');
+
+    const longData = {
+      ...mockSongData,
+      title: 'Very Long Song Title That Should Be Truncated',
+      artist: 'Very Long Artist Name That Should Be Truncated',
+    };
+
+    render(<SpotifyVinyl data={longData} statusLabel="Listening to" />);
+
+    const title = screen.getByText('Very Long Song Title That Should Be Truncated');
+    const artist = screen.getByText('Very Long Artist Name That Should Be Truncated');
+
+    expect(title).toHaveClass('truncate');
+    expect(artist).toHaveClass('truncate');
+  });
+
+  it('should render Spotify brand color logo', async () => {
+    const { SpotifyVinyl } = await import('@/components/spotify-vinyl');
+
+    const { container } = render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
+
+    const spotifyLogo = container.querySelector('svg.text-\\[\\#1DB954\\]');
+    expect(spotifyLogo).toBeInTheDocument();
+  });
+});

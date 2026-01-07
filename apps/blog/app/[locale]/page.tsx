@@ -3,8 +3,8 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Suspense } from 'react';
 
 import { PostCard } from '@/components/post-card';
-import { SpotifyServer } from '@/components/spotify-server';
-import { SpotifySkeleton } from '@/components/spotify-skeleton';
+import { SpotifyVinylServer } from '@/components/spotify-vinyl-server';
+import { SpotifyVinylSkeleton } from '@/components/spotify-vinyl-skeleton';
 import { type Locale } from '@/i18n/config';
 import { getPosts, isValidCategory } from '@/lib/posts';
 
@@ -50,8 +50,8 @@ export default async function HomePage({ params }: HomePageProps) {
         </div>
 
         <div className="w-full md:w-auto">
-          <Suspense fallback={<SpotifySkeleton />}>
-            <SpotifyServer listeningToLabel={t('listeningTo')} lastPlayedLabel={t('lastPlayed')} />
+          <Suspense fallback={<SpotifyVinylSkeleton />}>
+            <SpotifyVinylServer listeningToLabel={t('listeningTo')} lastPlayedLabel={t('lastPlayed')} />
           </Suspense>
         </div>
       </section>
