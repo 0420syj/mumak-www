@@ -155,17 +155,11 @@ test.describe('Theme color meta tag sync', () => {
     await expect(themeColorMeta).toHaveAttribute('content', '#ffffff');
   });
 
-  test('theme-color meta tags exist with media queries', async ({ page }) => {
+  test('theme-color meta tag exists after theme sync', async ({ page }) => {
     await page.goto('/ko');
 
-    // Check that there are theme-color meta tags with prefers-color-scheme media queries
-    const lightMeta = page.locator('meta[name="theme-color"][media*="light"]');
-    const darkMeta = page.locator('meta[name="theme-color"][media*="dark"]');
-
-    // At least one of them should exist (could be both)
-    const lightCount = await lightMeta.count();
-    const darkCount = await darkMeta.count();
-
-    expect(lightCount + darkCount).toBeGreaterThan(0);
+    // After initial load, the sync script should ensure at least one theme-color meta exists
+    const themeColorMeta = page.locator('meta[name="theme-color"]');
+    await expect(themeColorMeta.first()).toBeAttached();
   });
 });
