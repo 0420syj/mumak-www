@@ -1,25 +1,39 @@
 import { themeColors } from './theme-config';
 
-// Initial theme-color sync on page load (before React hydration)
+// theme-color 메타 태그를 html 클래스 변경에 맞춰 동기화
+// Safari iOS에서는 메타 태그를 삭제/생성하면 인식하지 못하고,
+// 기존 메타 태그의 content 속성만 변경해야 동적으로 업데이트됨
 function themeMetaSync(colors: { light: string; dark: string }) {
   const updateThemeColor = () => {
     const isDark = document.documentElement.classList.contains('dark');
     const expectedColor = isDark ? colors.dark : colors.light;
 
-    // Remove existing theme-color meta tags (including those with media queries)
-    const existingTags = document.querySelectorAll('meta[name="theme-color"]');
-    for (const tag of existingTags) {
-      tag.remove();
-    }
+    const metaTags = document.querySelectorAll('meta[name="theme-color"]');
+    if (!metaTags.length) return;
 
-    // Create new meta tag without media query
-    const newMeta = document.createElement('meta');
-    newMeta.name = 'theme-color';
-    newMeta.content = expectedColor;
-    document.head.appendChild(newMeta);
+    for (const metaTag of metaTags) {
+      // content가 다를 때만 업데이트 (불필요한 변경 방지)
+      if (metaTag.getAttribute('content') !== expectedColor) {
+        metaTag.setAttribute('content', expectedColor);
+      }
+    }
   };
 
-  // Run once on initial load
+  // html 요소의 클래스 변경 감지 (next-themes가 dark/light 클래스 토글)
+  const themeObserver = new MutationObserver(updateThemeColor);
+  themeObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['class'],
+  });
+
+  // head 요소의 변경 감지 (메타 태그가 동적으로 추가될 경우)
+  const headObserver = new MutationObserver(updateThemeColor);
+  headObserver.observe(document.head, {
+    childList: true,
+    subtree: true,
+  });
+
+  // 초기 실행
   updateThemeColor();
 }
 

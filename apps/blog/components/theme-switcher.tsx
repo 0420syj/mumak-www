@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react';
 import { Button } from '@mumak/ui/components/button';
 
 import { SwitcherDropdown } from './switcher-dropdown';
-import { themeColors } from '@/lib/theme/theme-config';
 
 type ThemeValue = 'light' | 'dark' | 'system';
 
@@ -26,20 +25,6 @@ function ThemeIcon() {
   );
 }
 
-// Update theme-color meta tag for Safari iOS
-function updateThemeColorMeta(isDark: boolean) {
-  const color = isDark ? themeColors.dark : themeColors.light;
-
-  // Remove existing theme-color tags
-  document.querySelectorAll('meta[name="theme-color"]').forEach(tag => tag.remove());
-
-  // Create new meta tag
-  const meta = document.createElement('meta');
-  meta.name = 'theme-color';
-  meta.content = color;
-  document.head.appendChild(meta);
-}
-
 export function ThemeSwitcher() {
   const { theme, resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -47,12 +32,6 @@ export function ThemeSwitcher() {
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  // Sync theme-color meta tag when resolvedTheme changes
-  useEffect(() => {
-    if (!mounted || !resolvedTheme) return;
-    updateThemeColorMeta(resolvedTheme === 'dark');
-  }, [mounted, resolvedTheme]);
 
   const selectedTheme: ThemeValue = mounted && theme ? (theme as ThemeValue) : 'system';
 
