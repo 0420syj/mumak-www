@@ -3,18 +3,20 @@ import { themeColors } from './theme-config';
 function themeMetaSync(colors: { light: string; dark: string }) {
   let currentColor: string | null = null;
 
-  // Force Safari iOS to re-read theme-color by triggering focus change
+  // Force Safari iOS to re-read theme-color
+  // Safari only re-reads theme-color when certain body/viewport changes occur
   const triggerSafariUpdate = () => {
-    // Method 1: Create temporary input for focus/blur trick
-    const input = document.createElement('input');
-    input.style.cssText = 'position:fixed;top:-100px;opacity:0;pointer-events:none;';
-    document.body.appendChild(input);
-    input.focus();
-    input.blur();
-    input.remove();
+    const body = document.body;
 
-    // Method 2: Dispatch resize event as fallback
-    window.dispatchEvent(new Event('resize'));
+    // Trick: Toggle body overflow to force Safari repaint (similar to Sheet opening)
+    const originalOverflow = body.style.overflow;
+    body.style.overflow = 'hidden';
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        body.style.overflow = originalOverflow;
+      });
+    });
   };
 
   const updateThemeColor = () => {
@@ -38,9 +40,7 @@ function themeMetaSync(colors: { light: string; dark: string }) {
     document.head.appendChild(newMeta);
 
     // Safari iOS needs UI interaction to re-read theme-color
-    requestAnimationFrame(() => {
-      triggerSafariUpdate();
-    });
+    triggerSafariUpdate();
   };
 
   const themeObserver = new MutationObserver(updateThemeColor);
