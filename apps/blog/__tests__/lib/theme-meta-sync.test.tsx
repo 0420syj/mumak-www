@@ -22,15 +22,6 @@ describe('ThemeMetaSyncScript', () => {
     expect(scriptContent).toContain(themeColors.dark);
   });
 
-  it('should include MutationObserver setup in the script', () => {
-    const { container } = render(<ThemeMetaSyncScript />);
-
-    const script = container.querySelector('script');
-    const scriptContent = script?.innerHTML || '';
-
-    expect(scriptContent).toContain('MutationObserver');
-  });
-
   it('should include theme-color meta tag selector in the script', () => {
     const { container } = render(<ThemeMetaSyncScript />);
 
@@ -50,14 +41,13 @@ describe('ThemeMetaSyncScript', () => {
     expect(scriptContent).toContain('dark');
   });
 
-  it('should observe document.documentElement for class changes', () => {
+  it('should create and append new meta tag', () => {
     const { container } = render(<ThemeMetaSyncScript />);
 
     const script = container.querySelector('script');
     const scriptContent = script?.innerHTML || '';
 
-    expect(scriptContent).toContain('document.documentElement');
-    expect(scriptContent).toContain('attributeFilter');
-    expect(scriptContent).toContain('class');
+    expect(scriptContent).toContain('createElement');
+    expect(scriptContent).toContain('appendChild');
   });
 });
