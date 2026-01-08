@@ -21,8 +21,8 @@ describe('SmartHeader', () => {
     jest.clearAllMocks();
   });
 
-  describe('렌더링', () => {
-    it('children을 정상적으로 렌더링함', () => {
+  describe('Rendering', () => {
+    it('renders children correctly', () => {
       render(
         <SmartHeader>
           <nav>Navigation Content</nav>
@@ -32,7 +32,7 @@ describe('SmartHeader', () => {
       expect(screen.getByText('Navigation Content')).toBeInTheDocument();
     });
 
-    it('header 요소로 렌더링됨', () => {
+    it('renders as a header element', () => {
       render(
         <SmartHeader>
           <nav>Test</nav>
@@ -43,8 +43,8 @@ describe('SmartHeader', () => {
     });
   });
 
-  describe('visible 상태', () => {
-    it('visible일 때 translate-y-0 클래스가 적용됨', () => {
+  describe('Visibility state', () => {
+    it('applies translate-y-0 class when visible', () => {
       mockUseScrollDirection.mockReturnValue({
         isVisible: true,
         isAtTop: true,
@@ -61,7 +61,7 @@ describe('SmartHeader', () => {
       expect(header).not.toHaveClass('-translate-y-full');
     });
 
-    it('hidden일 때 -translate-y-full 클래스가 적용됨', () => {
+    it('applies -translate-y-full class when hidden', () => {
       mockUseScrollDirection.mockReturnValue({
         isVisible: false,
         isAtTop: false,
@@ -79,8 +79,8 @@ describe('SmartHeader', () => {
     });
   });
 
-  describe('shadow 상태', () => {
-    it('상단에 있을 때(isAtTop=true) shadow가 없음', () => {
+  describe('Shadow state', () => {
+    it('has no shadow when at top (isAtTop=true)', () => {
       mockUseScrollDirection.mockReturnValue({
         isVisible: true,
         isAtTop: true,
@@ -96,7 +96,7 @@ describe('SmartHeader', () => {
       expect(header).not.toHaveClass('shadow-sm');
     });
 
-    it('스크롤 후(isAtTop=false) shadow가 표시됨', () => {
+    it('shows shadow after scrolling (isAtTop=false)', () => {
       mockUseScrollDirection.mockReturnValue({
         isVisible: true,
         isAtTop: false,
@@ -113,8 +113,8 @@ describe('SmartHeader', () => {
     });
   });
 
-  describe('스타일링', () => {
-    it('fixed position 클래스가 적용됨', () => {
+  describe('Styling', () => {
+    it('applies fixed position classes', () => {
       render(
         <SmartHeader>
           <nav>Test</nav>
@@ -125,7 +125,29 @@ describe('SmartHeader', () => {
       expect(header).toHaveClass('fixed', 'top-0', 'left-0', 'right-0', 'z-50');
     });
 
-    it('backdrop-blur 클래스가 적용됨', () => {
+    it('has no backdrop-blur when at top for Safari iOS theme-color compatibility', () => {
+      mockUseScrollDirection.mockReturnValue({
+        isVisible: true,
+        isAtTop: true,
+      });
+
+      render(
+        <SmartHeader>
+          <nav>Test</nav>
+        </SmartHeader>
+      );
+
+      const header = screen.getByRole('banner');
+      expect(header).toHaveClass('bg-background');
+      expect(header).not.toHaveClass('backdrop-blur-sm');
+    });
+
+    it('applies backdrop-blur after scrolling (isAtTop=false)', () => {
+      mockUseScrollDirection.mockReturnValue({
+        isVisible: true,
+        isAtTop: false,
+      });
+
       render(
         <SmartHeader>
           <nav>Test</nav>
@@ -136,7 +158,7 @@ describe('SmartHeader', () => {
       expect(header).toHaveClass('backdrop-blur-sm');
     });
 
-    it('transition 클래스가 적용됨', () => {
+    it('applies transition classes', () => {
       render(
         <SmartHeader>
           <nav>Test</nav>
@@ -148,8 +170,8 @@ describe('SmartHeader', () => {
     });
   });
 
-  describe('data 속성', () => {
-    it('data-visible 속성이 상태를 반영함', () => {
+  describe('Data attributes', () => {
+    it('data-visible attribute reflects the state', () => {
       mockUseScrollDirection.mockReturnValue({
         isVisible: true,
         isAtTop: true,
@@ -165,7 +187,7 @@ describe('SmartHeader', () => {
       expect(header).toHaveAttribute('data-visible', 'true');
     });
 
-    it('data-at-top 속성이 상태를 반영함', () => {
+    it('data-at-top attribute reflects the state', () => {
       mockUseScrollDirection.mockReturnValue({
         isVisible: true,
         isAtTop: false,
@@ -184,14 +206,14 @@ describe('SmartHeader', () => {
 });
 
 describe('HeaderSpacer', () => {
-  it('높이 16(h-16)의 div를 렌더링함', () => {
+  it('renders a div with height 16 (h-16)', () => {
     const { container } = render(<HeaderSpacer />);
 
     const spacer = container.firstChild;
     expect(spacer).toHaveClass('h-16');
   });
 
-  it('aria-hidden 속성이 true임', () => {
+  it('has aria-hidden attribute set to true', () => {
     const { container } = render(<HeaderSpacer />);
 
     const spacer = container.firstChild;

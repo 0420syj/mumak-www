@@ -6,9 +6,8 @@ import { useEffect, useState } from 'react';
 
 import { Button } from '@mumak/ui/components/button';
 
+import { type ThemeValue } from '@/lib/theme/theme-config';
 import { SwitcherDropdown } from './switcher-dropdown';
-
-type ThemeValue = 'light' | 'dark' | 'system';
 
 const themeOptions: Array<{ value: ThemeValue; label: string; Icon: typeof SunIcon }> = [
   { value: 'light', label: 'Light', Icon: SunIcon },

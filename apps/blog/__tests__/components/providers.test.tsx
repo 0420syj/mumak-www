@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 
-import { IntlProvider, ThemeProvider } from '@/components/providers';
+import { IntlProvider } from '@/components/providers';
 
 // Mock next-intl
 jest.mock('next-intl', () => ({
@@ -20,89 +20,6 @@ jest.mock('next-intl', () => ({
     </div>
   ),
 }));
-
-// Mock next-themes
-jest.mock('next-themes', () => ({
-  ThemeProvider: ({
-    children,
-    attribute,
-    defaultTheme,
-    storageKey,
-  }: {
-    children: React.ReactNode;
-    attribute: string;
-    defaultTheme: string;
-    storageKey: string;
-    enableSystem: boolean;
-    disableTransitionOnChange: boolean;
-    enableColorScheme: boolean;
-  }) => (
-    <div
-      data-testid="theme-provider"
-      data-attribute={attribute}
-      data-default-theme={defaultTheme}
-      data-storage-key={storageKey}
-    >
-      {children}
-    </div>
-  ),
-}));
-
-describe('ThemeProvider', () => {
-  it('should render children correctly', () => {
-    render(
-      <ThemeProvider>
-        <div data-testid="child-content">Test Content</div>
-      </ThemeProvider>
-    );
-
-    expect(screen.getByTestId('child-content')).toBeInTheDocument();
-    expect(screen.getByText('Test Content')).toBeInTheDocument();
-  });
-
-  it('should wrap children with NextThemesProvider', () => {
-    render(
-      <ThemeProvider>
-        <div>Content</div>
-      </ThemeProvider>
-    );
-
-    expect(screen.getByTestId('theme-provider')).toBeInTheDocument();
-  });
-
-  it('should configure ThemeProvider with class attribute', () => {
-    render(
-      <ThemeProvider>
-        <div>Content</div>
-      </ThemeProvider>
-    );
-
-    const themeProvider = screen.getByTestId('theme-provider');
-    expect(themeProvider).toHaveAttribute('data-attribute', 'class');
-  });
-
-  it('should set system as default theme', () => {
-    render(
-      <ThemeProvider>
-        <div>Content</div>
-      </ThemeProvider>
-    );
-
-    const themeProvider = screen.getByTestId('theme-provider');
-    expect(themeProvider).toHaveAttribute('data-default-theme', 'system');
-  });
-
-  it('should use "theme" as storage key', () => {
-    render(
-      <ThemeProvider>
-        <div>Content</div>
-      </ThemeProvider>
-    );
-
-    const themeProvider = screen.getByTestId('theme-provider');
-    expect(themeProvider).toHaveAttribute('data-storage-key', 'theme');
-  });
-});
 
 describe('IntlProvider', () => {
   const mockMessages = {

@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom';
 import { render } from '@testing-library/react';
 
-import { ThemeMetaSyncScript } from '@/lib/theme/theme-meta-sync';
 import { themeColors } from '@/lib/theme/theme-config';
+import { ThemeMetaSyncScript } from '@/lib/theme/theme-meta-sync';
 
 describe('ThemeMetaSyncScript', () => {
   it('should render a script tag', () => {
@@ -41,13 +41,24 @@ describe('ThemeMetaSyncScript', () => {
     expect(scriptContent).toContain('dark');
   });
 
-  it('should create and append new meta tag', () => {
+  it('should use setAttribute to update meta tag content (Safari iOS compatibility)', () => {
     const { container } = render(<ThemeMetaSyncScript />);
 
     const script = container.querySelector('script');
     const scriptContent = script?.innerHTML || '';
 
-    expect(scriptContent).toContain('createElement');
-    expect(scriptContent).toContain('appendChild');
+    // Safari iOS 호환성을 위해 메타 태그를 삭제/생성하지 않고 setAttribute 사용
+    expect(scriptContent).toContain('setAttribute');
+    expect(scriptContent).toContain('content');
+  });
+
+  it('should use MutationObserver to watch for class changes', () => {
+    const { container } = render(<ThemeMetaSyncScript />);
+
+    const script = container.querySelector('script');
+    const scriptContent = script?.innerHTML || '';
+
+    expect(scriptContent).toContain('MutationObserver');
+    expect(scriptContent).toContain('observe');
   });
 });

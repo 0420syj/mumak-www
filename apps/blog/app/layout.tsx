@@ -2,8 +2,8 @@ import '@mumak/ui/globals.css';
 
 import localFont from 'next/font/local';
 
-import { ThemeProvider } from '@/components/providers';
 import { ThemeMetaSyncScript } from '@/lib/theme/theme-meta-sync';
+import { ThemeProvider } from '@/lib/theme/theme-provider';
 
 const pretendard = localFont({
   src: '../public/assets/fonts/PretendardVariable.woff2',
