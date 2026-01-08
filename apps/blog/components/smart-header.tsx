@@ -20,10 +20,9 @@ export function SmartHeader({ children }: SmartHeaderProps) {
     <header
       className={`
         fixed top-0 left-0 right-0 z-50
-        bg-background/95 backdrop-blur-sm
         transition-transform duration-300 ease-out
         ${isVisible ? 'translate-y-0' : '-translate-y-full'}
-        ${!isAtTop ? 'shadow-sm' : ''}
+        ${isAtTop ? 'bg-background' : 'bg-background/95 backdrop-blur-sm shadow-sm'}
       `}
       data-visible={isVisible}
       data-at-top={isAtTop}
