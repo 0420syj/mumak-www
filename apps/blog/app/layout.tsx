@@ -11,19 +11,17 @@ const pretendard = localFont({
   display: 'swap',
   weight: '45 920',
   variable: '--font-pretendard',
-  preload: true,
-  adjustFontFallback: false,
 });
 
 export { themeViewport as viewport } from '@/lib/theme/theme-config';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html suppressHydrationWarning>
+    <html suppressHydrationWarning className={pretendard.variable}>
       <head>
         <ThemeMetaSyncScript />
       </head>
-      <body className={`${pretendard.className} antialiased`}>
+      <body className="antialiased">
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>

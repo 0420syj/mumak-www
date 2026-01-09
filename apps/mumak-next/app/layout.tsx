@@ -8,6 +8,7 @@ const pretendard = localFont({
   fallback: ['ui-sans-serif', 'system-ui', 'sans-serif'],
   display: 'swap',
   weight: '45 920',
+  variable: '--font-pretendard',
 });
 
 export default function RootLayout({
@@ -16,8 +17,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" suppressHydrationWarning>
-      <body className={`${pretendard.className} antialiased `}>
+    <html lang="ko" suppressHydrationWarning className={pretendard.variable}>
+      <body className="antialiased">
         <Providers>{children}</Providers>
       </body>
     </html>
