@@ -25,7 +25,7 @@ export const socialLinks: SocialLink[] = [
   },
   {
     name: 'LinkedIn',
-    url: 'https://linkedin.com/in/wannysim',
+    url: 'https://www.linkedin.com/in/wannysim',
     iconSlug: 'linkedin',
     ariaLabel: 'Visit LinkedIn profile',
   },
