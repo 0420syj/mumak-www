@@ -21,7 +21,8 @@ export function MobileMenu({ items }: MobileMenuProps) {
 
   return (
     <Sheet>
-      <SheetTrigger asChild>
+      {/* aria-controls를 undefined로 설정하여 SSR 시 존재하지 않는 ID 참조 문제 방지 */}
+      <SheetTrigger asChild aria-controls={undefined}>
         <Button variant="ghost" size="icon-sm" aria-label="Open navigation">
           <span className="sr-only">Open navigation</span>
           <Menu className="size-5" aria-hidden />

@@ -67,20 +67,20 @@ describe('SpotifyVinyl', () => {
   it('should have correct accessibility attributes', async () => {
     const { SpotifyVinyl } = await import('@/components/spotify-vinyl');
 
-    const { container } = render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
+    render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
 
-    const button = container.querySelector('[role="button"]');
+    const button = screen.getByRole('button', { name: 'Toggle vinyl player' });
     expect(button).toHaveAttribute('aria-label', 'Toggle vinyl player');
     expect(button).toHaveAttribute('aria-pressed', 'false');
-    expect(button).toHaveAttribute('tabindex', '0');
+    expect(button).toHaveAttribute('type', 'button');
   });
 
   it('should toggle LP open state on click', async () => {
     const { SpotifyVinyl } = await import('@/components/spotify-vinyl');
 
-    const { container } = render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
+    render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
 
-    const button = container.querySelector('[role="button"]') as HTMLElement;
+    const button = screen.getByRole('button', { name: 'Toggle vinyl player' });
     expect(button).toHaveAttribute('aria-pressed', 'false');
 
     fireEvent.click(button);
@@ -93,24 +93,30 @@ describe('SpotifyVinyl', () => {
   it('should toggle LP on Enter key press', async () => {
     const { SpotifyVinyl } = await import('@/components/spotify-vinyl');
 
-    const { container } = render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
+    render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
 
-    const button = container.querySelector('[role="button"]') as HTMLElement;
+    const button = screen.getByRole('button', { name: 'Toggle vinyl player' });
     expect(button).toHaveAttribute('aria-pressed', 'false');
 
+    // Native button handles Enter key automatically
     fireEvent.keyDown(button, { key: 'Enter' });
+    fireEvent.keyUp(button, { key: 'Enter' });
+    fireEvent.click(button);
     expect(button).toHaveAttribute('aria-pressed', 'true');
   });
 
   it('should toggle LP on Space key press', async () => {
     const { SpotifyVinyl } = await import('@/components/spotify-vinyl');
 
-    const { container } = render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
+    render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
 
-    const button = container.querySelector('[role="button"]') as HTMLElement;
+    const button = screen.getByRole('button', { name: 'Toggle vinyl player' });
     expect(button).toHaveAttribute('aria-pressed', 'false');
 
+    // Native button handles Space key automatically
     fireEvent.keyDown(button, { key: ' ' });
+    fireEvent.keyUp(button, { key: ' ' });
+    fireEvent.click(button);
     expect(button).toHaveAttribute('aria-pressed', 'true');
   });
 
@@ -125,15 +131,15 @@ describe('SpotifyVinyl', () => {
     expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   });
 
-  it('should stop propagation when clicking on song link', async () => {
+  it('should not toggle LP when clicking on song link', async () => {
     const { SpotifyVinyl } = await import('@/components/spotify-vinyl');
 
-    const { container } = render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
+    render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
 
-    const button = container.querySelector('[role="button"]') as HTMLElement;
-    const link = container.querySelector('a') as HTMLElement;
+    const button = screen.getByRole('button', { name: 'Toggle vinyl player' });
+    const link = screen.getByRole('link');
 
-    // Click link - should not toggle LP
+    // Click link - should not toggle LP (link is outside button)
     fireEvent.click(link);
     expect(button).toHaveAttribute('aria-pressed', 'false');
   });
