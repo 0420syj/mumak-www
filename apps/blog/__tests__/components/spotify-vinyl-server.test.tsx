@@ -61,6 +61,7 @@ describe('SpotifyVinylServer', () => {
       album: 'Test Album',
       albumImageUrl: 'https://i.scdn.co/test.jpg',
       songUrl: 'https://open.spotify.com/track/test',
+      isExplicit: false,
     });
 
     const { SpotifyVinylServer } = await import('@/components/spotify-vinyl-server');
@@ -84,6 +85,7 @@ describe('SpotifyVinylServer', () => {
       album: 'Recent Album',
       albumImageUrl: 'https://i.scdn.co/recent.jpg',
       songUrl: 'https://open.spotify.com/track/recent',
+      isExplicit: false,
     });
 
     const { SpotifyVinylServer } = await import('@/components/spotify-vinyl-server');
@@ -123,6 +125,7 @@ describe('SpotifyVinylServer', () => {
       album: 'Test Album',
       albumImageUrl: 'https://i.scdn.co/test.jpg',
       songUrl: 'https://open.spotify.com/track/test',
+      isExplicit: false,
     });
 
     const { SpotifyVinylServer } = await import('@/components/spotify-vinyl-server');
@@ -146,6 +149,7 @@ describe('SpotifyVinylServer', () => {
       album: 'Test Album',
       albumImageUrl: 'https://i.scdn.co/test.jpg',
       songUrl: 'https://open.spotify.com/track/test',
+      isExplicit: false,
     });
 
     const { SpotifyVinylServer } = await import('@/components/spotify-vinyl-server');
@@ -170,6 +174,7 @@ describe('SpotifyVinylServer', () => {
       album: 'Test Album',
       albumImageUrl: 'https://i.scdn.co/test.jpg',
       songUrl: 'https://open.spotify.com/track/test',
+      isExplicit: false,
     });
 
     const { SpotifyVinylServer } = await import('@/components/spotify-vinyl-server');

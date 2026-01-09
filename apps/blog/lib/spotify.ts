@@ -20,6 +20,7 @@ interface SpotifyTrack {
   name: string;
   artists: SpotifyArtist[];
   album: SpotifyAlbum;
+  explicit: boolean;
   external_urls: {
     spotify: string;
   };
@@ -44,6 +45,7 @@ export interface NowPlaying {
   album: string;
   albumImageUrl: string;
   songUrl: string;
+  isExplicit: boolean;
 }
 
 const NOW_PLAYING_ENDPOINT = 'https://api.spotify.com/v1/me/player/currently-playing';
@@ -201,6 +203,7 @@ async function fetchNowPlayingData(accessToken: string): Promise<NowPlaying | nu
       album: track.album.name,
       albumImageUrl: track.album.images[0]?.url || '',
       songUrl: track.external_urls.spotify,
+      isExplicit: track.explicit,
     };
   }
 
@@ -213,6 +216,7 @@ async function fetchNowPlayingData(accessToken: string): Promise<NowPlaying | nu
     album: song.item.album.name,
     albumImageUrl: song.item.album.images[0]?.url || '',
     songUrl: song.item.external_urls.spotify,
+    isExplicit: song.item.explicit,
   };
 }
 

@@ -36,6 +36,7 @@ const mockSongData: NowPlaying = {
   album: 'Test Album',
   albumImageUrl: 'https://i.scdn.co/test.jpg',
   songUrl: 'https://open.spotify.com/track/test',
+  isExplicit: false,
 };
 
 describe('SpotifyVinyl', () => {
@@ -137,13 +138,13 @@ describe('SpotifyVinyl', () => {
     expect(button).toHaveAttribute('aria-pressed', 'false');
   });
 
-  it('should show playing indicator when isPlaying is true and LP is closed', async () => {
+  it('should show playing indicator when isPlaying is true', async () => {
     const { SpotifyVinyl } = await import('@/components/spotify-vinyl');
 
     const { container } = render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
 
-    // Playing indicator should be visible (Disc3 icon container)
-    const playingIndicator = container.querySelector('.animate-pulse');
+    // Playing indicator should be visible (ping animation next to status label)
+    const playingIndicator = container.querySelector('.animate-ping');
     expect(playingIndicator).toBeInTheDocument();
   });
 
@@ -154,21 +155,28 @@ describe('SpotifyVinyl', () => {
     const { container } = render(<SpotifyVinyl data={notPlayingData} statusLabel="Last played" />);
 
     // Playing indicator should not be visible
-    const playingIndicator = container.querySelector('.animate-pulse');
+    const playingIndicator = container.querySelector('.animate-ping');
     expect(playingIndicator).not.toBeInTheDocument();
   });
 
-  it('should hide playing indicator when LP is open', async () => {
+  it('should show explicit badge when isExplicit is true', async () => {
     const { SpotifyVinyl } = await import('@/components/spotify-vinyl');
 
-    const { container } = render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
+    const explicitData = { ...mockSongData, isExplicit: true };
+    render(<SpotifyVinyl data={explicitData} statusLabel="Listening to" />);
 
-    const button = container.querySelector('[role="button"]') as HTMLElement;
-    fireEvent.click(button);
+    const explicitBadge = screen.getByLabelText('Explicit content');
+    expect(explicitBadge).toBeInTheDocument();
+    expect(explicitBadge).toHaveTextContent('19');
+  });
 
-    // Playing indicator should be hidden when LP is open
-    const playingIndicator = container.querySelector('.animate-pulse');
-    expect(playingIndicator).not.toBeInTheDocument();
+  it('should not show explicit badge when isExplicit is false', async () => {
+    const { SpotifyVinyl } = await import('@/components/spotify-vinyl');
+
+    render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
+
+    const explicitBadge = screen.queryByLabelText('Explicit content');
+    expect(explicitBadge).not.toBeInTheDocument();
   });
 
   it('should truncate long title and artist name', async () => {

@@ -51,6 +51,7 @@ describe('SpotifyServer', () => {
       album: 'Test Album',
       albumImageUrl: 'https://i.scdn.co/test.jpg',
       songUrl: 'https://open.spotify.com/track/test',
+      isExplicit: false,
     });
 
     const { SpotifyServer } = await import('@/components/spotify-server');
@@ -79,6 +80,7 @@ describe('SpotifyServer', () => {
       album: 'Recent Album',
       albumImageUrl: 'https://i.scdn.co/recent.jpg',
       songUrl: 'https://open.spotify.com/track/recent',
+      isExplicit: false,
     });
 
     const { SpotifyServer } = await import('@/components/spotify-server');
@@ -102,6 +104,7 @@ describe('SpotifyServer', () => {
       album: 'Test Album',
       albumImageUrl: 'https://i.scdn.co/test.jpg',
       songUrl: 'https://open.spotify.com/track/test',
+      isExplicit: false,
     });
 
     const { SpotifyServer } = await import('@/components/spotify-server');
@@ -125,6 +128,7 @@ describe('SpotifyServer', () => {
       album: 'Test Album',
       albumImageUrl: 'https://i.scdn.co/test.jpg',
       songUrl: 'https://open.spotify.com/track/test',
+      isExplicit: false,
     });
 
     const { SpotifyServer } = await import('@/components/spotify-server');
@@ -147,6 +151,7 @@ describe('SpotifyServer', () => {
       album: 'Test Album',
       albumImageUrl: 'https://i.scdn.co/test.jpg',
       songUrl: 'https://open.spotify.com/track/test',
+      isExplicit: false,
     });
 
     const { SpotifyServer } = await import('@/components/spotify-server');
@@ -170,6 +175,7 @@ describe('SpotifyServer', () => {
       album: 'Test Album',
       albumImageUrl: 'https://i.scdn.co/test.jpg',
       songUrl: 'https://open.spotify.com/track/test',
+      isExplicit: false,
     });
 
     const { SpotifyServer } = await import('@/components/spotify-server');

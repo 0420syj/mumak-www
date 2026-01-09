@@ -58,6 +58,7 @@ describe('spotify', () => {
             name: 'Test Album',
             images: [{ url: 'https://i.scdn.co/test-image.jpg' }],
           },
+          explicit: false,
           external_urls: {
             spotify: 'https://open.spotify.com/track/test',
           },
@@ -83,6 +84,7 @@ describe('spotify', () => {
         album: 'Test Album',
         albumImageUrl: 'https://i.scdn.co/test-image.jpg',
         songUrl: 'https://open.spotify.com/track/test',
+        isExplicit: false,
       });
     });
 
@@ -107,6 +109,7 @@ describe('spotify', () => {
                 name: 'Recent Album',
                 images: [{ url: 'https://i.scdn.co/recent-image.jpg' }],
               },
+              explicit: true,
               external_urls: {
                 spotify: 'https://open.spotify.com/track/recent',
               },
@@ -138,6 +141,7 @@ describe('spotify', () => {
         album: 'Recent Album',
         albumImageUrl: 'https://i.scdn.co/recent-image.jpg',
         songUrl: 'https://open.spotify.com/track/recent',
+        isExplicit: true,
       });
     });
 
@@ -161,6 +165,7 @@ describe('spotify', () => {
             name: 'Collaboration Album',
             images: [{ url: 'https://i.scdn.co/collab-image.jpg' }],
           },
+          explicit: false,
           external_urls: {
             spotify: 'https://open.spotify.com/track/collab',
           },
@@ -248,6 +253,7 @@ describe('spotify', () => {
             name: 'Test Album',
             images: [{ url: 'https://i.scdn.co/test-image.jpg' }],
           },
+          explicit: false,
           external_urls: {
             spotify: 'https://open.spotify.com/track/test',
           },
@@ -306,6 +312,7 @@ describe('spotify', () => {
                 name: 'Recent Album',
                 images: [{ url: 'https://i.scdn.co/recent-image.jpg' }],
               },
+              explicit: false,
               external_urls: {
                 spotify: 'https://open.spotify.com/track/recent',
               },
@@ -366,6 +373,7 @@ describe('spotify', () => {
             name: 'Test Album',
             images: [{ url: 'https://i.scdn.co/test-image.jpg' }],
           },
+          explicit: false,
           external_urls: {
             spotify: 'https://open.spotify.com/track/test',
           },
@@ -403,6 +411,7 @@ describe('spotify', () => {
         album: 'Test Album',
         albumImageUrl: 'https://i.scdn.co/test-image.jpg',
         songUrl: 'https://open.spotify.com/track/test',
+        isExplicit: false,
       });
 
       // 총 4번의 fetch 호출 확인 (토큰 → 401 → 새 토큰 → 성공)

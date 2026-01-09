@@ -36,6 +36,7 @@ const mockSongData: NowPlaying = {
   album: 'Test Album',
   albumImageUrl: 'https://i.scdn.co/test.jpg',
   songUrl: 'https://open.spotify.com/track/test',
+  isExplicit: false,
 };
 
 describe('useSpotifyPolling', () => {
