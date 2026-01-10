@@ -115,7 +115,7 @@ export function SpotifyVinyl({ data, statusLabel, isTransitioning = false }: Spo
               <span className="text-base sm:text-lg font-bold leading-tight truncate">{data.title}</span>
               {data.isExplicit && (
                 <span
-                  className="shrink-0 inline-flex items-center justify-center size-4 rounded-full border border-red-600 bg-white dark:bg-red-600 text-red-600 dark:text-white text-[9px] font-bold"
+                  className="shrink-0 inline-flex items-center justify-center size-4 rounded-full border border-red-600 bg-white dark:bg-red-600 text-red-600 dark:text-white text-[9px] font-bold leading-none"
                   title="Explicit content"
                   aria-label="Explicit content"
                 >

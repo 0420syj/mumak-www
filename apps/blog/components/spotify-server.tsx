@@ -52,7 +52,7 @@ export async function SpotifyServer({ listeningToLabel, lastPlayedLabel }: Spoti
           <span className="font-semibold truncate text-sm">{song.title}</span>
           {song.isExplicit && (
             <span
-              className="shrink-0 inline-flex items-center justify-center size-4 rounded-full border border-red-600 bg-white dark:bg-red-600 text-red-600 dark:text-white text-[9px] font-bold"
+              className="shrink-0 inline-flex items-center justify-center size-4 rounded-full border border-red-600 bg-white dark:bg-red-600 text-red-600 dark:text-white text-[9px] font-bold leading-none"
               title="Explicit content"
               aria-label="Explicit content"
             >
