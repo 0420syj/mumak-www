@@ -34,7 +34,7 @@ export function SpotifyVinyl({ data, statusLabel, isTransitioning = false }: Spo
             className={cn(
               'absolute left-0 top-1/2 -translate-y-1/2 z-0 size-24 sm:size-32 rounded-full',
               'flex items-center justify-center',
-              'bg-gradient-to-br from-neutral-800 via-neutral-900 to-black',
+              'bg-linear-to-br from-neutral-800 via-neutral-900 to-black',
               'shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.05)]',
               'transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)]',
               isOpen ? 'translate-x-12 sm:translate-x-20 rotate-180' : 'translate-x-0 rotate-0',
@@ -55,9 +55,9 @@ export function SpotifyVinyl({ data, statusLabel, isTransitioning = false }: Spo
             <div className="absolute inset-0 rounded-full opacity-20 bg-[conic-gradient(from_45deg,transparent_0deg,rgba(255,255,255,0.6)_30deg,transparent_90deg,transparent_180deg,rgba(255,255,255,0.3)_210deg,transparent_270deg)]" />
 
             {/* Center label area */}
-            <div className="relative size-8 sm:size-10 rounded-full bg-gradient-to-br from-neutral-700 via-neutral-800 to-neutral-900 flex items-center justify-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]">
+            <div className="relative size-8 sm:size-10 rounded-full bg-linear-to-br from-neutral-700 via-neutral-800 to-neutral-900 flex items-center justify-center shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]">
               {/* Label highlight */}
-              <div className="absolute inset-0 rounded-full bg-gradient-to-b from-white/10 to-transparent" />
+              <div className="absolute inset-0 rounded-full bg-linear-to-b from-white/10 to-transparent" />
               {/* Label mark - asymmetric dot for rotation visibility */}
               <div className="absolute top-1 sm:top-1.5 size-0.5 sm:size-1 rounded-full bg-neutral-500/60" />
               {/* Spindle hole */}

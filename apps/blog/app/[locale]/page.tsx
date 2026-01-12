@@ -42,12 +42,9 @@ export default async function HomePage({ params }: HomePageProps) {
   };
 
   return (
-    <div className="space-y-16 pb-12">
-      <section className="flex flex-col md:flex-row gap-8 md:items-start md:justify-between py-8">
-        <div className="space-y-4 max-w-2xl">
-          <h1 className="text-4xl font-bold">{t('title')}</h1>
-          <p className="text-lg text-muted-foreground whitespace-pre-wrap leading-relaxed">{t('intro')}</p>
-        </div>
+    <div className="space-y-8 pb-12">
+      <section className="flex flex-col md:flex-row gap-8 md:items-center md:justify-between py-4">
+        <p className="text-lg text-muted-foreground whitespace-pre-wrap leading-relaxed max-w-2xl">{t('intro')}</p>
 
         <div className="w-full md:w-auto">
           <Suspense fallback={<SpotifyVinylSkeleton />}>
