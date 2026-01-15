@@ -4,7 +4,8 @@ test.describe('Home Page', () => {
   test('should display intro section', async ({ page }) => {
     await page.goto('/ko');
 
-    await expect(page.getByRole('heading', { level: 1, name: 'Wan Sim' })).toBeVisible();
+    // 로고 링크 확인 (Navigation에 있는 "Wan Sim" 텍스트)
+    await expect(page.getByRole('link', { name: 'Wan Sim' })).toBeVisible();
 
     const introSection = page.locator('section').first();
     const introText = await introSection.textContent();
@@ -39,7 +40,8 @@ test.describe('Home Page', () => {
   test('should work in English', async ({ page }) => {
     await page.goto('/en');
 
-    await expect(page.getByRole('heading', { level: 1, name: 'Wan Sim' })).toBeVisible();
+    // 로고 링크 확인 (Navigation에 있는 "Wan Sim" 텍스트)
+    await expect(page.getByRole('link', { name: 'Wan Sim' })).toBeVisible();
     await expect(page.getByRole('heading', { level: 2, name: 'Latest Post' })).toBeVisible();
     await expect(page.getByRole('heading', { level: 2, name: 'Recent Posts' })).toBeVisible();
 

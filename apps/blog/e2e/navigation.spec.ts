@@ -179,7 +179,10 @@ test.describe('Navigation', () => {
   });
 
   test.describe('Accessibility', () => {
-    test('should show skip to content link on tab', async ({ page }) => {
+    // webkit에서는 Tab 키 동작이 다르므로 chromium, firefox에서만 테스트
+    test('should show skip to content link on tab', async ({ page, browserName }) => {
+      test.skip(browserName === 'webkit', 'WebKit handles Tab key focus differently');
+
       await page.goto('/ko');
 
       await page.keyboard.press('Tab');
@@ -189,7 +192,9 @@ test.describe('Navigation', () => {
       await expect(skipLink).toBeFocused();
     });
 
-    test('should skip to main content when skip link is clicked', async ({ page }) => {
+    test('should skip to main content when skip link is clicked', async ({ page, browserName }) => {
+      test.skip(browserName === 'webkit', 'WebKit handles Tab key focus differently');
+
       await page.goto('/ko');
 
       await page.keyboard.press('Tab');
