@@ -2,14 +2,10 @@ import type { Metadata } from 'next';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 
-import { VercelAnalytics } from '@/components/analytics';
-import { Footer } from '@/components/footer';
-import { Navigation } from '@/components/navigation';
-import { IntlProvider } from '@/components/providers';
-import { HeaderSpacer, SmartHeader } from '@/components/smart-header';
-import { locales, type Locale } from '@/i18n/config';
-import { routing } from '@/i18n/routing';
-import { JsonLdScript, generateWebSiteJsonLd } from '@/lib/json-ld';
+import { IntlProvider, VercelAnalytics, generateWebSiteJsonLd, JsonLdScript } from '@/src/app';
+import { locales, type Locale, routing } from '@/src/shared/config/i18n';
+import { Footer } from '@/src/widgets/footer';
+import { Navigation, SmartHeader, HeaderSpacer } from '@/src/widgets/header';
 
 export function generateStaticParams() {
   return routing.locales.map(locale => ({ locale }));

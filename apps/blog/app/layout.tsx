@@ -2,8 +2,7 @@ import '@mumak/ui/globals.css';
 
 import localFont from 'next/font/local';
 
-import { ThemeMetaSyncScript } from '@/lib/theme/theme-meta-sync';
-import { ThemeProvider } from '@/lib/theme/theme-provider';
+import { ThemeMetaSyncScript, ThemeProvider } from '@/src/shared/lib/theme';
 
 const pretendard = localFont({
   src: '../public/assets/fonts/PretendardVariable.woff2',
@@ -13,7 +12,7 @@ const pretendard = localFont({
   variable: '--font-pretendard',
 });
 
-export { themeViewport as viewport } from '@/lib/theme/theme-config';
+export { themeViewport as viewport } from '@/src/shared/lib/theme';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

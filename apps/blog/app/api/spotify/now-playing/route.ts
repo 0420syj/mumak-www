@@ -1,4 +1,4 @@
-import { getNowPlaying, type NowPlaying } from '@/lib/spotify';
+import { getNowPlaying, type NowPlaying } from '@/src/entities/spotify';
 import { NextResponse } from 'next/server';
 
 export interface NowPlayingResponse {

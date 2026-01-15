@@ -2,7 +2,7 @@ import type { MDXComponents } from 'mdx/types';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { SocialLinks } from '@/components/social-links';
+import { SocialLinks } from '@/src/widgets/footer';
 
 export const mdxComponents: MDXComponents = {
   // Override default elements with custom styling

@@ -1,8 +1,8 @@
 import { getTranslations } from 'next-intl/server';
 import { type NextRequest } from 'next/server';
 
-import { type Locale } from '@/i18n/config';
-import { getPosts } from '@/lib/posts';
+import { getPosts } from '@/src/entities/post';
+import { type Locale } from '@/src/shared/config/i18n';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://wannysim.com';
 

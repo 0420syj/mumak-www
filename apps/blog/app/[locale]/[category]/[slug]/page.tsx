@@ -3,11 +3,10 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { MDXRemote } from 'next-mdx-remote-client/rsc';
 import { notFound } from 'next/navigation';
 
-import { locales, type Locale } from '@/i18n/config';
-import { Link } from '@/i18n/routing';
-import { formatDateForLocale } from '@/lib/date';
-import { generateBlogPostingJsonLd, JsonLdScript } from '@/lib/json-ld';
-import { getAllPostSlugs, getPost, isValidCategory } from '@/lib/posts';
+import { generateBlogPostingJsonLd, JsonLdScript } from '@/src/app/seo';
+import { getAllPostSlugs, getPost, isValidCategory } from '@/src/entities/post';
+import { locales, type Locale, Link } from '@/src/shared/config/i18n';
+import { formatDateForLocale } from '@/src/shared/lib/date';
 import { mdxComponents } from '@/mdx-components';
 
 interface PostPageProps {

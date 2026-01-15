@@ -3,8 +3,8 @@ import { join } from 'node:path';
 
 import { ImageResponse } from 'next/og';
 
-import { locales, type Locale } from '@/i18n/config';
-import { getAllPostSlugs, getPost, isValidCategory } from '@/lib/posts';
+import { getAllPostSlugs, getPost, isValidCategory } from '@/src/entities/post';
+import { locales, type Locale } from '@/src/shared/config/i18n';
 
 export const alt = 'Blog Post';
 export const size = {

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { SocialLinks } from '@/components/social-links';
+import { SocialLinks } from '@/src/widgets/footer';
 
 interface AboutPageProps {
   params: Promise<{ locale: string }>;

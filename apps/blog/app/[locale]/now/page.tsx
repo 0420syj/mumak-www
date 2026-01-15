@@ -3,9 +3,9 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { MDXRemote } from 'next-mdx-remote-client/rsc';
 import { notFound } from 'next/navigation';
 
-import type { Locale } from '@/i18n/config';
-import { formatDateForLocale } from '@/lib/date';
-import { getPage } from '@/lib/posts';
+import { getPage } from '@/src/entities/post';
+import { type Locale } from '@/src/shared/config/i18n';
+import { formatDateForLocale } from '@/src/shared/lib/date';
 import { mdxComponents } from '@/mdx-components';
 
 interface NowPageProps {

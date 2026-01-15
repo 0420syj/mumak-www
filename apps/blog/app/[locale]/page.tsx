@@ -2,11 +2,10 @@ import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { Suspense } from 'react';
 
-import { PostCard } from '@/components/post-card';
-import { SpotifyVinylServer } from '@/components/spotify-vinyl-server';
-import { SpotifyVinylSkeleton } from '@/components/spotify-vinyl-skeleton';
-import { type Locale } from '@/i18n/config';
-import { getPosts, isValidCategory } from '@/lib/posts';
+import { getPosts, isValidCategory } from '@/src/entities/post';
+import { type Locale } from '@/src/shared/config/i18n';
+import { PostCard } from '@/src/widgets/post-card';
+import { SpotifyVinylServer, SpotifyVinylSkeleton } from '@/src/widgets/spotify-vinyl';
 
 const HOME_POST_LIMIT = 4;
 

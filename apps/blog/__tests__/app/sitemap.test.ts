@@ -1,5 +1,5 @@
 import sitemap from '@/app/sitemap';
-import { locales } from '@/i18n/config';
+import { locales } from '@/src/shared/config/i18n/config';
 
 describe('sitemap', () => {
   it('should return an array of sitemap entries', () => {

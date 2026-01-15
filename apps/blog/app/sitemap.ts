@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 
-import { locales, type Locale } from '@/i18n/config';
-import { getCategories, getAllPostSlugs } from '@/lib/posts';
+import { getCategories, getAllPostSlugs } from '@/src/entities/post';
+import { locales, type Locale } from '@/src/shared/config/i18n/config';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://wannysim.com';
 

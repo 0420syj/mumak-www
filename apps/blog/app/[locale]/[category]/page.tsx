@@ -2,9 +2,9 @@ import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 
-import { PostCard } from '@/components/post-card';
-import { locales, type Locale } from '@/i18n/config';
-import { getCategories, getPosts, isValidCategory, type Category } from '@/lib/posts';
+import { getCategories, getPosts, isValidCategory, type Category } from '@/src/entities/post';
+import { locales, type Locale } from '@/src/shared/config/i18n';
+import { PostCard } from '@/src/widgets/post-card';
 
 interface CategoryPageProps {
   params: Promise<{ locale: string; category: string }>;
