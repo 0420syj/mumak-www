@@ -2,10 +2,23 @@ name: E2E Tests
 
 on:
   pull_request:
-    branches: ['**']
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - "apps/**"
+      - "packages/**"
+      - "pnpm-lock.yaml"
   push:
     branches: [main, develop]
+    paths:
+      - "apps/**"
+      - "packages/**"
+      - "pnpm-lock.yaml"
   workflow_dispatch:
+    inputs:
+      scopes:
+        description: "Comma-separated list of app names (optional, auto-detected if not provided)"
+        required: false
+        type: string
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -16,58 +29,56 @@ env:
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
 jobs:
-  # Check which packages are affected before running browser tests
-  check-affected:
-    name: Check Affected Packages
+  # Step 1: Detect which apps have changed
+  detect-scopes:
+    name: Detect Changed Apps
     runs-on: ubuntu-latest
     outputs:
-      has_affected: ${{ steps.check.outputs.has_affected }}
-      filter: ${{ steps.check.outputs.filter }}
+      scopes: ${{ steps.detect.outputs.scopes }}
+      has_changes: ${{ steps.detect.outputs.has_changes }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - name: Get changed files
+        id: changed-files
+        if: github.event_name == 'pull_request'
+        uses: tj-actions/changed-files@v46
+
+      - name: Detect changed apps
+        id: detect
+        uses: ./.github/actions/detect-scopes
         with:
-          node-version: '24.11.1'
+          manual_scopes: ${{ inputs.scopes }}
+          changed_files: ${{ steps.changed-files.outputs.all_changed_files }}
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+  # Step 2: Prepare matrix (only E2E-enabled apps)
+  prepare-matrix:
+    name: Prepare Matrix
+    needs: detect-scopes
+    if: needs.detect-scopes.outputs.has_changes == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.convert.outputs.matrix }}
+      count: ${{ steps.convert.outputs.count }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Convert scopes to matrix (E2E apps only)
+        id: convert
+        uses: ./.github/actions/scopes-to-matrix
+        with:
+          scopes: ${{ needs.detect-scopes.outputs.scopes }}
+          filter_e2e: "true"
 
-      - name: Check affected packages
-        id: check
-        run: |
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
-            BASE_SHA="${{ github.event.pull_request.base.sha }}"
-            HEAD_SHA="${{ github.sha }}"
-            FILTER="--filter=[${BASE_SHA}...${HEAD_SHA}]..."
-
-            # Check if any e2e-relevant packages are affected
-            RESULT=$(pnpm turbo run test:e2e ${FILTER} --dry-run=json 2>/dev/null || echo '{"tasks":[]}')
-            TASK_COUNT=$(echo "$RESULT" | jq '.tasks | length' 2>/dev/null || echo "0")
-
-            if [ "$TASK_COUNT" -gt "0" ]; then
-              echo "has_affected=true" >> $GITHUB_OUTPUT
-            else
-              echo "has_affected=false" >> $GITHUB_OUTPUT
-            fi
-            echo "filter=${FILTER}" >> $GITHUB_OUTPUT
-          else
-            # Push to main/develop: always run
-            echo "has_affected=true" >> $GITHUB_OUTPUT
-            echo "filter=" >> $GITHUB_OUTPUT
-          fi
-
+  # Step 3: Run E2E tests for each app x browser combination
   e2e:
-    name: E2E (${{ matrix.browser }})
-    needs: check-affected
-    if: needs.check-affected.outputs.has_affected == 'true'
+    name: E2E (${{ matrix.app }} / ${{ matrix.browser }})
+    needs: [detect-scopes, prepare-matrix]
+    if: needs.detect-scopes.outputs.has_changes == 'true' && needs.prepare-matrix.outputs.count != '0'
     timeout-minutes: 20
     runs-on: ubuntu-latest
     container:
@@ -76,6 +87,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        app: ${{ fromJson(needs.prepare-matrix.outputs.matrix) }}
         browser: [chromium, firefox, webkit]
     steps:
       - name: Checkout
@@ -83,44 +95,61 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: '24.11.1'
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup-node-pnpm
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      - name: Setup pnpm cache
+      - name: Restore Turbo cache
         uses: actions/cache@v5
         with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: .turbo
+          key: ${{ runner.os }}-turbo-e2e-${{ matrix.app }}-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+            ${{ runner.os }}-turbo-e2e-${{ matrix.app }}-
+            ${{ runner.os }}-turbo-e2e-
+            ${{ runner.os }}-turbo-
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Build app
+        run: pnpm turbo run build --filter=${{ matrix.app }}
 
-      - name: Build affected packages
-        run: pnpm turbo run build ${{ needs.check-affected.outputs.filter }}
-
-      - name: Run E2E tests (${{ matrix.browser }})
-        run: |
-          # Run test:e2e for affected apps with specific browser project
-          pnpm turbo run test:e2e ${{ needs.check-affected.outputs.filter }} -- --project=${{ matrix.browser }}
+      - name: Run E2E tests
+        run: pnpm turbo run test:e2e --filter=${{ matrix.app }} -- --project=${{ matrix.browser }}
 
       - name: Upload test results
         uses: actions/upload-artifact@v6
         if: failure()
         with:
-          name: playwright-report-${{ matrix.browser }}
+          name: playwright-report-${{ matrix.app }}-${{ matrix.browser }}
           path: |
-            apps/*/playwright-report/
-            apps/*/test-results/
+            apps/${{ matrix.app }}/playwright-report/
+            apps/${{ matrix.app }}/test-results/
           retention-days: 7
+
+  # Summary job for branch protection
+  e2e-success:
+    name: E2E Success
+    needs: [detect-scopes, prepare-matrix, e2e]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check results
+        run: |
+          if [ "${{ needs.detect-scopes.outputs.has_changes }}" != "true" ]; then
+            echo "No relevant changes detected - E2E passed"
+            exit 0
+          fi
+
+          if [ "${{ needs.prepare-matrix.outputs.count }}" == "0" ]; then
+            echo "No E2E-enabled apps affected - E2E passed"
+            exit 0
+          fi
+
+          if [ "${{ needs.e2e.result }}" == "success" ]; then
+            echo "All E2E tests passed"
+            exit 0
+          elif [ "${{ needs.e2e.result }}" == "skipped" ]; then
+            echo "E2E tests skipped"
+            exit 0
+          else
+            echo "Some E2E tests failed"
+            exit 1
+          fi

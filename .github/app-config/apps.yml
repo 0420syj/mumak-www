@@ -1,0 +1,20 @@
+# 모노레포 앱 설정
+# 새 앱 추가 시 이 파일에 등록하면 CI/CD에 자동 포함됩니다.
+#
+# 필드 설명:
+# - app: 앱 디렉토리 이름 (apps/{app})
+# - type: 앱 타입 (next, vite, node 등)
+# - hasE2E: E2E 테스트 포함 여부
+
+apps:
+  - app: blog
+    type: next
+    hasE2E: true
+
+  - app: mumak-next
+    type: next
+    hasE2E: true
+
+  - app: mumak-react
+    type: vite
+    hasE2E: true

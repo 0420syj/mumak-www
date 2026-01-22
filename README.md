@@ -154,6 +154,7 @@ cp -r apps/mumak-react apps/[app-name]
 >
 > - `package.json` 내 `name`
 > - 개발서버 & Playwright 포트 번호
+> - `.github/app-config/apps.yml`에 앱 등록 (CI/CD 포함)
 
 ### 새 패키지 추가
 
@@ -205,13 +206,25 @@ import { Button } from '@mumak/ui/components/button';
 
 1. **CI 워크플로우** (`.github/workflows/ci.yml`)
    - 린팅, 타입 체크, 단위 테스트, 빌드
-   - 빠른 피드백을 위한 핵심 검증
+   - 변경된 앱별로 병렬 실행 (동적 matrix)
 
 2. **E2E 워크플로우** (`.github/workflows/e2e.yml`)
    - Playwright를 사용한 E2E 테스트
-   - Docker 컨테이너를 사용하여 브라우저 설치 시간 단축
+   - 앱 x 브라우저 조합별 병렬 실행
 
 ### 트리거 조건
 
-- **Pull Request**: 모든 브랜치에서 PR 생성 시 두 워크플로우 모두 실행
+- **paths 필터**: `apps/**`, `packages/**` 변경 시에만 실행
+- **Pull Request**: PR 생성/업데이트 시 변경된 앱만 검증
 - **Push**: `main`, `develop` 브랜치에 푸시 시 실행
+
+### 앱 설정
+
+새 앱을 CI/CD에 포함하려면 `.github/app-config/apps.yml`에 등록합니다:
+
+```yaml
+apps:
+  - app: new-app-name
+    type: next  # or vite, node
+    hasE2E: true  # E2E 테스트 포함 여부
+```

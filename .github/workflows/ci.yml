@@ -2,9 +2,25 @@ name: CI
 
 on:
   pull_request:
-    branches: ['**']
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - "apps/**"
+      - "packages/**"
+      - "pnpm-lock.yaml"
+      - "turbo.json"
   push:
     branches: [main, develop]
+    paths:
+      - "apps/**"
+      - "packages/**"
+      - "pnpm-lock.yaml"
+      - "turbo.json"
+  workflow_dispatch:
+    inputs:
+      scopes:
+        description: "Comma-separated list of app names (optional, auto-detected if not provided)"
+        required: false
+        type: string
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -15,93 +31,135 @@ env:
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
 
 jobs:
-  ci:
-    name: CI Pipeline
+  # Step 1: Detect which apps have changed
+  detect-scopes:
+    name: Detect Changed Apps
     runs-on: ubuntu-latest
+    outputs:
+      scopes: ${{ steps.detect.outputs.scopes }}
+      has_changes: ${{ steps.detect.outputs.has_changes }}
     steps:
       - name: Checkout
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
+      - name: Get changed files
+        id: changed-files
+        if: github.event_name == 'pull_request'
+        uses: tj-actions/changed-files@v46
+
+      - name: Detect changed apps
+        id: detect
+        uses: ./.github/actions/detect-scopes
         with:
-          node-version: '24.11.1'
+          manual_scopes: ${{ inputs.scopes }}
+          changed_files: ${{ steps.changed-files.outputs.all_changed_files }}
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+  # Step 2: Prepare matrix from detected scopes
+  prepare-matrix:
+    name: Prepare Matrix
+    needs: detect-scopes
+    if: needs.detect-scopes.outputs.has_changes == 'true'
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.convert.outputs.matrix }}
+      count: ${{ steps.convert.outputs.count }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - name: Convert scopes to matrix
+        id: convert
+        uses: ./.github/actions/scopes-to-matrix
+        with:
+          scopes: ${{ needs.detect-scopes.outputs.scopes }}
 
-      - name: Setup pnpm cache
+  # Step 3: Validate each app (lint, type-check, test, build)
+  validate:
+    name: Validate (${{ matrix.app }})
+    needs: [detect-scopes, prepare-matrix]
+    if: needs.detect-scopes.outputs.has_changes == 'true' && needs.prepare-matrix.outputs.count != '0'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        app: ${{ fromJson(needs.prepare-matrix.outputs.matrix) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Restore Turbo cache
         uses: actions/cache@v5
         with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ matrix.app }}-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+            ${{ runner.os }}-turbo-${{ matrix.app }}-
+            ${{ runner.os }}-turbo-
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Lint
+        run: pnpm turbo run lint --filter=${{ matrix.app }}
 
-      - name: Determine affected packages
-        id: affected
-        run: |
-          if [ "${{ github.event_name }}" == "pull_request" ]; then
-            BASE_SHA="${{ github.event.pull_request.base.sha }}"
-            HEAD_SHA="${{ github.sha }}"
-            # Include changed packages and their dependents (apps that depend on changed packages)
-            echo "filter=--filter=[${BASE_SHA}...${HEAD_SHA}]..." >> $GITHUB_OUTPUT
-            echo "dry_run_filter=--filter=[${BASE_SHA}...${HEAD_SHA}]... --dry-run=json" >> $GITHUB_OUTPUT
-            echo "base_sha=${BASE_SHA}" >> $GITHUB_OUTPUT
-            echo "head_sha=${HEAD_SHA}" >> $GITHUB_OUTPUT
-          else
-            echo "filter=" >> $GITHUB_OUTPUT
-            echo "dry_run_filter=--dry-run=json" >> $GITHUB_OUTPUT
-          fi
+      - name: Type Check
+        run: pnpm turbo run check-types --filter=${{ matrix.app }}
 
-      - name: Analyze affected tasks (dry-run)
-        run: |
-          echo "=== Affected packages ==="
-          if [ -n "${{ steps.affected.outputs.base_sha }}" ]; then
-            echo "Range: ${{ steps.affected.outputs.base_sha }}...${{ steps.affected.outputs.head_sha }}"
-          fi
-          echo ""
-          echo "=== Lint affected packages ==="
-          pnpm turbo run lint ${{ steps.affected.outputs.dry_run_filter }}
-          echo ""
-          echo "=== Build affected packages ==="
-          pnpm turbo run build ${{ steps.affected.outputs.dry_run_filter }}
-
-      - name: Lint & Type Check
-        run: pnpm turbo run lint check-types format:check ${{ steps.affected.outputs.filter }}
+      - name: Format Check
+        run: pnpm turbo run format:check --filter=${{ matrix.app }}
 
       - name: Test
-        run: pnpm turbo run test:ci ${{ steps.affected.outputs.filter }}
+        run: pnpm turbo run test:ci --filter=${{ matrix.app }}
+
+      - name: Build
+        run: pnpm turbo run build --filter=${{ matrix.app }}
+
+  # Step 4: Upload coverage (after all validations)
+  coverage:
+    name: Upload Coverage
+    needs: [detect-scopes, validate]
+    if: needs.detect-scopes.outputs.has_changes == 'true' && always() && needs.validate.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Run tests with coverage
+        run: pnpm turbo run test:ci --filter=[HEAD~1]...
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
-      - name: Build
-        run: pnpm turbo run build ${{ steps.affected.outputs.filter }}
-
-      - name: Generate Turbo Summary
-        if: always()
+  # Summary job for branch protection
+  ci-success:
+    name: CI Success
+    needs: [detect-scopes, validate]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check results
         run: |
-          echo "## Turborepo CI Summary" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Filter Used" >> $GITHUB_STEP_SUMMARY
-          if [ -n "${{ steps.affected.outputs.base_sha }}" ]; then
-            echo "PR range: \`${{ steps.affected.outputs.base_sha }}...${{ steps.affected.outputs.head_sha }}\`" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "Full build (push to main/develop)" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ needs.detect-scopes.outputs.has_changes }}" != "true" ]; then
+            echo "No relevant changes detected - CI passed"
+            exit 0
           fi
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Affected Packages" >> $GITHUB_STEP_SUMMARY
-          pnpm turbo run build ${{ steps.affected.outputs.dry_run_filter }} 2>/dev/null | head -50 >> $GITHUB_STEP_SUMMARY || echo "All packages" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ needs.validate.result }}" == "success" ]; then
+            echo "All validations passed"
+            exit 0
+          elif [ "${{ needs.validate.result }}" == "skipped" ]; then
+            echo "Validations skipped (no apps to validate)"
+            exit 0
+          else
+            echo "Some validations failed"
+            exit 1
+          fi

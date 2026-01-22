@@ -1,0 +1,101 @@
+name: "Scopes to Matrix"
+description: "Convert comma-separated scopes to JSON array for matrix strategy"
+
+inputs:
+  scopes:
+    description: "Comma-separated list of app names (e.g., blog,mumak-next,mumak-react)"
+    required: true
+  apps_config:
+    description: "Path to apps config file (for filtering by properties)"
+    required: false
+    default: ".github/app-config/apps.yml"
+  filter_e2e:
+    description: "Filter to only apps with hasE2E: true"
+    required: false
+    default: "false"
+
+outputs:
+  matrix:
+    description: "JSON string array for matrix strategy"
+    value: ${{ steps.convert.outputs.matrix }}
+  count:
+    description: "Number of apps in matrix"
+    value: ${{ steps.convert.outputs.count }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Convert scopes to matrix
+      id: convert
+      shell: bash
+      run: |
+        set -e
+
+        SCOPES="${{ inputs.scopes }}"
+        APPS_CONFIG="${{ inputs.apps_config }}"
+        FILTER_E2E="${{ inputs.filter_e2e }}"
+
+        echo "=========================================="
+        echo "Scopes to Matrix"
+        echo "=========================================="
+        echo "Input: $SCOPES"
+        echo "Filter E2E only: $FILTER_E2E"
+        echo ""
+
+        if [ -z "$SCOPES" ]; then
+          echo "No scopes provided"
+          echo "matrix=[]" >> "$GITHUB_OUTPUT"
+          echo "count=0" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+
+        # Get E2E apps if filtering (pure bash, no yq dependency)
+        E2E_APPS=""
+        if [ "$FILTER_E2E" = "true" ] && [ -f "$APPS_CONFIG" ]; then
+          # Parse YAML: find apps with hasE2E: true
+          E2E_APPS=$(awk '
+            /^[[:space:]]*-[[:space:]]*app:/ { app = $NF; gsub(/[[:space:]]/, "", app) }
+            /hasE2E:[[:space:]]*true/ { if (app != "") { print app; app = "" } }
+          ' "$APPS_CONFIG" 2>/dev/null | tr '\n' ',' | sed 's/,$//')
+          echo "E2E enabled apps: $E2E_APPS"
+        fi
+
+        # Build matrix JSON
+        IFS=',' read -ra APP_ARRAY <<< "$SCOPES"
+        MATRIX_JSON="["
+        FIRST=true
+        COUNT=0
+
+        for APP in "${APP_ARRAY[@]}"; do
+          APP="$(echo "$APP" | xargs)"  # trim whitespace
+          if [ -z "$APP" ]; then
+            continue
+          fi
+
+          # Filter by E2E if requested
+          if [ "$FILTER_E2E" = "true" ]; then
+            if ! echo ",$E2E_APPS," | grep -q ",$APP,"; then
+              echo "  [skipped] $APP (no E2E)"
+              continue
+            fi
+          fi
+
+          if [ "$FIRST" = true ]; then
+            FIRST=false
+          else
+            MATRIX_JSON="$MATRIX_JSON,"
+          fi
+          MATRIX_JSON="$MATRIX_JSON\"$APP\""
+          COUNT=$((COUNT + 1))
+          echo "  [included] $APP"
+        done
+
+        MATRIX_JSON="$MATRIX_JSON]"
+
+        echo ""
+        echo "Output: $MATRIX_JSON"
+        echo "Count: $COUNT"
+        echo "=========================================="
+
+        echo "matrix=$MATRIX_JSON" >> "$GITHUB_OUTPUT"
+        echo "count=$COUNT" >> "$GITHUB_OUTPUT"

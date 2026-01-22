@@ -87,12 +87,33 @@ pnpm install
 
 ## CI/CD 동작
 
+### 변경 감지 전략
+
+CI/CD는 변경된 앱만 검증하여 리소스를 절약합니다:
+
+1. **paths 필터**: `apps/**`, `packages/**` 변경 시에만 워크플로우 실행
+2. **detect-scopes**: 변경된 파일을 분석해 영향받는 앱 감지
+3. **동적 matrix**: 감지된 앱별로 병렬 job 실행
+
+### 앱 설정
+
+`.github/app-config/apps.yml`에서 CI/CD 대상 앱을 관리합니다:
+
+```yaml
+apps:
+  - app: blog
+    type: next
+    hasE2E: true
+```
+
+- `packages/**` 변경 시 모든 앱 포함
+- `apps/{app}/**` 변경 시 해당 앱만 포함
+
 ### Pull Request
 
-- **Affected 필터**: PR base SHA ~ head SHA 범위의 변경 패키지 + dependents 자동 감지
+- **앱별 병렬 실행**: 변경된 앱마다 독립적인 validate job 실행
 - **Remote Cache**: Turbo Remote Cache를 통해 CI 간 캐시 공유
-- **E2E 병렬화**: chromium, firefox, webkit 3개 브라우저가 matrix job으로 병렬 실행
-- dry-run으로 실행 계획 출력
+- **E2E 병렬화**: (앱 x 브라우저) 조합별 matrix job 실행
 
 ### main/develop Push
 
@@ -103,7 +124,8 @@ pnpm install
 
 - **CI**: 빌드된 산출물 재사용 (`next start` / `vite preview`)
 - **로컬**: dev 서버 사용 (`next dev` / `vite`)
-- 브라우저별 matrix로 병렬 실행하여 wall-clock 시간 단축
+- 앱 x 브라우저 matrix로 병렬 실행하여 wall-clock 시간 단축
+- `hasE2E: true`인 앱만 E2E 테스트 실행
 
 ## 캐싱 전략
 
