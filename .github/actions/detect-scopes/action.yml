@@ -93,6 +93,13 @@ runs:
           echo "packages/** changed - will include all apps"
         fi
 
+        # Check if CI-related files changed (affects all apps)
+        CI_CHANGED=false
+        if echo "$CHANGED_FILES" | grep -qE "^\.github/(workflows|actions|app-config)/"; then
+          CI_CHANGED=true
+          echo ".github CI files changed - will include all apps"
+        fi
+
         # Detect affected apps
         AFFECTED=""
         for APP in $APP_NAMES; do
@@ -103,8 +110,8 @@ runs:
             APP_CHANGED=true
           fi
 
-          # Include if packages changed or app changed
-          if [ "$PACKAGES_CHANGED" = true ] || [ "$APP_CHANGED" = true ]; then
+          # Include if packages/CI changed or app changed
+          if [ "$PACKAGES_CHANGED" = true ] || [ "$CI_CHANGED" = true ] || [ "$APP_CHANGED" = true ]; then
             if [ -n "$AFFECTED" ]; then
               AFFECTED="${AFFECTED},${APP}"
             else
