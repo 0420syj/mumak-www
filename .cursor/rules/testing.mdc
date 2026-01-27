@@ -1,0 +1,71 @@
+---
+description: 테스트 작성 규칙
+globs:
+  - "**/__tests__/**"
+  - "**/e2e/**"
+  - "**/*.test.ts"
+  - "**/*.test.tsx"
+  - "**/*.spec.ts"
+---
+
+## 테스트 파일 위치
+
+- 단위 테스트: 소스와 colocate된 `__tests__/` 폴더
+- E2E 테스트: 프로젝트 루트 `e2e/` 폴더
+
+## 네이밍
+
+- 단위 테스트: `{소스파일명}.test.ts(x)`
+- E2E 테스트: `{페이지명}.spec.ts`
+
+```
+components/counter.tsx     → __tests__/counter.test.tsx
+app/page.tsx              → e2e/home.spec.ts
+```
+
+## 테스트 구조
+
+### Jest (단위 테스트)
+
+```typescript
+import { render, screen } from '@testing-library/react';
+import { Counter } from '../components/counter';
+
+describe('Counter', () => {
+  it('should render initial count', () => {
+    render(<Counter />);
+    expect(screen.getByText('0')).toBeInTheDocument();
+  });
+
+  describe('when clicked', () => {
+    it('should increment count', async () => {
+      // ...
+    });
+  });
+});
+```
+
+### Playwright (E2E)
+
+```typescript
+import { expect, test } from '@playwright/test';
+
+test.describe('Home Page', () => {
+  test('should display intro section', async ({ page }) => {
+    await page.goto('/');
+    await expect(page.getByRole('heading')).toBeVisible();
+  });
+});
+```
+
+## Import 경로
+
+테스트 파일에서는 **상대경로 허용**:
+
+```typescript
+// 테스트 대상은 상대경로 OK
+import { Counter } from '../components/counter';
+
+// 유틸리티는 절대경로
+import { mockUser } from '@/test/mocks';
+```

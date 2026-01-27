@@ -1,11 +1,30 @@
+## 프로젝트 구조
+
+Turborepo 모노레포. 공유 패키지는 `packages/`에, 앱은 `apps/`에 위치.
+
+| 패키지 | 용도 |
+|--------|------|
+| `@mumak/ui` | shadcn/ui 기반 공유 컴포넌트 |
+| `@mumak/eslint-config` | ESLint 설정 |
+| `@mumak/typescript-config` | TypeScript 설정 |
+
+| 앱 | 설명 |
+|----|------|
+| `apps/mumak-next` | Next.js 15 (App Router) |
+| `apps/mumak-react` | React + Vite |
+| `apps/blog` | 블로그 |
+
+## Git Flow
+
+- `main`: 프로덕션, `develop`: 개발 통합
+- `feature/*`: develop에서 분기 → develop으로 머지
+- `hotfix/*`: main에서 분기 → main, develop 둘 다 머지
+
 ## TypeScript
 
-- Only create an abstraction if it's actually needed
 - Prefer clear function/variable names over inline comments
-- Avoid helper functions when a simple inline expression would suffice
 - Use `knip` to remove unused code if making large changes
-- The `gh` CLI is installed, use it
-- Don't use emojis
+- Don't cast to `any`
 
 ## React
 
@@ -13,19 +32,18 @@
 - Colocate code that changes together
 - Avoid `useEffect` unless absolutely needed
 
+## Next.js
+
+- Prefer fetching data in RSC
+- Be mindful of serialized prop size for RSC → client components
+- Use `priority` on next/image sparingly (LCP only)
+
 ## Tailwind
 
-- Mostly use built-in values, occasionally allow dynamic values, rarely globals
-- Always use v4 + global CSS file format + shadcn/ui
+- Always use v4 + shadcn/ui
+- Mostly use built-in values, rarely globals
 
-## Next
+## 기타
 
-- Prefer fetching data in RSC (page can still be static)
-- Use next/font + next/script when applicable
-- next/image should have `sync` / `eager` / use `priority` sparingly
-- Be mindful of serialized prop size for RSC -> child components
-
-## TypeScript
-
-- Don't unnecessarily add `try`/`catch`
-- Don't cast to `any`
+- `gh` CLI 사용 가능
+- Don't use emojis
