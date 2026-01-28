@@ -68,7 +68,7 @@ export function SpotifyVinyl({ data, statusLabel, isTransitioning = false }: Spo
           {/* Album Sleeve */}
           <div
             className={cn(
-              'size-24 sm:size-32 rounded sm:rounded-lg shadow-2xl overflow-hidden bg-neutral-800 border border-neutral-200 dark:border-white/10 relative',
+              'size-24 sm:size-32 rounded lg:rounded-lg shadow-2xl overflow-hidden bg-neutral-800 border border-neutral-200 dark:border-white/10 relative',
               'transition-opacity duration-300',
               isTransitioning && 'animate-[fadeInScale_0.4s_ease-out]'
             )}
