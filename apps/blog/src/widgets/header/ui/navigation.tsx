@@ -19,7 +19,7 @@ export async function Navigation() {
 
   return (
     <nav className="border-b border-border">
-      <div className="container mx-auto px-4 max-w-5xl">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-5xl">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-3 sm:gap-4">
             <div className="md:hidden">
