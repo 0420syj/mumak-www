@@ -45,7 +45,8 @@ pnpm turbo run build --filter=<app>
 
 ```bash
 # develop 브랜치 대비 변경된 부분 검증
-pnpm turbo run check-types lint format:check test:ci --filter=[origin/develop...HEAD]
+# 주의: zsh에서는 반드시 따옴표로 감싸야 함 (bracket이 glob으로 해석됨)
+pnpm turbo run check-types lint format:check test:ci --filter='[origin/develop...HEAD]'
 ```
 
 ## Turbo 필터 팁
@@ -58,7 +59,8 @@ pnpm turbo run check-types lint format:check test:ci --filter=[origin/develop...
 --filter=mumak-next
 
 # 변경된 부분만 (CI와 동일)
---filter=[origin/develop...HEAD]
+# zsh에서는 따옴표 필수
+--filter='[origin/develop...HEAD]'
 
 # 특정 앱 + 의존성
 --filter=...blog
@@ -119,5 +121,5 @@ pnpm turbo run format --filter=<app>
 스크립트 없이 한줄로:
 
 ```bash
-pnpm turbo run check-types lint format:check test:ci --filter=[origin/develop...HEAD]
+pnpm turbo run check-types lint format:check test:ci --filter='[origin/develop...HEAD]'
 ```
