@@ -18,7 +18,12 @@ export async function SpotifyVinylServer({ listeningToLabel, lastPlayedLabel }: 
   'use cache';
   cacheLife({ stale: 10, revalidate: 10, expire: 60 });
 
-  const initialData = await getNowPlayingDirect();
+  let initialData = null;
+  try {
+    initialData = await getNowPlayingDirect();
+  } catch {
+    // API 에러 시 null 유지 (skeleton 표시)
+  }
 
   return (
     <SpotifyVinylClient
