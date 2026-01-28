@@ -61,7 +61,7 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
         <p className="text-muted-foreground">{t(`${category}.description`)}</p>
       </header>
 
-      <BlogNav allLabel={tCommon('all')} categoryLabels={categoryLabels} />
+      <BlogNav allLabel={tCommon('all')} categoryLabels={categoryLabels} tagsLabel={tCommon('tags')} />
 
       <section className="space-y-6">
         {posts.length === 0 ? (

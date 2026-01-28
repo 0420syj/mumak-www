@@ -6,7 +6,8 @@
     "essay": "에세이",
     "articles": "아티클",
     "notes": "노트",
-    "language": "언어"
+    "language": "언어",
+    "tags": "태그"
   },
   "footer": {
     "about": "소개",
@@ -45,6 +46,15 @@
     "readMore": "더 읽기",
     "backToList": "목록으로 돌아가기",
     "readingTimeUnit": "분"
+  },
+  "tags": {
+    "title": "태그",
+    "metaDescription": "블로그의 모든 태그 목록",
+    "description": "총 {count}개의 태그가 있습니다",
+    "empty": "태그가 없습니다",
+    "postCount": "{count}개의 글",
+    "tagTitle": "#{tag}",
+    "tagDescription": "{tag} 태그가 포함된 글 목록"
   },
   "notFound": {
     "title": "페이지를 찾을 수 없습니다",

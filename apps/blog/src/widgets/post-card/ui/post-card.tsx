@@ -7,6 +7,8 @@ import { type PostMeta } from '@/src/entities/post';
 import { Link } from '@/src/shared/config/i18n';
 import { formatDateForLocale } from '@/src/shared/lib/date';
 
+import { PostTags } from './post-tags';
+
 interface PostCardProps {
   post: PostMeta;
   locale: string;
@@ -34,6 +36,11 @@ export async function PostCard({ post, locale, categoryLabel, readMoreLabel }: P
         </div>
         <h3 className="text-xl font-semibold mb-2">{post.title}</h3>
         <p className="text-muted-foreground mb-3">{post.description}</p>
+        {post.tags && post.tags.length > 0 && (
+          <div className="mb-3">
+            <PostTags tags={post.tags} />
+          </div>
+        )}
         {readMoreLabel && <span className="text-sm font-medium text-foreground">{readMoreLabel} →</span>}
       </article>
     </Link>

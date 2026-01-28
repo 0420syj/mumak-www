@@ -3,11 +3,12 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { MDXRemote } from 'next-mdx-remote-client/rsc';
 import { notFound } from 'next/navigation';
 
+import { mdxComponents } from '@/mdx-components';
 import { generateBlogPostingJsonLd, JsonLdScript } from '@/src/app/seo';
 import { getAllPostSlugs, getPost, isValidCategory } from '@/src/entities/post';
-import { locales, type Locale, Link } from '@/src/shared/config/i18n';
+import { Link, locales, type Locale } from '@/src/shared/config/i18n';
 import { formatDateForLocale } from '@/src/shared/lib/date';
-import { mdxComponents } from '@/mdx-components';
+import { PostTags } from '@/src/widgets/post-card/ui/post-tags';
 
 interface PostPageProps {
   params: Promise<{ locale: string; category: string; slug: string }>;
@@ -73,6 +74,11 @@ export default async function PostPage({ params }: PostPageProps) {
           </div>
           <h1 className="text-4xl font-bold mb-4">{post.meta.title}</h1>
           <p className="text-lg text-muted-foreground">{post.meta.description}</p>
+          {post.meta.tags && post.meta.tags.length > 0 && (
+            <div className="mt-4">
+              <PostTags tags={post.meta.tags} />
+            </div>
+          )}
         </header>
 
         <div className="prose prose-neutral dark:prose-invert max-w-none">

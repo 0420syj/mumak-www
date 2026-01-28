@@ -6,7 +6,8 @@
     "essay": "Essay",
     "articles": "Articles",
     "notes": "Notes",
-    "language": "Language"
+    "language": "Language",
+    "tags": "Tags"
   },
   "footer": {
     "about": "About",
@@ -45,6 +46,15 @@
     "readMore": "Read more",
     "backToList": "Back to list",
     "readingTimeUnit": " min"
+  },
+  "tags": {
+    "title": "Tags",
+    "metaDescription": "All tags in the blog",
+    "description": "{count} tags available",
+    "empty": "No tags found",
+    "postCount": "{count} posts",
+    "tagTitle": "#{tag}",
+    "tagDescription": "Posts tagged with {tag}"
   },
   "notFound": {
     "title": "Page Not Found",
