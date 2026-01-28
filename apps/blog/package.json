@@ -20,7 +20,8 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:debug": "playwright test --debug",
-    "clean": "rm -rf .next .turbo coverage test-results playwright-report node_modules/.cache"
+    "clean": "rm -rf .next .turbo coverage test-results playwright-report node_modules/.cache",
+    "validate:content": "node scripts/validate-content.mjs"
   },
   "dependencies": {
     "@mumak/ui": "workspace:*",
