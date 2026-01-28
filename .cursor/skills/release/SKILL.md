@@ -11,9 +11,9 @@ Git Flow와 버전 동기화 스크립트를 사용한 릴리즈 워크플로우
 
 버전 형식: `MAJOR.MINOR.PATCH`
 
-| 유형 | 언제 올림 | 예시 |
-|------|----------|------|
-| **MAJOR** | 호환되지 않는 API 변경 | 1.0.0 → 2.0.0 |
+| 유형      | 언제 올림               | 예시          |
+| --------- | ----------------------- | ------------- |
+| **MAJOR** | 호환되지 않는 API 변경  | 1.0.0 → 2.0.0 |
 | **MINOR** | 하위 호환되는 기능 추가 | 1.0.0 → 1.1.0 |
 | **PATCH** | 하위 호환되는 버그 수정 | 1.0.0 → 1.0.1 |
 
@@ -136,9 +136,9 @@ node scripts/sync-versions.mjs 2.0.0-beta.1
 
 ## 문제 해결
 
-| 문제 | 해결 |
-|------|------|
-| git flow 미설치 | `brew install git-flow` |
-| 버전 불일치 | `node scripts/sync-versions.mjs` |
-| 태그 충돌 | `git tag -d <tag>` 후 재시도 |
-| 머지 충돌 | 수동 해결 후 `git flow release finish` 재실행 |
+| 문제            | 해결                                          |
+| --------------- | --------------------------------------------- |
+| git flow 미설치 | `brew install git-flow`                       |
+| 버전 불일치     | `node scripts/sync-versions.mjs`              |
+| 태그 충돌       | `git tag -d <tag>` 후 재시도                  |
+| 머지 충돌       | 수동 해결 후 `git flow release finish` 재실행 |

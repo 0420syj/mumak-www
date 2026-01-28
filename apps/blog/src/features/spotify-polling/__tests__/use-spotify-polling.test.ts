@@ -216,7 +216,9 @@ describe('useSpotifyPolling', () => {
       renderHook(() => useSpotifyPolling({ enabled: true }));
 
       // useSWR에 전달된 fetcher 함수 추출
-      const fetcherFn = mockUseSWR.mock.calls[mockUseSWR.mock.calls.length - 1][1] as (url: string) => Promise<unknown>;
+      const fetcherFn = mockUseSWR.mock.calls[mockUseSWR.mock.calls.length - 1]![1] as (
+        url: string
+      ) => Promise<unknown>;
 
       mockFetch.mockResolvedValueOnce({
         ok: false,
@@ -232,7 +234,9 @@ describe('useSpotifyPolling', () => {
       const { useSpotifyPolling } = await import('../hooks/use-spotify-polling');
       renderHook(() => useSpotifyPolling({ enabled: true }));
 
-      const fetcherFn = mockUseSWR.mock.calls[mockUseSWR.mock.calls.length - 1][1] as (url: string) => Promise<unknown>;
+      const fetcherFn = mockUseSWR.mock.calls[mockUseSWR.mock.calls.length - 1]![1] as (
+        url: string
+      ) => Promise<unknown>;
 
       const expectedResponse = { data: mockSongData, timestamp: Date.now() };
       mockFetch.mockResolvedValueOnce({
@@ -254,7 +258,7 @@ describe('useSpotifyPolling', () => {
       const { useSpotifyPolling } = await import('../hooks/use-spotify-polling');
       renderHook(() => useSpotifyPolling({ initialData: mockSongData }));
 
-      const swrOptions = mockUseSWR.mock.calls[mockUseSWR.mock.calls.length - 1][2] as {
+      const swrOptions = mockUseSWR.mock.calls[mockUseSWR.mock.calls.length - 1]![2] as {
         compare: (
           a: { data: NowPlaying | null; timestamp: number } | undefined,
           b: { data: NowPlaying | null; timestamp: number } | undefined
@@ -271,7 +275,7 @@ describe('useSpotifyPolling', () => {
       const { useSpotifyPolling } = await import('../hooks/use-spotify-polling');
       renderHook(() => useSpotifyPolling({ initialData: mockSongData }));
 
-      const swrOptions = mockUseSWR.mock.calls[mockUseSWR.mock.calls.length - 1][2] as {
+      const swrOptions = mockUseSWR.mock.calls[mockUseSWR.mock.calls.length - 1]![2] as {
         compare: (
           a: { data: NowPlaying | null; timestamp: number } | undefined,
           b: { data: NowPlaying | null; timestamp: number } | undefined
@@ -289,7 +293,7 @@ describe('useSpotifyPolling', () => {
       const { useSpotifyPolling } = await import('../hooks/use-spotify-polling');
       renderHook(() => useSpotifyPolling({ initialData: mockSongData }));
 
-      const swrOptions = mockUseSWR.mock.calls[mockUseSWR.mock.calls.length - 1][2] as {
+      const swrOptions = mockUseSWR.mock.calls[mockUseSWR.mock.calls.length - 1]![2] as {
         compare: (
           a: { data: NowPlaying | null; timestamp: number } | undefined,
           b: { data: NowPlaying | null; timestamp: number } | undefined
@@ -306,7 +310,7 @@ describe('useSpotifyPolling', () => {
       const { useSpotifyPolling } = await import('../hooks/use-spotify-polling');
       renderHook(() => useSpotifyPolling({ initialData: mockSongData }));
 
-      const swrOptions = mockUseSWR.mock.calls[mockUseSWR.mock.calls.length - 1][2] as {
+      const swrOptions = mockUseSWR.mock.calls[mockUseSWR.mock.calls.length - 1]![2] as {
         compare: (
           a: { data: NowPlaying | null; timestamp: number } | undefined,
           b: { data: NowPlaying | null; timestamp: number } | undefined
