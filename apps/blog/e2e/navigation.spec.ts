@@ -29,7 +29,7 @@ test.describe('Navigation', () => {
     };
 
     test('should hide header when scrolling down', async ({ page }) => {
-      await page.goto('/ko/essay/retrospect-2025');
+      await page.goto('/ko/blog/essay/retrospect-2025');
 
       const header = getSmartHeader(page);
       await expect(header).toBeVisible();
@@ -44,7 +44,7 @@ test.describe('Navigation', () => {
     });
 
     test('should show header when scrolling up', async ({ page }) => {
-      await page.goto('/ko/essay/retrospect-2025');
+      await page.goto('/ko/blog/essay/retrospect-2025');
 
       const header = getSmartHeader(page);
 
@@ -62,7 +62,7 @@ test.describe('Navigation', () => {
     });
 
     test('should always show header at top of page', async ({ page }) => {
-      await page.goto('/ko/essay/retrospect-2025');
+      await page.goto('/ko/blog/essay/retrospect-2025');
 
       const header = getSmartHeader(page);
 
@@ -80,7 +80,7 @@ test.describe('Navigation', () => {
     });
 
     test('should have shadow when scrolled (not at top)', async ({ page }) => {
-      await page.goto('/ko/essay/retrospect-2025');
+      await page.goto('/ko/blog/essay/retrospect-2025');
 
       const header = getSmartHeader(page);
 
@@ -101,7 +101,7 @@ test.describe('Navigation', () => {
 
     test('should work on mobile viewport', async ({ page }) => {
       await page.setViewportSize({ width: 375, height: 667 });
-      await page.goto('/ko/essay/retrospect-2025');
+      await page.goto('/ko/blog/essay/retrospect-2025');
 
       const header = getSmartHeader(page);
       await expect(header).toBeVisible();
@@ -121,7 +121,7 @@ test.describe('Navigation', () => {
 
     test('should work on tablet viewport', async ({ page }) => {
       await page.setViewportSize({ width: 768, height: 1024 });
-      await page.goto('/ko/essay/retrospect-2025');
+      await page.goto('/ko/blog/essay/retrospect-2025');
 
       const header = getSmartHeader(page);
 
@@ -140,7 +140,7 @@ test.describe('Navigation', () => {
 
     test('should work on desktop viewport', async ({ page }) => {
       await page.setViewportSize({ width: 1440, height: 900 });
-      await page.goto('/ko/essay/retrospect-2025');
+      await page.goto('/ko/blog/essay/retrospect-2025');
 
       const header = getSmartHeader(page);
 
@@ -158,7 +158,7 @@ test.describe('Navigation', () => {
     });
 
     test('navigation links should still work after scroll', async ({ page }) => {
-      await page.goto('/ko/essay/retrospect-2025');
+      await page.goto('/ko/blog/essay/retrospect-2025');
 
       const header = getSmartHeader(page);
 
@@ -171,10 +171,10 @@ test.describe('Navigation', () => {
       await waitForHeaderState(page, 'true');
 
       // 네비게이션 링크 클릭
-      await header.getByRole('link', { name: '에세이' }).click();
-      await page.waitForURL(/\/ko\/essay$/);
+      await header.getByRole('link', { name: '블로그' }).click();
+      await page.waitForURL(/\/ko\/blog$/);
 
-      await expect(page).toHaveURL(/\/ko\/essay$/);
+      await expect(page).toHaveURL(/\/ko\/blog$/);
     });
   });
 
@@ -207,7 +207,7 @@ test.describe('Navigation', () => {
 
   test.describe('Header Navigation', () => {
     test('should display logo and navigate to home', async ({ page }) => {
-      await page.goto('/ko/essay');
+      await page.goto('/ko/blog');
 
       const logo = page.getByRole('link', { name: 'Wan Sim' });
       await expect(logo).toBeVisible();
@@ -216,45 +216,30 @@ test.describe('Navigation', () => {
       await page.waitForURL(/\/ko$/);
     });
 
-    test('should display all navigation links', async ({ page }) => {
+    test('should display blog navigation link', async ({ page }) => {
       await page.goto('/ko');
 
       const nav = page.locator('nav');
-      await expect(nav.getByRole('link', { name: '에세이' })).toBeVisible();
-      await expect(nav.getByRole('link', { name: '아티클' })).toBeVisible();
-      await expect(nav.getByRole('link', { name: '노트' })).toBeVisible();
+      await expect(nav.getByRole('link', { name: '블로그' })).toBeVisible();
     });
 
-    test('should navigate to category pages from nav', async ({ page }) => {
+    test('should navigate to blog page from nav', async ({ page }) => {
       await page.goto('/ko');
       const nav = page.locator('nav');
 
-      // Navigate to essay
-      await nav.getByRole('link', { name: '에세이' }).click();
-      await page.waitForURL(/\/ko\/essay$/);
-      await expect(page.getByRole('heading', { level: 1, name: '에세이' })).toBeVisible();
-
-      // Navigate to articles
-      await nav.getByRole('link', { name: '아티클' }).click();
-      await page.waitForURL(/\/ko\/articles$/);
-      await expect(page.getByRole('heading', { level: 1, name: '아티클' })).toBeVisible();
-
-      // Navigate to notes
-      await nav.getByRole('link', { name: '노트' }).click();
-      await page.waitForURL(/\/ko\/notes$/);
-      await expect(page.getByRole('heading', { level: 1, name: '노트' })).toBeVisible();
+      await nav.getByRole('link', { name: '블로그' }).click();
+      await page.waitForURL(/\/ko\/blog$/);
+      await expect(page.getByRole('heading', { level: 1, name: '블로그' })).toBeVisible();
     });
 
     test('should work in English', async ({ page }) => {
       await page.goto('/en');
       const nav = page.locator('nav');
 
-      await expect(nav.getByRole('link', { name: 'Essay' })).toBeVisible();
-      await expect(nav.getByRole('link', { name: 'Articles' })).toBeVisible();
-      await expect(nav.getByRole('link', { name: 'Notes' })).toBeVisible();
+      await expect(nav.getByRole('link', { name: 'Blog' })).toBeVisible();
     });
 
-    test('should open mobile sheet menu with links', async ({ page }) => {
+    test('should open mobile sheet menu with blog link', async ({ page }) => {
       await page.setViewportSize({ width: 480, height: 900 });
       await page.goto('/ko');
 
@@ -265,13 +250,11 @@ test.describe('Navigation', () => {
       const sheet = page.getByRole('dialog');
       await expect(sheet).toBeVisible();
 
-      await expect(sheet.getByRole('link', { name: '에세이' })).toBeVisible();
-      await expect(sheet.getByRole('link', { name: '아티클' })).toBeVisible();
-      await expect(sheet.getByRole('link', { name: '노트' })).toBeVisible();
+      await expect(sheet.getByRole('link', { name: '블로그' })).toBeVisible();
 
-      await sheet.getByRole('link', { name: '에세이' }).click();
-      await page.waitForURL(/\/ko\/essay$/);
-      await expect(page).toHaveURL(/\/ko\/essay$/);
+      await sheet.getByRole('link', { name: '블로그' }).click();
+      await page.waitForURL(/\/ko\/blog$/);
+      await expect(page).toHaveURL(/\/ko\/blog$/);
     });
 
     test('mobile header keeps switchers visible and sheet can close with escape', async ({ page }) => {
@@ -306,22 +289,22 @@ test.describe('Navigation', () => {
 
   test.describe('Post Navigation', () => {
     test('should navigate from post list to post detail', async ({ page }) => {
-      await page.goto('/ko/essay');
+      await page.goto('/ko/blog/essay');
 
       // PostCard wraps article with Link, so we click on the article's parent link
       const firstPostCard = page.locator('article').first();
       await firstPostCard.click();
 
       // Should be on post detail page
-      await page.waitForURL(/\/ko\/essay\/.+/);
-      await expect(page.url()).toMatch(/\/ko\/essay\/.+/);
+      await page.waitForURL(/\/ko\/blog\/essay\/.+/);
+      await expect(page.url()).toMatch(/\/ko\/blog\/essay\/.+/);
     });
 
     test('should navigate back to list from post detail', async ({ page }) => {
-      await page.goto('/ko/essay/first');
+      await page.goto('/ko/blog/essay/first');
 
       await page.getByRole('link', { name: '목록으로 돌아가기' }).click();
-      await page.waitForURL(/\/ko\/essay$/);
+      await page.waitForURL(/\/ko\/blog\/essay$/);
     });
   });
 

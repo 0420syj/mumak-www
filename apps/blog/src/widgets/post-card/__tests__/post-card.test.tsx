@@ -66,7 +66,7 @@ describe('PostCard', () => {
     render(<PostCard post={mockPost} locale="ko" readMoreLabel="더 읽기" readingTimeUnit="분" />);
 
     const link = screen.getByRole('link');
-    expect(link).toHaveAttribute('href', '/articles/test-post');
+    expect(link).toHaveAttribute('href', '/blog/articles/test-post');
   });
 
   describe('with categoryLabel', () => {

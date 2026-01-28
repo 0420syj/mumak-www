@@ -14,7 +14,7 @@ interface PostCardProps {
 
 export function PostCard({ post, locale, categoryLabel, readMoreLabel, readingTimeUnit }: PostCardProps) {
   return (
-    <Link href={`/${post.category}/${post.slug}`} className="block">
+    <Link href={`/blog/${post.category}/${post.slug}`} className="block">
       <article className="border border-border rounded-lg p-4 hover:bg-muted/50 transition-colors">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
           {categoryLabel && (

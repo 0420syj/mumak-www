@@ -27,7 +27,7 @@ test.describe('SEO - JSON-LD Structured Data', () => {
   });
 
   test('should have BlogPosting JSON-LD on post page', async ({ page }) => {
-    await page.goto('/ko/essay/first');
+    await page.goto('/ko/blog/essay/first');
 
     const jsonLdScripts = await page.locator('script[type="application/ld+json"]').all();
     expect(jsonLdScripts.length).toBe(2);

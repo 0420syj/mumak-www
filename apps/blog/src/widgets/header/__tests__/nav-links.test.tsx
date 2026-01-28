@@ -14,10 +14,7 @@ jest.mock('@/src/shared/config/i18n', () => ({
   usePathname: () => mockUsePathname(),
 }));
 
-const items = [
-  { href: '/essay', label: 'Essay' },
-  { href: '/articles', label: 'Articles' },
-];
+const items = [{ href: '/blog', label: 'Blog' }];
 
 describe('NavLinks', () => {
   beforeEach(() => {
@@ -27,18 +24,17 @@ describe('NavLinks', () => {
   it('should render links with correct labels', () => {
     render(<NavLinks items={items} />);
 
-    expect(screen.getByText('Essay')).toBeInTheDocument();
-    expect(screen.getByText('Articles')).toBeInTheDocument();
+    expect(screen.getByText('Blog')).toBeInTheDocument();
   });
 
   it('should apply active styles when pathname matches', () => {
-    mockUsePathname.mockReturnValue('/essay');
+    mockUsePathname.mockReturnValue('/blog');
 
     render(<NavLinks items={items} />);
 
-    const essayLink = screen.getByText('Essay').closest('a');
-    expect(essayLink).toHaveClass('bg-muted font-medium');
-    expect(essayLink).not.toHaveClass('hover:bg-muted/50');
+    const blogLink = screen.getByText('Blog').closest('a');
+    expect(blogLink).toHaveClass('bg-muted font-medium');
+    expect(blogLink).not.toHaveClass('hover:bg-muted/50');
   });
 
   it('should apply inactive styles when pathname does not match', () => {
@@ -46,8 +42,8 @@ describe('NavLinks', () => {
 
     render(<NavLinks items={items} />);
 
-    const essayLink = screen.getByText('Essay').closest('a');
-    expect(essayLink).toHaveClass('hover:bg-muted/50');
-    expect(essayLink).not.toHaveClass('bg-muted font-medium');
+    const blogLink = screen.getByText('Blog').closest('a');
+    expect(blogLink).toHaveClass('hover:bg-muted/50');
+    expect(blogLink).not.toHaveClass('bg-muted font-medium');
   });
 });

@@ -34,6 +34,21 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ['next-mdx-remote-client', '@mumak/ui', 'lucide-react', 'next-themes', 'next-intl'],
   },
+  async redirects() {
+    const categories = ['essay', 'articles', 'notes'];
+    return categories.flatMap(category => [
+      {
+        source: `/:locale/${category}`,
+        destination: `/:locale/blog/${category}`,
+        permanent: true,
+      },
+      {
+        source: `/:locale/${category}/:slug`,
+        destination: `/:locale/blog/${category}/:slug`,
+        permanent: true,
+      },
+    ]);
+  },
   async headers() {
     return [
       {

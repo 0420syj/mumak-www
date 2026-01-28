@@ -81,7 +81,7 @@ export default async function PostPage({ params }: PostPageProps) {
       </article>
 
       <nav className="mt-12 pt-8 border-t border-border">
-        <Link href={`/${category}`} className="text-sm font-medium hover:underline">
+        <Link href={`/blog/${category}`} className="text-sm font-medium hover:underline">
           ← {t('backToList')}
         </Link>
       </nav>

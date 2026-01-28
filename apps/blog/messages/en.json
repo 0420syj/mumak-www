@@ -1,6 +1,8 @@
 {
   "common": {
     "home": "Home",
+    "blog": "Blog",
+    "all": "All",
     "essay": "Essay",
     "articles": "Articles",
     "notes": "Notes",
@@ -18,6 +20,12 @@
     "recentPosts": "Recent Posts",
     "listeningTo": "Listening to Spotify",
     "lastPlayed": "Last Played on Spotify"
+  },
+  "blog": {
+    "title": "Blog",
+    "description": "A space for thoughts and records",
+    "allPosts": "All Posts",
+    "postsCount": "{count} posts"
   },
   "category": {
     "essay": {

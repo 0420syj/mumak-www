@@ -7,11 +7,7 @@ import { Link } from '@/src/shared/config/i18n';
 import { MobileMenu } from './MobileMenu';
 import { NavLinks } from './NavLinks';
 
-const navItems = [
-  { href: '/essay', labelKey: 'essay' },
-  { href: '/articles', labelKey: 'articles' },
-  { href: '/notes', labelKey: 'notes' },
-] as const;
+const navItems = [{ href: '/blog', labelKey: 'blog' }] as const;
 
 export async function Navigation() {
   const t = await getTranslations('common');

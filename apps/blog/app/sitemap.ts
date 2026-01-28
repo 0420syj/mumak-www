@@ -18,12 +18,22 @@ export default function sitemap(): MetadataRoute.Sitemap {
     });
   }
 
+  // Blog pages for each locale
+  for (const locale of locales) {
+    routes.push({
+      url: `${BASE_URL}/${locale}/blog`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    });
+  }
+
   // Category pages for each locale
   const categories = getCategories();
   for (const locale of locales) {
     for (const category of categories) {
       routes.push({
-        url: `${BASE_URL}/${locale}/${category}`,
+        url: `${BASE_URL}/${locale}/blog/${category}`,
         lastModified: new Date(),
         changeFrequency: 'weekly',
         priority: 0.8,
@@ -36,7 +46,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const posts = getAllPostSlugs(locale as Locale);
     for (const { category, slug } of posts) {
       routes.push({
-        url: `${BASE_URL}/${locale}/${category}/${slug}`,
+        url: `${BASE_URL}/${locale}/blog/${category}/${slug}`,
         lastModified: new Date(),
         changeFrequency: 'monthly',
         priority: 0.6,

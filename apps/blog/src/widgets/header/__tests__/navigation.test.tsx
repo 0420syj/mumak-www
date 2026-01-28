@@ -7,6 +7,7 @@ import { Navigation } from '../ui/Navigation';
 jest.mock('next-intl/server', () => ({
   getTranslations: jest.fn(async () => (key: string) => {
     const translations: Record<string, string> = {
+      blog: '블로그',
       essay: '에세이',
       articles: '아티클',
       notes: '노트',
@@ -67,9 +68,7 @@ describe('Navigation', () => {
 
     const navLinks = screen.getByTestId('nav-links');
     expect(navLinks).toBeInTheDocument();
-    expect(navLinks).toHaveTextContent('에세이');
-    expect(navLinks).toHaveTextContent('아티클');
-    expect(navLinks).toHaveTextContent('노트');
+    expect(navLinks).toHaveTextContent('블로그');
   });
 
   it('should render mobile menu via MobileMenu', async () => {
@@ -78,7 +77,7 @@ describe('Navigation', () => {
 
     const mobileMenu = screen.getByTestId('mobile-menu');
     expect(mobileMenu).toBeInTheDocument();
-    expect(mobileMenu).toHaveTextContent('에세이');
+    expect(mobileMenu).toHaveTextContent('블로그');
   });
 
   it('should render theme switcher and locale switcher', async () => {

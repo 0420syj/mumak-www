@@ -36,7 +36,7 @@ export function generateBlogPostingJsonLd({ post, locale, category }: BlogPostin
     description: post.description,
     datePublished: post.date,
     dateModified: post.date,
-    url: `${BASE_URL}/${locale}/${category}/${post.slug}`,
+    url: `${BASE_URL}/${locale}/blog/${category}/${post.slug}`,
     inLanguage: locale === 'ko' ? 'ko-KR' : 'en-US',
     author: {
       '@type': 'Person',
@@ -50,7 +50,7 @@ export function generateBlogPostingJsonLd({ post, locale, category }: BlogPostin
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `${BASE_URL}/${locale}/${category}/${post.slug}`,
+      '@id': `${BASE_URL}/${locale}/blog/${category}/${post.slug}`,
     },
   };
 }
