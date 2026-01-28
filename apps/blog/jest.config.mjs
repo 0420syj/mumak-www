@@ -29,6 +29,13 @@ const customJestConfig = {
     '!**/.next/**',
     '!**/coverage/**',
     '!**/__tests__/**',
+    // 배럴 파일 제외 (단순 re-export)
+    '!**/index.ts',
+    // Next.js 메타데이터 파일 제외 (E2E 테스트 권장)
+    '!**/opengraph-image.tsx',
+    '!**/icon.tsx',
+    // API 라우트 제외 (통합 테스트 권장)
+    '!app/api/**',
   ],
   // coverageThreshold: {
   //   global: {

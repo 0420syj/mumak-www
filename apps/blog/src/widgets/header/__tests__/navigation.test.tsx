@@ -1,12 +1,13 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 
-import { Navigation } from '../ui/Navigation';
+import { Navigation } from '../ui/navigation';
 
 // Mock next-intl/server
 jest.mock('next-intl/server', () => ({
   getTranslations: jest.fn(async () => (key: string) => {
     const translations: Record<string, string> = {
+      blog: '블로그',
       essay: '에세이',
       articles: '아티클',
       notes: '노트',
@@ -33,7 +34,7 @@ jest.mock('@/src/features/switch-theme', () => ({
   ThemeSwitcher: () => <div data-testid="theme-switcher">ThemeSwitcher</div>,
 }));
 
-jest.mock('../ui/MobileMenu', () => ({
+jest.mock('../ui/mobile-menu', () => ({
   MobileMenu: ({ items }: { items: { label: string; href: string }[] }) => (
     <div data-testid="mobile-menu">
       {items.map(item => (
@@ -43,7 +44,7 @@ jest.mock('../ui/MobileMenu', () => ({
   ),
 }));
 
-jest.mock('../ui/NavLinks', () => ({
+jest.mock('../ui/nav-links', () => ({
   NavLinks: ({ items }: { items: { label: string; href: string }[] }) => (
     <div data-testid="nav-links">
       {items.map(item => (
@@ -67,9 +68,7 @@ describe('Navigation', () => {
 
     const navLinks = screen.getByTestId('nav-links');
     expect(navLinks).toBeInTheDocument();
-    expect(navLinks).toHaveTextContent('에세이');
-    expect(navLinks).toHaveTextContent('아티클');
-    expect(navLinks).toHaveTextContent('노트');
+    expect(navLinks).toHaveTextContent('블로그');
   });
 
   it('should render mobile menu via MobileMenu', async () => {
@@ -78,7 +77,7 @@ describe('Navigation', () => {
 
     const mobileMenu = screen.getByTestId('mobile-menu');
     expect(mobileMenu).toBeInTheDocument();
-    expect(mobileMenu).toHaveTextContent('에세이');
+    expect(mobileMenu).toHaveTextContent('블로그');
   });
 
   it('should render theme switcher and locale switcher', async () => {

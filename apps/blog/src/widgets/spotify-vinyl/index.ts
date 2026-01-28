@@ -1,4 +1,4 @@
-export { SpotifyVinyl } from './ui/SpotifyVinyl';
-export { SpotifyVinylServer } from './ui/SpotifyVinylServer';
-export { SpotifyVinylSkeleton } from './ui/SpotifyVinylSkeleton';
-export { SpotifyVinylClient } from './ui/SpotifyVinylClient';
+export { SpotifyVinyl } from './ui/spotify-vinyl';
+export { SpotifyVinylServer } from './ui/spotify-vinyl-server';
+export { SpotifyVinylSkeleton } from './ui/spotify-vinyl-skeleton';
+export { SpotifyVinylClient } from './ui/spotify-vinyl-client';

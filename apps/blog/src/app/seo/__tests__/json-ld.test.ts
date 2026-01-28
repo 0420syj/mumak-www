@@ -49,7 +49,7 @@ describe('json-ld', () => {
       expect(result.description).toBe('Test post description');
       expect(result.datePublished).toBe('2024-01-15');
       expect(result.dateModified).toBe('2024-01-15');
-      expect(result.url).toContain('/ko/articles/test-post');
+      expect(result.url).toContain('/ko/blog/articles/test-post');
       expect(result.inLanguage).toBe('ko-KR');
     });
 
@@ -60,7 +60,7 @@ describe('json-ld', () => {
         category: 'essay',
       });
 
-      expect(result.url).toContain('/en/essay/test-post');
+      expect(result.url).toContain('/en/blog/essay/test-post');
       expect(result.inLanguage).toBe('en-US');
     });
 
@@ -92,7 +92,7 @@ describe('json-ld', () => {
 
       expect(result.mainEntityOfPage).toEqual({
         '@type': 'WebPage',
-        '@id': expect.stringContaining('/ko/articles/test-post'),
+        '@id': expect.stringContaining('/ko/blog/articles/test-post'),
       });
     });
   });

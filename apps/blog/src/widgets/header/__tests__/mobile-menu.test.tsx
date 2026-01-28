@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 
-import { MobileMenu } from '../ui/MobileMenu';
+import { MobileMenu } from '../ui/mobile-menu';
 
 const mockUsePathname = jest.fn(() => '/');
 
@@ -24,10 +24,7 @@ jest.mock('@mumak/ui/components/sheet', () => ({
   SheetClose: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 
-const items = [
-  { href: '/essay', label: 'Essay' },
-  { href: '/articles', label: 'Articles' },
-];
+const items = [{ href: '/blog', label: 'Blog' }];
 
 describe('MobileMenu', () => {
   beforeEach(() => {
@@ -42,18 +39,17 @@ describe('MobileMenu', () => {
   it('should render links in sheet content', () => {
     render(<MobileMenu items={items} />);
 
-    expect(screen.getByText('Essay')).toBeInTheDocument();
-    expect(screen.getByText('Articles')).toBeInTheDocument();
+    expect(screen.getByText('Blog')).toBeInTheDocument();
   });
 
   it('should apply active styles when pathname matches', () => {
-    mockUsePathname.mockReturnValue('/essay');
+    mockUsePathname.mockReturnValue('/blog');
 
     render(<MobileMenu items={items} />);
 
-    const essayLink = screen.getByText('Essay').closest('a');
-    expect(essayLink).toHaveClass('text-foreground');
-    expect(essayLink).not.toHaveClass('text-muted-foreground');
+    const blogLink = screen.getByText('Blog').closest('a');
+    expect(blogLink).toHaveClass('text-foreground');
+    expect(blogLink).not.toHaveClass('text-muted-foreground');
   });
 
   it('should apply inactive styles when pathname does not match', () => {
@@ -61,8 +57,8 @@ describe('MobileMenu', () => {
 
     render(<MobileMenu items={items} />);
 
-    const essayLink = screen.getByText('Essay').closest('a');
-    expect(essayLink).toHaveClass('text-muted-foreground');
-    expect(essayLink).not.toHaveClass('text-foreground');
+    const blogLink = screen.getByText('Blog').closest('a');
+    expect(blogLink).toHaveClass('text-muted-foreground');
+    expect(blogLink).not.toHaveClass('text-foreground');
   });
 });

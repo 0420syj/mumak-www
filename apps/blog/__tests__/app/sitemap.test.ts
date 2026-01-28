@@ -20,13 +20,21 @@ describe('sitemap', () => {
     }
   });
 
-  it('should include category pages', () => {
+  it('should include blog and category pages', () => {
     const result = sitemap();
     const categories = ['essay', 'articles', 'notes'];
 
     for (const locale of locales) {
+      // Check blog main page
+      const blogEntry = result.find(
+        entry => entry.url.includes(`/${locale}/blog`) && !entry.url.includes(`/${locale}/blog/`)
+      );
+      expect(blogEntry).toBeDefined();
+      expect(blogEntry?.priority).toBe(0.9);
+
+      // Check category pages
       for (const category of categories) {
-        const categoryEntry = result.find(entry => entry.url.includes(`/${locale}/${category}`));
+        const categoryEntry = result.find(entry => entry.url.includes(`/${locale}/blog/${category}`));
         expect(categoryEntry).toBeDefined();
         expect(categoryEntry?.priority).toBe(0.8);
       }

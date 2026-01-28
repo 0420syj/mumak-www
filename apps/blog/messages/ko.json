@@ -1,10 +1,13 @@
 {
   "common": {
     "home": "홈",
+    "blog": "블로그",
+    "all": "전체",
     "essay": "에세이",
     "articles": "아티클",
     "notes": "노트",
-    "language": "언어"
+    "language": "언어",
+    "tags": "태그"
   },
   "footer": {
     "about": "소개",
@@ -18,6 +21,12 @@
     "recentPosts": "이전 글",
     "listeningTo": "Spotify에서 재생 중",
     "lastPlayed": "Spotify에서 최근 재생"
+  },
+  "blog": {
+    "title": "블로그",
+    "description": "생각과 기록을 담는 공간",
+    "allPosts": "전체 글",
+    "postsCount": "{count}개의 글"
   },
   "category": {
     "essay": {
@@ -37,6 +46,15 @@
     "readMore": "더 읽기",
     "backToList": "목록으로 돌아가기",
     "readingTimeUnit": "분"
+  },
+  "tags": {
+    "title": "태그",
+    "metaDescription": "블로그의 모든 태그 목록",
+    "description": "총 {count}개의 태그가 있습니다",
+    "empty": "태그가 없습니다",
+    "postCount": "{count}개의 글",
+    "tagTitle": "#{tag}",
+    "tagDescription": "{tag} 태그가 포함된 글 목록"
   },
   "notFound": {
     "title": "페이지를 찾을 수 없습니다",

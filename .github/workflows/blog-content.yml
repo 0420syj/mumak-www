@@ -1,0 +1,30 @@
+name: Blog Content Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - "apps/blog/content/**"
+  push:
+    branches: [main, develop]
+    paths:
+      - "apps/blog/content/**"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-content:
+    name: Validate Blog Content
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js and pnpm
+        uses: ./.github/actions/setup-node-pnpm
+
+      - name: Validate content
+        run: pnpm --filter=blog validate:content -- --summary >> $GITHUB_STEP_SUMMARY

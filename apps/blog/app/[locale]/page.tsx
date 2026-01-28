@@ -29,7 +29,6 @@ export default async function HomePage({ params }: HomePageProps) {
 
   const t = await getTranslations('home');
   const tCommon = await getTranslations('common');
-  const tPost = await getTranslations('post');
   const allPosts = getPosts(locale as Locale).slice(0, HOME_POST_LIMIT);
   const [featuredPost, ...recentPosts] = allPosts;
 
@@ -55,13 +54,7 @@ export default async function HomePage({ params }: HomePageProps) {
       {featuredPost && (
         <section>
           <h2 className="text-2xl font-semibold mb-6">{t('latestPosts')}</h2>
-          <PostCard
-            post={featuredPost}
-            locale={locale}
-            categoryLabel={translateCategory(featuredPost.category)}
-            readMoreLabel={tPost('readMore')}
-            readingTimeUnit={tPost('readingTimeUnit')}
-          />
+          <PostCard post={featuredPost} locale={locale} categoryLabel={translateCategory(featuredPost.category)} />
         </section>
       )}
 
@@ -75,8 +68,6 @@ export default async function HomePage({ params }: HomePageProps) {
                 post={post}
                 locale={locale}
                 categoryLabel={translateCategory(post.category)}
-                readMoreLabel={tPost('readMore')}
-                readingTimeUnit={tPost('readingTimeUnit')}
               />
             ))}
           </div>

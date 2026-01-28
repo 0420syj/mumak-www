@@ -3,6 +3,11 @@ import { render, screen } from '@testing-library/react';
 
 import type { NowPlaying } from '@/src/entities/spotify';
 
+// next/cache mock (cacheLife 등 서버 전용 API)
+jest.mock('next/cache', () => ({
+  cacheLife: jest.fn(),
+}));
+
 jest.mock('next/image', () => ({
   __esModule: true,
   default: ({ src, alt, priority }: { src: string; alt: string; priority?: boolean }) => (
@@ -26,10 +31,10 @@ jest.mock('@mumak/ui/components/skeleton', () => ({
   ),
 }));
 
-const mockGetNowPlaying = jest.fn<Promise<NowPlaying | null>, []>();
+const mockGetNowPlayingDirect = jest.fn<Promise<NowPlaying | null>, []>();
 
 jest.mock('@/src/entities/spotify', () => ({
-  getNowPlaying: () => mockGetNowPlaying(),
+  getNowPlayingDirect: () => mockGetNowPlayingDirect(),
 }));
 
 describe('SpotifyVinylServer', () => {
@@ -38,9 +43,9 @@ describe('SpotifyVinylServer', () => {
   });
 
   it('should render skeleton when no song data is available', async () => {
-    mockGetNowPlaying.mockResolvedValue(null);
+    mockGetNowPlayingDirect.mockResolvedValue(null);
 
-    const { SpotifyVinylServer } = await import('../ui/SpotifyVinylServer');
+    const { SpotifyVinylServer } = await import('../ui/spotify-vinyl-server');
     const Component = await SpotifyVinylServer({
       listeningToLabel: 'Listening to',
       lastPlayedLabel: 'Last played',
@@ -54,7 +59,7 @@ describe('SpotifyVinylServer', () => {
   });
 
   it('should render SpotifyVinyl with "Listening to" label when isPlaying is true', async () => {
-    mockGetNowPlaying.mockResolvedValue({
+    mockGetNowPlayingDirect.mockResolvedValue({
       isPlaying: true,
       title: 'Test Song',
       artist: 'Test Artist',
@@ -64,7 +69,7 @@ describe('SpotifyVinylServer', () => {
       isExplicit: false,
     });
 
-    const { SpotifyVinylServer } = await import('../ui/SpotifyVinylServer');
+    const { SpotifyVinylServer } = await import('../ui/spotify-vinyl-server');
     const Component = await SpotifyVinylServer({
       listeningToLabel: 'Listening to',
       lastPlayedLabel: 'Last played',
@@ -78,7 +83,7 @@ describe('SpotifyVinylServer', () => {
   });
 
   it('should render SpotifyVinyl with "Last played" label when isPlaying is false', async () => {
-    mockGetNowPlaying.mockResolvedValue({
+    mockGetNowPlayingDirect.mockResolvedValue({
       isPlaying: false,
       title: 'Recent Song',
       artist: 'Recent Artist',
@@ -88,7 +93,7 @@ describe('SpotifyVinylServer', () => {
       isExplicit: false,
     });
 
-    const { SpotifyVinylServer } = await import('../ui/SpotifyVinylServer');
+    const { SpotifyVinylServer } = await import('../ui/spotify-vinyl-server');
     const Component = await SpotifyVinylServer({
       listeningToLabel: 'Listening to',
       lastPlayedLabel: 'Last played',
@@ -102,9 +107,9 @@ describe('SpotifyVinylServer', () => {
   });
 
   it('should render skeleton when getNowPlaying throws an error', async () => {
-    mockGetNowPlaying.mockRejectedValue(new Error('API Error'));
+    mockGetNowPlayingDirect.mockRejectedValue(new Error('API Error'));
 
-    const { SpotifyVinylServer } = await import('../ui/SpotifyVinylServer');
+    const { SpotifyVinylServer } = await import('../ui/spotify-vinyl-server');
     const Component = await SpotifyVinylServer({
       listeningToLabel: 'Listening to',
       lastPlayedLabel: 'Last played',
@@ -118,7 +123,7 @@ describe('SpotifyVinylServer', () => {
   });
 
   it('should render album cover with correct alt text', async () => {
-    mockGetNowPlaying.mockResolvedValue({
+    mockGetNowPlayingDirect.mockResolvedValue({
       isPlaying: true,
       title: 'Test Song',
       artist: 'Test Artist',
@@ -128,7 +133,7 @@ describe('SpotifyVinylServer', () => {
       isExplicit: false,
     });
 
-    const { SpotifyVinylServer } = await import('../ui/SpotifyVinylServer');
+    const { SpotifyVinylServer } = await import('../ui/spotify-vinyl-server');
     const Component = await SpotifyVinylServer({
       listeningToLabel: 'Listening to',
       lastPlayedLabel: 'Last played',
@@ -142,7 +147,7 @@ describe('SpotifyVinylServer', () => {
   });
 
   it('should render Spotify link to song', async () => {
-    mockGetNowPlaying.mockResolvedValue({
+    mockGetNowPlayingDirect.mockResolvedValue({
       isPlaying: true,
       title: 'Test Song',
       artist: 'Test Artist',
@@ -152,7 +157,7 @@ describe('SpotifyVinylServer', () => {
       isExplicit: false,
     });
 
-    const { SpotifyVinylServer } = await import('../ui/SpotifyVinylServer');
+    const { SpotifyVinylServer } = await import('../ui/spotify-vinyl-server');
     const Component = await SpotifyVinylServer({
       listeningToLabel: 'Listening to',
       lastPlayedLabel: 'Last played',
@@ -167,7 +172,7 @@ describe('SpotifyVinylServer', () => {
   });
 
   it('should pass i18n labels correctly', async () => {
-    mockGetNowPlaying.mockResolvedValue({
+    mockGetNowPlayingDirect.mockResolvedValue({
       isPlaying: true,
       title: 'Test Song',
       artist: 'Test Artist',
@@ -177,7 +182,7 @@ describe('SpotifyVinylServer', () => {
       isExplicit: false,
     });
 
-    const { SpotifyVinylServer } = await import('../ui/SpotifyVinylServer');
+    const { SpotifyVinylServer } = await import('../ui/spotify-vinyl-server');
     const Component = await SpotifyVinylServer({
       listeningToLabel: '듣는 중',
       lastPlayedLabel: '최근 재생',

@@ -14,7 +14,7 @@ async function generateRSSFeed(locale: Locale): Promise<string> {
   const items = posts
     .slice(0, 20)
     .map(post => {
-      const postUrl = `${siteUrl}/${post.category}/${post.slug}`;
+      const postUrl = `${siteUrl}/blog/${post.category}/${post.slug}`;
       const pubDate = new Date(post.date).toUTCString();
 
       return `

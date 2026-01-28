@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 
-import { IntlProvider } from '../IntlProvider';
+import { IntlProvider } from '../intl-provider';
 
 // Mock next-intl
 jest.mock('next-intl', () => ({

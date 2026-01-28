@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { LocaleSwitcher } from '../ui/LocaleSwitcher';
+import { LocaleSwitcher } from '../ui/locale-switcher';
 
 // Mock next-intl
 jest.mock('next-intl', () => ({

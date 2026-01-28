@@ -1,8 +1,19 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 
-import { PostCard } from '../ui/PostCard';
 import type { PostMeta } from '@/src/entities/post';
+import { PostCard } from '../ui/post-card';
+
+// Mock next-intl/server
+jest.mock('next-intl/server', () => ({
+  getTranslations: jest.fn(async () => (key: string) => {
+    const translations: Record<string, string> = {
+      readingTimeUnit: '분',
+      readMore: '더 읽기',
+    };
+    return translations[key] ?? key;
+  }),
+}));
 
 // Mock next/link
 jest.mock('@/src/shared/config/i18n', () => ({
@@ -21,6 +32,15 @@ jest.mock('@/src/shared/lib/date', () => ({
   }),
 }));
 
+// Mock Badge component
+jest.mock('@mumak/ui/components/badge', () => ({
+  Badge: ({ children, variant }: { children: React.ReactNode; variant?: string }) => (
+    <span data-testid="badge" data-variant={variant}>
+      {children}
+    </span>
+  ),
+}));
+
 const mockPost: PostMeta = {
   slug: 'test-post',
   title: 'Test Post Title',
@@ -30,84 +50,85 @@ const mockPost: PostMeta = {
   readingTime: 5,
 };
 
+async function renderPostCard(props: Partial<Parameters<typeof PostCard>[0]> = {}) {
+  const element = await PostCard({ post: mockPost, locale: 'ko', ...props });
+  return render(element);
+}
+
 describe('PostCard', () => {
-  it('should render post title', () => {
-    render(<PostCard post={mockPost} locale="ko" readMoreLabel="더 읽기" readingTimeUnit="분" />);
+  it('should render post title', async () => {
+    await renderPostCard();
 
     expect(screen.getByText('Test Post Title')).toBeInTheDocument();
   });
 
-  it('should render post description', () => {
-    render(<PostCard post={mockPost} locale="ko" readMoreLabel="더 읽기" readingTimeUnit="분" />);
+  it('should render post description', async () => {
+    await renderPostCard();
 
     expect(screen.getByText('Test post description')).toBeInTheDocument();
   });
 
-  it('should render formatted date', () => {
-    render(<PostCard post={mockPost} locale="ko" readMoreLabel="더 읽기" readingTimeUnit="분" />);
+  it('should render formatted date', async () => {
+    await renderPostCard();
 
     expect(screen.getByText('2024년 1월 1일')).toBeInTheDocument();
   });
 
-  it('should render reading time with unit', () => {
-    render(<PostCard post={mockPost} locale="ko" readMoreLabel="더 읽기" readingTimeUnit="분" />);
+  it('should render reading time with unit', async () => {
+    await renderPostCard();
 
     expect(screen.getByText(/5/)).toBeInTheDocument();
     expect(screen.getByText(/분/)).toBeInTheDocument();
   });
 
-  it('should render read more label', () => {
-    render(<PostCard post={mockPost} locale="ko" readMoreLabel="더 읽기" readingTimeUnit="분" />);
+  it('should render read more label when provided', async () => {
+    await renderPostCard({ readMoreLabel: '더 읽기' });
 
     expect(screen.getByText(/더 읽기/)).toBeInTheDocument();
   });
 
-  it('should link to correct post URL', () => {
-    render(<PostCard post={mockPost} locale="ko" readMoreLabel="더 읽기" readingTimeUnit="분" />);
+  it('should not render read more label when not provided', async () => {
+    await renderPostCard();
+
+    expect(screen.queryByText(/더 읽기/)).not.toBeInTheDocument();
+  });
+
+  it('should link to correct post URL', async () => {
+    await renderPostCard();
 
     const link = screen.getByRole('link');
-    expect(link).toHaveAttribute('href', '/articles/test-post');
+    expect(link).toHaveAttribute('href', '/blog/articles/test-post');
   });
 
   describe('with categoryLabel', () => {
-    it('should render category label when provided', () => {
-      render(
-        <PostCard post={mockPost} locale="ko" categoryLabel="아티클" readMoreLabel="더 읽기" readingTimeUnit="분" />
-      );
+    it('should render category label in Badge when provided', async () => {
+      await renderPostCard({ categoryLabel: '아티클' });
 
-      expect(screen.getByText('아티클')).toBeInTheDocument();
-    });
-
-    it('should render separator when category is provided', () => {
-      render(
-        <PostCard post={mockPost} locale="ko" categoryLabel="아티클" readMoreLabel="더 읽기" readingTimeUnit="분" />
-      );
-
-      // 카테고리와 날짜 사이의 구분자 확인
-      expect(screen.getAllByText('·').length).toBeGreaterThan(0);
+      const badge = screen.getByTestId('badge');
+      expect(badge).toHaveTextContent('아티클');
+      expect(badge).toHaveAttribute('data-variant', 'secondary');
     });
   });
 
   describe('without categoryLabel', () => {
-    it('should not render category when not provided', () => {
-      render(<PostCard post={mockPost} locale="ko" readMoreLabel="더 읽기" readingTimeUnit="분" />);
+    it('should not render Badge when category not provided', async () => {
+      await renderPostCard();
 
-      expect(screen.queryByText('아티클')).not.toBeInTheDocument();
+      expect(screen.queryByTestId('badge')).not.toBeInTheDocument();
     });
   });
 
-  it('should render book icon for reading time', () => {
-    const { container } = render(<PostCard post={mockPost} locale="ko" readMoreLabel="더 읽기" readingTimeUnit="분" />);
+  it('should render book icon for reading time', async () => {
+    const { container } = await renderPostCard();
 
     // lucide-react의 BookOpen 아이콘은 SVG로 렌더링됨
     const svgElements = container.querySelectorAll('svg');
     expect(svgElements.length).toBeGreaterThan(0);
   });
 
-  it('should work with English locale', () => {
-    render(<PostCard post={mockPost} locale="en" readMoreLabel="Read more" readingTimeUnit=" min" />);
+  it('should work with English locale', async () => {
+    await renderPostCard({ locale: 'en', readMoreLabel: 'Read more' });
 
     expect(screen.getByText(/Read more/)).toBeInTheDocument();
-    expect(screen.getByText(/min/)).toBeInTheDocument();
   });
 });
