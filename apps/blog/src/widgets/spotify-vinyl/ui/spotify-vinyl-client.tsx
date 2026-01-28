@@ -20,8 +20,8 @@ interface SpotifyVinylClientProps {
 export function SpotifyVinylClient({ initialData, listeningToLabel, lastPlayedLabel }: SpotifyVinylClientProps) {
   const { data, hasTrackChanged, hasPlayStateChanged, resetChangeState } = useSpotifyPolling({
     initialData,
-    playingInterval: 5000,
-    pausedInterval: 30000,
+    playingInterval: 5_000,
+    pausedInterval: 30_000,
     enabled: true,
   });
 
@@ -36,11 +36,14 @@ export function SpotifyVinylClient({ initialData, listeningToLabel, lastPlayedLa
     }
   }, [hasTrackChanged, hasPlayStateChanged, resetChangeState]);
 
-  if (!data) {
+  // Fast Refresh 시에도 initialData를 fallback으로 사용
+  const displayData = data ?? initialData;
+
+  if (!displayData) {
     return <SpotifyVinylSkeleton />;
   }
 
-  const statusLabel = data.isPlaying ? listeningToLabel : lastPlayedLabel;
+  const statusLabel = displayData.isPlaying ? listeningToLabel : lastPlayedLabel;
 
-  return <SpotifyVinyl data={data} statusLabel={statusLabel} isTransitioning={hasTrackChanged} />;
+  return <SpotifyVinyl data={displayData} statusLabel={statusLabel} isTransitioning={hasTrackChanged} />;
 }

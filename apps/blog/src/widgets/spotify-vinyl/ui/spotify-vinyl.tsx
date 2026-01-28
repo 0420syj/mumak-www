@@ -1,10 +1,12 @@
 'use client';
 
-import type { NowPlaying } from '@/src/entities/spotify';
+import { memo, useState } from 'react';
+
 import { cn } from '@mumak/ui/lib/utils';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+
+import type { NowPlaying } from '@/src/entities/spotify';
 
 interface SpotifyVinylProps {
   data: NowPlaying;
@@ -13,7 +15,11 @@ interface SpotifyVinylProps {
   isTransitioning?: boolean;
 }
 
-export function SpotifyVinyl({ data, statusLabel, isTransitioning = false }: SpotifyVinylProps) {
+export const SpotifyVinyl = memo(function SpotifyVinyl({
+  data,
+  statusLabel,
+  isTransitioning = false,
+}: SpotifyVinylProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleOpen = () => setIsOpen(prev => !prev);
@@ -128,5 +134,16 @@ export function SpotifyVinyl({ data, statusLabel, isTransitioning = false }: Spo
         </div>
       </div>
     </div>
+  );
+}, arePropsEqual);
+
+function arePropsEqual(prev: SpotifyVinylProps, next: SpotifyVinylProps): boolean {
+  return (
+    prev.data.songUrl === next.data.songUrl &&
+    prev.data.isPlaying === next.data.isPlaying &&
+    prev.data.title === next.data.title &&
+    prev.data.artist === next.data.artist &&
+    prev.statusLabel === next.statusLabel &&
+    prev.isTransitioning === next.isTransitioning
   );
 }
