@@ -40,7 +40,7 @@ describe('SpotifyVinylServer', () => {
   it('should render skeleton when no song data is available', async () => {
     mockGetNowPlaying.mockResolvedValue(null);
 
-    const { SpotifyVinylServer } = await import('../ui/SpotifyVinylServer');
+    const { SpotifyVinylServer } = await import('../ui/spotify-vinyl-server');
     const Component = await SpotifyVinylServer({
       listeningToLabel: 'Listening to',
       lastPlayedLabel: 'Last played',
@@ -64,7 +64,7 @@ describe('SpotifyVinylServer', () => {
       isExplicit: false,
     });
 
-    const { SpotifyVinylServer } = await import('../ui/SpotifyVinylServer');
+    const { SpotifyVinylServer } = await import('../ui/spotify-vinyl-server');
     const Component = await SpotifyVinylServer({
       listeningToLabel: 'Listening to',
       lastPlayedLabel: 'Last played',
@@ -88,7 +88,7 @@ describe('SpotifyVinylServer', () => {
       isExplicit: false,
     });
 
-    const { SpotifyVinylServer } = await import('../ui/SpotifyVinylServer');
+    const { SpotifyVinylServer } = await import('../ui/spotify-vinyl-server');
     const Component = await SpotifyVinylServer({
       listeningToLabel: 'Listening to',
       lastPlayedLabel: 'Last played',
@@ -104,7 +104,7 @@ describe('SpotifyVinylServer', () => {
   it('should render skeleton when getNowPlaying throws an error', async () => {
     mockGetNowPlaying.mockRejectedValue(new Error('API Error'));
 
-    const { SpotifyVinylServer } = await import('../ui/SpotifyVinylServer');
+    const { SpotifyVinylServer } = await import('../ui/spotify-vinyl-server');
     const Component = await SpotifyVinylServer({
       listeningToLabel: 'Listening to',
       lastPlayedLabel: 'Last played',
@@ -128,7 +128,7 @@ describe('SpotifyVinylServer', () => {
       isExplicit: false,
     });
 
-    const { SpotifyVinylServer } = await import('../ui/SpotifyVinylServer');
+    const { SpotifyVinylServer } = await import('../ui/spotify-vinyl-server');
     const Component = await SpotifyVinylServer({
       listeningToLabel: 'Listening to',
       lastPlayedLabel: 'Last played',
@@ -152,7 +152,7 @@ describe('SpotifyVinylServer', () => {
       isExplicit: false,
     });
 
-    const { SpotifyVinylServer } = await import('../ui/SpotifyVinylServer');
+    const { SpotifyVinylServer } = await import('../ui/spotify-vinyl-server');
     const Component = await SpotifyVinylServer({
       listeningToLabel: 'Listening to',
       lastPlayedLabel: 'Last played',
@@ -177,7 +177,7 @@ describe('SpotifyVinylServer', () => {
       isExplicit: false,
     });
 
-    const { SpotifyVinylServer } = await import('../ui/SpotifyVinylServer');
+    const { SpotifyVinylServer } = await import('../ui/spotify-vinyl-server');
     const Component = await SpotifyVinylServer({
       listeningToLabel: '듣는 중',
       lastPlayedLabel: '최근 재생',

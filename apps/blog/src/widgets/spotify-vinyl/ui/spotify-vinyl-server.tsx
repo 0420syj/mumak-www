@@ -1,6 +1,6 @@
 import { getNowPlaying } from '@/src/entities/spotify';
 
-import { SpotifyVinylClient } from './SpotifyVinylClient';
+import { SpotifyVinylClient } from './spotify-vinyl-client';
 
 interface SpotifyVinylServerProps {
   listeningToLabel: string;

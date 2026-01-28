@@ -9,7 +9,7 @@ jest.mock('@mumak/ui/components/skeleton', () => ({
 
 describe('SpotifyVinylSkeleton', () => {
   it('should render skeleton UI with correct structure', async () => {
-    const { SpotifyVinylSkeleton } = await import('../ui/SpotifyVinylSkeleton');
+    const { SpotifyVinylSkeleton } = await import('../ui/spotify-vinyl-skeleton');
 
     const { container } = render(<SpotifyVinylSkeleton />);
 
@@ -19,7 +19,7 @@ describe('SpotifyVinylSkeleton', () => {
   });
 
   it('should render LP disc skeleton', async () => {
-    const { SpotifyVinylSkeleton } = await import('../ui/SpotifyVinylSkeleton');
+    const { SpotifyVinylSkeleton } = await import('../ui/spotify-vinyl-skeleton');
 
     const { container } = render(<SpotifyVinylSkeleton />);
 
@@ -30,7 +30,7 @@ describe('SpotifyVinylSkeleton', () => {
   });
 
   it('should render album sleeve skeleton', async () => {
-    const { SpotifyVinylSkeleton } = await import('../ui/SpotifyVinylSkeleton');
+    const { SpotifyVinylSkeleton } = await import('../ui/spotify-vinyl-skeleton');
 
     const { container } = render(<SpotifyVinylSkeleton />);
 
@@ -41,7 +41,7 @@ describe('SpotifyVinylSkeleton', () => {
   });
 
   it('should render track info skeletons', async () => {
-    const { SpotifyVinylSkeleton } = await import('../ui/SpotifyVinylSkeleton');
+    const { SpotifyVinylSkeleton } = await import('../ui/spotify-vinyl-skeleton');
 
     const { container } = render(<SpotifyVinylSkeleton />);
 
@@ -56,7 +56,7 @@ describe('SpotifyVinylSkeleton', () => {
   });
 
   it('should have correct z-index layering', async () => {
-    const { SpotifyVinylSkeleton } = await import('../ui/SpotifyVinylSkeleton');
+    const { SpotifyVinylSkeleton } = await import('../ui/spotify-vinyl-skeleton');
 
     const { container } = render(<SpotifyVinylSkeleton />);
 
@@ -66,7 +66,7 @@ describe('SpotifyVinylSkeleton', () => {
   });
 
   it('should match layout with actual component', async () => {
-    const { SpotifyVinylSkeleton } = await import('../ui/SpotifyVinylSkeleton');
+    const { SpotifyVinylSkeleton } = await import('../ui/spotify-vinyl-skeleton');
 
     const { container } = render(<SpotifyVinylSkeleton />);
 

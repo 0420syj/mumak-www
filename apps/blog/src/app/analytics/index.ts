@@ -1,1 +1,1 @@
-export { VercelAnalytics } from './Analytics';
+export { VercelAnalytics } from './analytics';

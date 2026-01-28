@@ -4,8 +4,8 @@ import { LocaleSwitcher } from '@/src/features/switch-locale';
 import { ThemeSwitcher } from '@/src/features/switch-theme';
 import { Link } from '@/src/shared/config/i18n';
 
-import { MobileMenu } from './MobileMenu';
-import { NavLinks } from './NavLinks';
+import { MobileMenu } from './mobile-menu';
+import { NavLinks } from './nav-links';
 
 const navItems = [{ href: '/blog', labelKey: 'blog' }] as const;
 

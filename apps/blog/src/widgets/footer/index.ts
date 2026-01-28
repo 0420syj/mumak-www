@@ -1,3 +1,3 @@
-export { Footer } from './ui/Footer';
-export { Copyright } from './ui/Copyright';
-export { SocialLinks } from './ui/SocialLinks';
+export { Footer } from './ui/footer';
+export { Copyright } from './ui/copyright';
+export { SocialLinks } from './ui/social-links';

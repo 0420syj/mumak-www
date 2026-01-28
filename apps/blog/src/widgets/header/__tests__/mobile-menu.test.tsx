@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 
-import { MobileMenu } from '../ui/MobileMenu';
+import { MobileMenu } from '../ui/mobile-menu';
 
 const mockUsePathname = jest.fn(() => '/');
 

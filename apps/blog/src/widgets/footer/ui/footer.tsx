@@ -3,8 +3,8 @@ import { getTranslations } from 'next-intl/server';
 
 import { Link } from '@/src/shared/config/i18n';
 
-import { Copyright } from './Copyright';
-import { SocialLinks } from './SocialLinks';
+import { Copyright } from './copyright';
+import { SocialLinks } from './social-links';
 
 export async function Footer() {
   const t = await getTranslations('footer');

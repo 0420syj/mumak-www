@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 
-import { Footer } from '../ui/Footer';
+import { Footer } from '../ui/footer';
 
 // Mock next-intl/server
 jest.mock('next-intl/server', () => ({

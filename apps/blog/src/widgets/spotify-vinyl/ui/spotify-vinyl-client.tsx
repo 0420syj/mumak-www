@@ -5,8 +5,8 @@ import { useEffect } from 'react';
 import type { NowPlaying } from '@/src/entities/spotify';
 import { useSpotifyPolling } from '@/src/features/spotify-polling';
 
-import { SpotifyVinyl } from './SpotifyVinyl';
-import { SpotifyVinylSkeleton } from './SpotifyVinylSkeleton';
+import { SpotifyVinyl } from './spotify-vinyl';
+import { SpotifyVinylSkeleton } from './spotify-vinyl-skeleton';
 
 interface SpotifyVinylClientProps {
   /** SSR에서 전달된 초기 데이터 */

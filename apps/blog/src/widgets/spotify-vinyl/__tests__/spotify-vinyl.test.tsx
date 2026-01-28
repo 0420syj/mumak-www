@@ -45,7 +45,7 @@ describe('SpotifyVinyl', () => {
   });
 
   it('should render song information correctly', async () => {
-    const { SpotifyVinyl } = await import('../ui/SpotifyVinyl');
+    const { SpotifyVinyl } = await import('../ui/spotify-vinyl');
 
     render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
 
@@ -55,7 +55,7 @@ describe('SpotifyVinyl', () => {
   });
 
   it('should render album cover image', async () => {
-    const { SpotifyVinyl } = await import('../ui/SpotifyVinyl');
+    const { SpotifyVinyl } = await import('../ui/spotify-vinyl');
 
     render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
 
@@ -65,7 +65,7 @@ describe('SpotifyVinyl', () => {
   });
 
   it('should have correct accessibility attributes', async () => {
-    const { SpotifyVinyl } = await import('../ui/SpotifyVinyl');
+    const { SpotifyVinyl } = await import('../ui/spotify-vinyl');
 
     render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
 
@@ -76,7 +76,7 @@ describe('SpotifyVinyl', () => {
   });
 
   it('should toggle LP open state on click', async () => {
-    const { SpotifyVinyl } = await import('../ui/SpotifyVinyl');
+    const { SpotifyVinyl } = await import('../ui/spotify-vinyl');
 
     render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
 
@@ -91,7 +91,7 @@ describe('SpotifyVinyl', () => {
   });
 
   it('should toggle LP on Enter key press', async () => {
-    const { SpotifyVinyl } = await import('../ui/SpotifyVinyl');
+    const { SpotifyVinyl } = await import('../ui/spotify-vinyl');
 
     render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
 
@@ -106,7 +106,7 @@ describe('SpotifyVinyl', () => {
   });
 
   it('should toggle LP on Space key press', async () => {
-    const { SpotifyVinyl } = await import('../ui/SpotifyVinyl');
+    const { SpotifyVinyl } = await import('../ui/spotify-vinyl');
 
     render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
 
@@ -121,7 +121,7 @@ describe('SpotifyVinyl', () => {
   });
 
   it('should render Spotify link with correct attributes', async () => {
-    const { SpotifyVinyl } = await import('../ui/SpotifyVinyl');
+    const { SpotifyVinyl } = await import('../ui/spotify-vinyl');
 
     const { container } = render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
 
@@ -132,7 +132,7 @@ describe('SpotifyVinyl', () => {
   });
 
   it('should not toggle LP when clicking on song link', async () => {
-    const { SpotifyVinyl } = await import('../ui/SpotifyVinyl');
+    const { SpotifyVinyl } = await import('../ui/spotify-vinyl');
 
     render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
 
@@ -145,7 +145,7 @@ describe('SpotifyVinyl', () => {
   });
 
   it('should show playing indicator when isPlaying is true', async () => {
-    const { SpotifyVinyl } = await import('../ui/SpotifyVinyl');
+    const { SpotifyVinyl } = await import('../ui/spotify-vinyl');
 
     const { container } = render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
 
@@ -155,7 +155,7 @@ describe('SpotifyVinyl', () => {
   });
 
   it('should hide playing indicator when isPlaying is false', async () => {
-    const { SpotifyVinyl } = await import('../ui/SpotifyVinyl');
+    const { SpotifyVinyl } = await import('../ui/spotify-vinyl');
 
     const notPlayingData = { ...mockSongData, isPlaying: false };
     const { container } = render(<SpotifyVinyl data={notPlayingData} statusLabel="Last played" />);
@@ -166,7 +166,7 @@ describe('SpotifyVinyl', () => {
   });
 
   it('should show explicit badge when isExplicit is true', async () => {
-    const { SpotifyVinyl } = await import('../ui/SpotifyVinyl');
+    const { SpotifyVinyl } = await import('../ui/spotify-vinyl');
 
     const explicitData = { ...mockSongData, isExplicit: true };
     render(<SpotifyVinyl data={explicitData} statusLabel="Listening to" />);
@@ -177,7 +177,7 @@ describe('SpotifyVinyl', () => {
   });
 
   it('should not show explicit badge when isExplicit is false', async () => {
-    const { SpotifyVinyl } = await import('../ui/SpotifyVinyl');
+    const { SpotifyVinyl } = await import('../ui/spotify-vinyl');
 
     render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
 
@@ -186,7 +186,7 @@ describe('SpotifyVinyl', () => {
   });
 
   it('should truncate long title and artist name', async () => {
-    const { SpotifyVinyl } = await import('../ui/SpotifyVinyl');
+    const { SpotifyVinyl } = await import('../ui/spotify-vinyl');
 
     const longData = {
       ...mockSongData,
@@ -204,7 +204,7 @@ describe('SpotifyVinyl', () => {
   });
 
   it('should render Spotify brand color logo', async () => {
-    const { SpotifyVinyl } = await import('../ui/SpotifyVinyl');
+    const { SpotifyVinyl } = await import('../ui/spotify-vinyl');
 
     const { container } = render(<SpotifyVinyl data={mockSongData} statusLabel="Listening to" />);
 

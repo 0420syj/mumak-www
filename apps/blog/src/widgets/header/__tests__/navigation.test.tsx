@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 
-import { Navigation } from '../ui/Navigation';
+import { Navigation } from '../ui/navigation';
 
 // Mock next-intl/server
 jest.mock('next-intl/server', () => ({
@@ -34,7 +34,7 @@ jest.mock('@/src/features/switch-theme', () => ({
   ThemeSwitcher: () => <div data-testid="theme-switcher">ThemeSwitcher</div>,
 }));
 
-jest.mock('../ui/MobileMenu', () => ({
+jest.mock('../ui/mobile-menu', () => ({
   MobileMenu: ({ items }: { items: { label: string; href: string }[] }) => (
     <div data-testid="mobile-menu">
       {items.map(item => (
@@ -44,7 +44,7 @@ jest.mock('../ui/MobileMenu', () => ({
   ),
 }));
 
-jest.mock('../ui/NavLinks', () => ({
+jest.mock('../ui/nav-links', () => ({
   NavLinks: ({ items }: { items: { label: string; href: string }[] }) => (
     <div data-testid="nav-links">
       {items.map(item => (

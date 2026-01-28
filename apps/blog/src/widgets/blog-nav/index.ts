@@ -1,1 +1,1 @@
-export { BlogNav } from './ui/BlogNav';
+export { BlogNav } from './ui/blog-nav';

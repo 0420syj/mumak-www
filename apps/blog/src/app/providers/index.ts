@@ -1,1 +1,1 @@
-export { IntlProvider } from './IntlProvider';
+export { IntlProvider } from './intl-provider';
