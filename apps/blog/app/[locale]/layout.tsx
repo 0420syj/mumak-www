@@ -2,10 +2,10 @@ import type { Metadata } from 'next';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 
-import { IntlProvider, VercelAnalytics, generateWebSiteJsonLd, JsonLdScript } from '@/src/app';
-import { locales, type Locale, routing } from '@/src/shared/config/i18n';
+import { IntlProvider, JsonLdScript, VercelAnalytics, generateWebSiteJsonLd } from '@/src/app';
+import { locales, routing, type Locale } from '@/src/shared/config/i18n';
 import { Footer } from '@/src/widgets/footer';
-import { Navigation, SmartHeader, HeaderSpacer } from '@/src/widgets/header';
+import { HeaderSpacer, Navigation, SmartHeader } from '@/src/widgets/header';
 
 export function generateStaticParams() {
   return routing.locales.map(locale => ({ locale }));
@@ -78,7 +78,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
           <Navigation />
         </SmartHeader>
         <HeaderSpacer />
-        <main id="main-content" className="flex-1 container mx-auto px-4 py-8">
+        <main id="main-content" className="flex-1 container mx-auto px-4 py-8 max-w-5xl">
           {children}
         </main>
         <Footer />
