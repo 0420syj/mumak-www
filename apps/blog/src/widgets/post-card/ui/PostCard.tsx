@@ -1,6 +1,8 @@
 import { BookOpen } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
+import { Badge } from '@mumak/ui/components/badge';
+
 import { type PostMeta } from '@/src/entities/post';
 import { Link } from '@/src/shared/config/i18n';
 import { formatDateForLocale } from '@/src/shared/lib/date';
@@ -19,12 +21,7 @@ export async function PostCard({ post, locale, categoryLabel, readMoreLabel }: P
     <Link href={`/blog/${post.category}/${post.slug}`} className="block">
       <article className="border border-border rounded-lg p-4 hover:bg-muted/50 transition-colors">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-          {categoryLabel && (
-            <>
-              <span className="capitalize">{categoryLabel}</span>
-              <span>·</span>
-            </>
-          )}
+          {categoryLabel && <Badge variant="secondary">{categoryLabel}</Badge>}
           <time dateTime={formatDateForLocale(post.date, locale).dateTime}>
             {formatDateForLocale(post.date, locale).text}
           </time>
