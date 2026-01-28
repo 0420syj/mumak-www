@@ -26,7 +26,6 @@ export default async function BlogPage({ params }: BlogPageProps) {
 
   const t = await getTranslations('blog');
   const tCommon = await getTranslations('common');
-  const tPost = await getTranslations('post');
 
   const posts = getPosts(locale as Locale);
   const categories = getCategories();
@@ -58,8 +57,6 @@ export default async function BlogPage({ params }: BlogPageProps) {
               post={post}
               locale={locale}
               categoryLabel={tCommon(post.category)}
-              readMoreLabel={tPost('readMore')}
-              readingTimeUnit={tPost('readingTimeUnit')}
             />
           ))
         )}

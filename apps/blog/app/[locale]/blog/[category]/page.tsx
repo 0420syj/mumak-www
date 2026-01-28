@@ -42,7 +42,6 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
 
   const t = await getTranslations('category');
   const tCommon = await getTranslations('common');
-  const tPost = await getTranslations('post');
 
   const posts = getPosts(locale as Locale, category as Category);
   const categories = getCategories();
@@ -68,15 +67,7 @@ export default async function BlogCategoryPage({ params }: BlogCategoryPageProps
         {posts.length === 0 ? (
           <p className="text-muted-foreground">No posts yet.</p>
         ) : (
-          posts.map(post => (
-            <PostCard
-              key={post.slug}
-              post={post}
-              locale={locale}
-              readMoreLabel={tPost('readMore')}
-              readingTimeUnit={tPost('readingTimeUnit')}
-            />
-          ))
+          posts.map(post => <PostCard key={post.slug} post={post} locale={locale} />)
         )}
       </section>
     </div>
