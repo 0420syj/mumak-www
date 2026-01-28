@@ -27,4 +27,4 @@ jobs:
         uses: ./.github/actions/setup-node-pnpm
 
       - name: Validate content
-        run: pnpm --filter=blog validate:content
+        run: pnpm --filter=blog validate:content -- --summary >> $GITHUB_STEP_SUMMARY

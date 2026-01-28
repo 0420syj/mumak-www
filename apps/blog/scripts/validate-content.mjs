@@ -7,12 +7,16 @@
  * 1. ko/en 폴더에 동일한 파일(slug)이 존재하는지
  * 2. 동일 slug의 파일들이 같은 date를 가지는지
  * 3. 동일 slug의 파일들이 같은 tags를 가지는지
+ *
+ * 사용법:
+ *   node validate-content.mjs              # 일반 출력
+ *   node validate-content.mjs --summary    # GitHub Actions Summary용 마크다운 출력
  */
 
 import fs from 'fs';
+import matter from 'gray-matter';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import matter from 'gray-matter';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,6 +24,7 @@ const __dirname = path.dirname(__filename);
 const CONTENT_DIR = path.join(__dirname, '../content');
 const LANGUAGES = ['ko', 'en'];
 const PRIMARY_LANG = 'ko';
+const OUTPUT_SUMMARY = process.argv.includes('--summary');
 
 /**
  * 디렉토리 내 모든 .mdx 파일을 재귀적으로 찾음
@@ -72,6 +77,73 @@ function arraysEqual(a, b) {
 }
 
 /**
+ * GitHub Actions Summary용 마크다운 생성
+ */
+function generateSummary(errors, warnings, commonFiles) {
+  const lines = [];
+
+  lines.push('## Blog Content Validation\n');
+
+  if (errors.length === 0) {
+    lines.push('### ✅ All checks passed!\n');
+    lines.push(`- **Files validated**: ${commonFiles.length}`);
+    lines.push(`- **Languages**: ${LANGUAGES.join(', ')}\n`);
+  } else {
+    lines.push('### ❌ Validation failed\n');
+  }
+
+  if (errors.length > 0) {
+    lines.push('<details>');
+    lines.push(`<summary>🚨 Errors (${errors.length})</summary>\n`);
+    lines.push('| Type | File | Details |');
+    lines.push('|------|------|---------|');
+
+    for (const error of errors) {
+      const match = error.match(/\[([^\]]+)\]\s*(.+)/);
+      if (match) {
+        const file = match[1];
+        const detail = match[2].replace(/\|/g, '\\|');
+        const type = error.includes('파일이') ? 'Missing file' : 'Mismatch';
+        lines.push(`| ${type} | \`${file}\` | ${detail} |`);
+      } else {
+        lines.push(`| Error | - | ${error} |`);
+      }
+    }
+
+    lines.push('\n</details>\n');
+  }
+
+  if (warnings.length > 0) {
+    lines.push('<details>');
+    lines.push(`<summary>⚠️ Warnings (${warnings.length})</summary>\n`);
+    lines.push('| File | Details |');
+    lines.push('|------|---------|');
+
+    for (const warning of warnings) {
+      const match = warning.match(/\[([^\]]+)\]\s*(.+)/);
+      if (match) {
+        lines.push(`| \`${match[1]}\` | ${match[2].replace(/\|/g, '\\|')} |`);
+      }
+    }
+
+    lines.push('\n</details>\n');
+  }
+
+  if (errors.length === 0 && commonFiles.length > 0) {
+    lines.push('<details>');
+    lines.push(`<summary>📁 Validated files (${commonFiles.length})</summary>\n`);
+
+    for (const file of commonFiles.sort()) {
+      lines.push(`- \`${file}\``);
+    }
+
+    lines.push('\n</details>');
+  }
+
+  return lines.join('\n');
+}
+
+/**
  * 메인 검증 로직
  */
 function validateContent() {
@@ -88,9 +160,11 @@ function validateContent() {
   const primaryFiles = filesByLang[PRIMARY_LANG];
   const secondaryLangs = LANGUAGES.filter(l => l !== PRIMARY_LANG);
 
-  // 1. 파일 존재 여부 검증
-  console.log('\n📁 파일 존재 여부 검증...\n');
+  if (!OUTPUT_SUMMARY) {
+    console.log('\n📁 파일 존재 여부 검증...\n');
+  }
 
+  // 1. 파일 존재 여부 검증
   // Primary 언어에만 있는 파일
   for (const file of primaryFiles) {
     for (const lang of secondaryLangs) {
@@ -109,9 +183,11 @@ function validateContent() {
     }
   }
 
-  // 2. Frontmatter 동일성 검증
-  console.log('📝 Frontmatter 검증...\n');
+  if (!OUTPUT_SUMMARY) {
+    console.log('📝 Frontmatter 검증...\n');
+  }
 
+  // 2. Frontmatter 동일성 검증
   // 모든 언어에 공통으로 존재하는 파일만 검증
   const commonFiles = [...primaryFiles].filter(file =>
     secondaryLangs.every(lang => filesByLang[lang].has(file))
@@ -162,7 +238,13 @@ function validateContent() {
     }
   }
 
-  // 결과 출력
+  // Summary 모드: 마크다운만 출력
+  if (OUTPUT_SUMMARY) {
+    console.log(generateSummary(errors, warnings, commonFiles));
+    process.exit(errors.length > 0 ? 1 : 0);
+  }
+
+  // 일반 모드: 콘솔 출력
   console.log('━'.repeat(50));
 
   if (warnings.length > 0) {
