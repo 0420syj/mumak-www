@@ -220,19 +220,12 @@ async function fetchNowPlayingData(accessToken: string): Promise<NowPlaying | nu
   };
 }
 
-export async function getNowPlaying(): Promise<NowPlaying | null> {
-  // 동적 렌더링으로 전환 (Date.now() 사용 전에 호출 필요)
-  // PPR 모드에서 prerendering 완료 후 connection()이 reject될 수 있음
-  try {
-    await connection();
-  } catch (error) {
-    // HANGING_PROMISE_REJECTION은 PPR 빌드 시 예상되는 동작이므로 무시
-    if (error instanceof Error && error.message.includes('prerender')) {
-      return null;
-    }
-    throw error;
-  }
-
+/**
+ * Spotify API 직접 호출 (캐싱 없음)
+ * - 'use cache' 컴포넌트 내에서 호출됨
+ * - connection() 호출 불필요 (캐시 컴포넌트가 처리)
+ */
+export async function getNowPlayingDirect(): Promise<NowPlaying | null> {
   const accessToken = await getAccessToken();
 
   if (!accessToken) {
@@ -267,4 +260,25 @@ export async function getNowPlaying(): Promise<NowPlaying | null> {
     console.error('[Spotify] API 호출 중 예외 발생:', error);
     return null;
   }
+}
+
+/**
+ * Spotify 재생 정보 조회 (Route Handler용)
+ * - API route에서 호출 시 사용
+ * - connection()으로 동적 렌더링 전환
+ */
+export async function getNowPlaying(): Promise<NowPlaying | null> {
+  // 동적 렌더링으로 전환 (Date.now() 사용 전에 호출 필요)
+  // PPR 모드에서 prerendering 완료 후 connection()이 reject될 수 있음
+  try {
+    await connection();
+  } catch (error) {
+    // HANGING_PROMISE_REJECTION은 PPR 빌드 시 예상되는 동작이므로 무시
+    if (error instanceof Error && error.message.includes('prerender')) {
+      return null;
+    }
+    throw error;
+  }
+
+  return getNowPlayingDirect();
 }

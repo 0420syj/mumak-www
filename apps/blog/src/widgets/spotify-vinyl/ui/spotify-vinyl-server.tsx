@@ -1,4 +1,6 @@
-import { getNowPlaying } from '@/src/entities/spotify';
+import { cacheLife } from 'next/cache';
+
+import { getNowPlayingDirect } from '@/src/entities/spotify';
 
 import { SpotifyVinylClient } from './spotify-vinyl-client';
 
@@ -7,14 +9,16 @@ interface SpotifyVinylServerProps {
   lastPlayedLabel: string;
 }
 
+/**
+ * Spotify 위젯 서버 컴포넌트
+ * - 'use cache'로 10초간 캐시하여 페이지 이동 시 skeleton 방지
+ * - 실시간 업데이트는 클라이언트 SWR 폴링이 담당
+ */
 export async function SpotifyVinylServer({ listeningToLabel, lastPlayedLabel }: SpotifyVinylServerProps) {
-  let initialData = null;
+  'use cache';
+  cacheLife({ stale: 10, revalidate: 10, expire: 60 });
 
-  try {
-    initialData = await getNowPlaying();
-  } catch {
-    // PPR 빌드 시 발생하는 에러는 무시
-  }
+  const initialData = await getNowPlayingDirect();
 
   return (
     <SpotifyVinylClient
