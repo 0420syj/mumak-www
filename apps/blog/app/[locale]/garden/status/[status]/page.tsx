@@ -1,41 +1,53 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { notFound } from 'next/navigation';
 
-import { getAllNoteTags, getNotes } from '@/src/entities/note';
+import { getAllNoteTags, getNotesByStatus, type NoteStatus } from '@/src/entities/note';
 import { locales, type Locale } from '@/src/shared/config/i18n';
 import { GardenNav } from '@/src/widgets/garden-nav';
 import { NoteCard } from '@/src/widgets/note-card';
 import { TagCloud } from '@/src/widgets/tag-cloud';
 
-interface GardenPageProps {
-  params: Promise<{ locale: string }>;
+const VALID_STATUSES: NoteStatus[] = ['seedling', 'budding', 'evergreen'];
+
+interface GardenStatusPageProps {
+  params: Promise<{ locale: string; status: string }>;
 }
 
 export function generateStaticParams() {
-  return locales.map(locale => ({ locale }));
+  return locales.flatMap(locale => VALID_STATUSES.map(status => ({ locale, status })));
 }
 
-export async function generateMetadata({ params }: GardenPageProps): Promise<Metadata> {
-  const { locale } = await params;
+export async function generateMetadata({ params }: GardenStatusPageProps): Promise<Metadata> {
+  const { locale, status } = await params;
+
+  if (!VALID_STATUSES.includes(status as NoteStatus)) {
+    return { title: 'Not Found' };
+  }
+
   const t = await getTranslations({ locale, namespace: 'garden' });
 
   return {
-    title: t('title'),
+    title: `${t(`status.${status}`)} - ${t('title')}`,
     description: t('description'),
   };
 }
 
-export default async function GardenPage({ params }: GardenPageProps) {
-  const { locale } = await params;
+export default async function GardenStatusPage({ params }: GardenStatusPageProps) {
+  const { locale, status } = await params;
   setRequestLocale(locale);
 
-  const notes = getNotes(locale as Locale);
+  if (!VALID_STATUSES.includes(status as NoteStatus)) {
+    notFound();
+  }
+
+  const t = await getTranslations('garden');
+  const tCommon = await getTranslations('common');
+  const notes = getNotesByStatus(locale as Locale, status as NoteStatus);
   const tags = getAllNoteTags(locale as Locale).map(tag => ({
     ...tag,
     slug: encodeURIComponent(tag.name),
   }));
-  const t = await getTranslations('garden');
-  const tCommon = await getTranslations('common');
 
   const statusLabels = {
     seedling: t('status.seedling'),
@@ -46,13 +58,13 @@ export default async function GardenPage({ params }: GardenPageProps) {
   return (
     <div className="space-y-8">
       <header>
-        <h1 className="text-3xl font-bold mb-2">{t('title')}</h1>
+        <h1 className="text-3xl font-bold mb-2">{t(`status.${status}`)}</h1>
         <p className="text-muted-foreground">{t('noteCount', { count: notes.length })}</p>
       </header>
 
       <GardenNav allLabel={tCommon('all')} statusLabels={statusLabels} tagsLabel={tCommon('tags')} />
 
-      {tags.length > 0 && <TagCloud tags={tags} basePath="/garden/tags" />}
+      {tags.length > 0 && <TagCloud tags={tags.slice(0, 10)} basePath="/garden/tags" />}
 
       <section className="space-y-4">
         {notes.length === 0 ? (

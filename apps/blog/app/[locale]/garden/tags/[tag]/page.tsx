@@ -36,35 +36,40 @@ export default async function GardenTagPage({ params }: GardenTagPageProps) {
 
   const decodedTag = decodeURIComponent(tag);
   const t = await getTranslations('garden.tags');
+  const tGarden = await getTranslations('garden');
   const tCommon = await getTranslations('common');
   const notes = getNotesByTag(locale as Locale, decodedTag);
-  const allTags = getAllNoteTags(locale as Locale).map(t => ({
-    ...t,
-    slug: encodeURIComponent(t.name),
+  const allTags = getAllNoteTags(locale as Locale).map(tagItem => ({
+    ...tagItem,
+    slug: encodeURIComponent(tagItem.name),
   }));
 
   if (notes.length === 0) {
     notFound();
   }
 
+  const statusLabels = {
+    seedling: tGarden('status.seedling'),
+    budding: tGarden('status.budding'),
+    evergreen: tGarden('status.evergreen'),
+  };
+
   return (
-    <div className="max-w-3xl mx-auto">
-      <header className="mb-8">
-        <h1 className="text-4xl font-bold mb-2">{t('tagTitle', { tag: decodedTag })}</h1>
+    <div className="space-y-8">
+      <header>
+        <h1 className="text-3xl font-bold mb-2">{t('tagTitle', { tag: decodedTag })}</h1>
         <p className="text-muted-foreground">{t('noteCount', { count: notes.length })}</p>
       </header>
 
-      <GardenNav allLabel={tCommon('all')} tagsLabel={tCommon('tags')} />
+      <GardenNav allLabel={tCommon('all')} statusLabels={statusLabels} tagsLabel={tCommon('tags')} />
 
-      <section className="my-8">
-        <TagCloud tags={allTags.slice(0, 10)} activeTag={decodedTag} basePath="/garden/tags" />
-      </section>
+      <TagCloud tags={allTags.slice(0, 10)} activeTag={decodedTag} basePath="/garden/tags" showCount />
 
-      <div className="space-y-4">
+      <section className="space-y-4">
         {notes.map(note => (
           <NoteCard key={note.slug} note={note} locale={locale} />
         ))}
-      </div>
+      </section>
     </div>
   );
 }

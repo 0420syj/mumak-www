@@ -158,6 +158,11 @@ export function getNotesByTag(locale: Locale, tag: string): NoteMeta[] {
   return notes.filter(note => note.tags?.includes(tag));
 }
 
+export function getNotesByStatus(locale: Locale, status: NoteStatus): NoteMeta[] {
+  const notes = getNotes(locale);
+  return notes.filter(note => note.status === status);
+}
+
 export function getAllNoteTags(locale: Locale): Array<{ name: string; count: number }> {
   const notes = getNotes(locale);
   const tagMap = new Map<string, number>();

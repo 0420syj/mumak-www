@@ -1,11 +1,10 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { Badge } from '@mumak/ui/components/badge';
-
 import { getAllNoteTags } from '@/src/entities/note';
-import { Link, locales, type Locale } from '@/src/shared/config/i18n';
+import { locales, type Locale } from '@/src/shared/config/i18n';
 import { GardenNav } from '@/src/widgets/garden-nav';
+import { TagCloud } from '@/src/widgets/tag-cloud';
 
 interface GardenTagsPageProps {
   params: Promise<{ locale: string }>;
@@ -30,31 +29,35 @@ export default async function GardenTagsPage({ params }: GardenTagsPageProps) {
   setRequestLocale(locale);
 
   const t = await getTranslations('garden.tags');
+  const tGarden = await getTranslations('garden');
   const tCommon = await getTranslations('common');
-  const tags = getAllNoteTags(locale as Locale);
+  const tags = getAllNoteTags(locale as Locale).map(tag => ({
+    ...tag,
+    slug: encodeURIComponent(tag.name),
+  }));
+
+  const statusLabels = {
+    seedling: tGarden('status.seedling'),
+    budding: tGarden('status.budding'),
+    evergreen: tGarden('status.evergreen'),
+  };
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <header className="mb-8">
-        <h1 className="text-4xl font-bold mb-2">{t('title')}</h1>
+    <div className="space-y-8">
+      <header>
+        <h1 className="text-3xl font-bold mb-2">{t('title')}</h1>
         <p className="text-muted-foreground">{t('description', { count: tags.length })}</p>
       </header>
 
-      <GardenNav allLabel={tCommon('all')} tagsLabel={tCommon('tags')} />
+      <GardenNav allLabel={tCommon('all')} statusLabels={statusLabels} tagsLabel={tCommon('tags')} />
 
-      <div className="flex flex-wrap gap-3 mt-8">
-        {tags.map(tag => (
-          <Link key={tag.name} href={`/garden/tags/${tag.name}`}>
-            <Badge
-              variant="secondary"
-              className="text-base px-4 py-2 hover:bg-primary hover:text-primary-foreground transition-colors cursor-pointer"
-            >
-              #{tag.name}
-              <span className="ml-2 text-muted-foreground">({tag.count})</span>
-            </Badge>
-          </Link>
-        ))}
-      </div>
+      <section>
+        {tags.length === 0 ? (
+          <p className="text-muted-foreground">{tGarden('empty')}</p>
+        ) : (
+          <TagCloud tags={tags} basePath="/garden/tags" showCount />
+        )}
+      </section>
     </div>
   );
 }

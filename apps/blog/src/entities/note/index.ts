@@ -5,6 +5,7 @@ export {
   getExistingNoteSlugs,
   getNote,
   getNotes,
+  getNotesByStatus,
   getNotesByTag,
   getOutgoingNotes,
 } from './api/notes';

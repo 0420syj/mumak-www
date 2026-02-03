@@ -4,18 +4,23 @@ import { TagIcon } from 'lucide-react';
 
 import { cn } from '@mumak/ui/lib/utils';
 
+import type { NoteStatus } from '@/src/entities/note';
 import { Link, usePathname } from '@/src/shared/config/i18n';
+
+const STATUSES: NoteStatus[] = ['seedling', 'budding', 'evergreen'];
 
 interface GardenNavProps {
   allLabel: string;
+  statusLabels: Record<NoteStatus, string>;
   tagsLabel: string;
 }
 
-export function GardenNav({ allLabel, tagsLabel }: GardenNavProps) {
+export function GardenNav({ allLabel, statusLabels, tagsLabel }: GardenNavProps) {
   const pathname = usePathname();
 
   const isAllActive = pathname === '/garden';
   const isTagsActive = pathname.startsWith('/garden/tags');
+  const activeStatus = STATUSES.find(status => pathname === `/garden/status/${status}`);
 
   const baseItemClass =
     'inline-flex h-[calc(100%-1px)] items-center justify-center rounded-md border border-transparent px-3 py-1 text-sm font-medium whitespace-nowrap transition-[color,box-shadow]';
@@ -30,6 +35,15 @@ export function GardenNav({ allLabel, tagsLabel }: GardenNavProps) {
       <Link href="/garden" className={cn(baseItemClass, isAllActive ? activeClass : inactiveClass)}>
         {allLabel}
       </Link>
+      {STATUSES.map(status => (
+        <Link
+          key={status}
+          href={`/garden/status/${status}`}
+          className={cn(baseItemClass, activeStatus === status ? activeClass : inactiveClass)}
+        >
+          {statusLabels[status]}
+        </Link>
+      ))}
 
       <div className="bg-border mx-1 h-4 w-px" />
 
