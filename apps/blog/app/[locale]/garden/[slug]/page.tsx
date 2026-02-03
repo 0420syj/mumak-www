@@ -6,7 +6,14 @@ import { notFound } from 'next/navigation';
 import { Badge } from '@mumak/ui/components/badge';
 
 import { mdxComponents } from '@/mdx-components';
-import { getAllNoteSlugs, getBacklinks, getExistingNoteSlugs, getNote, type NoteStatus } from '@/src/entities/note';
+import {
+  getAllNoteSlugs,
+  getBacklinks,
+  getExistingNoteSlugs,
+  getNote,
+  getOutgoingNotes,
+  type NoteStatus,
+} from '@/src/entities/note';
 import { Link, locales, type Locale } from '@/src/shared/config/i18n';
 import { formatDateForLocale } from '@/src/shared/lib/date';
 import { createGardenResolver, transformWikilinks } from '@/src/shared/lib/wikilink';
@@ -55,6 +62,7 @@ export default async function NotePage({ params }: NotePageProps) {
 
   const t = await getTranslations('garden');
   const backlinks = getBacklinks(locale as Locale, slug);
+  const outgoingNotes = getOutgoingNotes(locale as Locale, note.meta.outgoingLinks);
   const existingSlugs = getExistingNoteSlugs(locale as Locale);
   const resolver = createGardenResolver(existingSlugs);
   const transformedContent = transformWikilinks(note.content, { resolver });
@@ -90,20 +98,41 @@ export default async function NotePage({ params }: NotePageProps) {
         </div>
       </article>
 
-      {backlinks.length > 0 && (
+      {(outgoingNotes.length > 0 || backlinks.length > 0) && (
         <section className="mt-12 pt-8 border-t border-border">
-          <h2 className="text-lg font-semibold mb-4">
-            {t('backlinks')} ({backlinks.length})
-          </h2>
-          <ul className="space-y-2">
-            {backlinks.map(backlink => (
-              <li key={backlink.slug}>
-                <Link href={`/garden/${backlink.slug}`} className="text-primary hover:underline underline-offset-4">
-                  {backlink.title}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          {outgoingNotes.length > 0 && (
+            <div className="mb-8">
+              <h2 className="text-lg font-semibold mb-4">
+                {t('outgoingLinks')} ({outgoingNotes.length})
+              </h2>
+              <ul className="space-y-2">
+                {outgoingNotes.map(outgoing => (
+                  <li key={outgoing.slug}>
+                    <Link href={`/garden/${outgoing.slug}`} className="text-primary hover:underline underline-offset-4">
+                      {outgoing.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {backlinks.length > 0 && (
+            <div>
+              <h2 className="text-lg font-semibold mb-4">
+                {t('backlinks')} ({backlinks.length})
+              </h2>
+              <ul className="space-y-2">
+                {backlinks.map(backlink => (
+                  <li key={backlink.slug}>
+                    <Link href={`/garden/${backlink.slug}`} className="text-primary hover:underline underline-offset-4">
+                      {backlink.title}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </section>
       )}
 

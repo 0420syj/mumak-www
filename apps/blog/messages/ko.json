@@ -82,12 +82,20 @@
     "noteCount": "{count}개의 노트",
     "empty": "아직 노트가 없습니다",
     "backlinks": "연결된 노트",
+    "outgoingLinks": "참조하는 노트",
     "backToGarden": "가든으로 돌아가기",
     "updated": "수정됨",
     "status": {
       "seedling": "씨앗",
       "budding": "새싹",
       "evergreen": "상록수"
+    },
+    "tags": {
+      "title": "가든 태그",
+      "description": "총 {count}개의 태그",
+      "noteCount": "{count}개의 노트",
+      "tagTitle": "#{tag}",
+      "tagDescription": "{tag} 태그가 포함된 노트"
     }
   }
 }

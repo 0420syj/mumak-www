@@ -82,12 +82,20 @@
     "noteCount": "{count} notes",
     "empty": "No notes yet",
     "backlinks": "Linked References",
+    "outgoingLinks": "References",
     "backToGarden": "Back to Garden",
     "updated": "Updated",
     "status": {
       "seedling": "Seedling",
       "budding": "Budding",
       "evergreen": "Evergreen"
+    },
+    "tags": {
+      "title": "Garden Tags",
+      "description": "{count} tags",
+      "noteCount": "{count} notes",
+      "tagTitle": "#{tag}",
+      "tagDescription": "Notes tagged with {tag}"
     }
   }
 }

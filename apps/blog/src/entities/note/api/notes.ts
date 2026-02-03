@@ -172,3 +172,10 @@ export function getAllNoteTags(locale: Locale): Array<{ name: string; count: num
     .map(([name, count]) => ({ name, count }))
     .sort((a, b) => b.count - a.count);
 }
+
+export function getOutgoingNotes(locale: Locale, slugs: string[]): NoteMeta[] {
+  const allNotes = getNotes(locale);
+  const noteMap = new Map(allNotes.map(note => [note.slug, note]));
+
+  return slugs.map(slug => noteMap.get(slug)).filter((note): note is NoteMeta => note !== undefined);
+}
