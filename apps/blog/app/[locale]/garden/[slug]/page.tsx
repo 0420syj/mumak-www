@@ -37,17 +37,11 @@ export async function generateMetadata({ params }: NotePageProps): Promise<Metad
   };
 }
 
-function StatusBadge({ status }: { status: NoteStatus }) {
-  const statusConfig: Record<NoteStatus, { label: string; variant: 'default' | 'secondary' | 'outline' }> = {
-    seedling: { label: 'Seedling', variant: 'outline' },
-    budding: { label: 'Budding', variant: 'secondary' },
-    evergreen: { label: 'Evergreen', variant: 'default' },
-  };
-
-  const config = statusConfig[status];
-
-  return <Badge variant={config.variant}>{config.label}</Badge>;
-}
+const statusVariants: Record<NoteStatus, 'default' | 'secondary' | 'outline'> = {
+  seedling: 'outline',
+  budding: 'secondary',
+  evergreen: 'default',
+};
 
 export default async function NotePage({ params }: NotePageProps) {
   const { locale, slug } = await params;
@@ -70,7 +64,7 @@ export default async function NotePage({ params }: NotePageProps) {
       <article>
         <header className="mb-8">
           <div className="flex items-center gap-2 mb-2">
-            <StatusBadge status={note.meta.status} />
+            <Badge variant={statusVariants[note.meta.status]}>{t(`status.${note.meta.status}`)}</Badge>
             <time className="text-sm text-muted-foreground" dateTime={note.meta.created}>
               {formatDateForLocale(note.meta.created, locale).text}
             </time>

@@ -9,13 +9,12 @@ export interface LinkResolver {
 
 export interface TransformOptions {
   resolver: LinkResolver;
-  brokenLinkClass?: string;
 }
 
 const WIKILINK_REGEX = /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g;
 
 export function transformWikilinks(content: string, options: TransformOptions): string {
-  const { resolver, brokenLinkClass = 'wikilink-broken' } = options;
+  const { resolver } = options;
 
   return content.replace(WIKILINK_REGEX, (raw, slug: string, label?: string) => {
     const trimmedSlug = slug.trim();
@@ -23,7 +22,7 @@ export function transformWikilinks(content: string, options: TransformOptions): 
     const href = resolver.resolve(trimmedSlug);
 
     if (!href || !resolver.exists(trimmedSlug)) {
-      return `<span class="${brokenLinkClass}" data-slug="${trimmedSlug}">${trimmedLabel}</span>`;
+      return `<BrokenWikiLink slug="${trimmedSlug}">${trimmedLabel}</BrokenWikiLink>`;
     }
 
     return `<WikiLink href="${href}" slug="${trimmedSlug}">${trimmedLabel}</WikiLink>`;

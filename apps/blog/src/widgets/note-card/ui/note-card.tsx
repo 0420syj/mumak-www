@@ -1,4 +1,5 @@
 import { Badge } from '@mumak/ui/components/badge';
+import { getTranslations } from 'next-intl/server';
 
 import { type NoteMeta, type NoteStatus } from '@/src/entities/note';
 import { Link } from '@/src/shared/config/i18n';
@@ -11,24 +12,20 @@ interface NoteCardProps {
   locale: string;
 }
 
-function StatusBadge({ status }: { status: NoteStatus }) {
-  const statusConfig: Record<NoteStatus, { label: string; variant: 'default' | 'secondary' | 'outline' }> = {
-    seedling: { label: 'Seedling', variant: 'outline' },
-    budding: { label: 'Budding', variant: 'secondary' },
-    evergreen: { label: 'Evergreen', variant: 'default' },
-  };
+const statusVariants: Record<NoteStatus, 'default' | 'secondary' | 'outline'> = {
+  seedling: 'outline',
+  budding: 'secondary',
+  evergreen: 'default',
+};
 
-  const config = statusConfig[status];
+export async function NoteCard({ note, locale }: NoteCardProps) {
+  const t = await getTranslations('garden');
 
-  return <Badge variant={config.variant}>{config.label}</Badge>;
-}
-
-export function NoteCard({ note, locale }: NoteCardProps) {
   return (
     <Link href={`/garden/${note.slug}`} className="block">
       <article className="border border-border rounded-lg p-4 hover:bg-muted/50 active:scale-[0.98] transition-all duration-150">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
-          <StatusBadge status={note.status} />
+          <Badge variant={statusVariants[note.status]}>{t(`status.${note.status}`)}</Badge>
           <time dateTime={note.updated || note.created}>
             {formatDateForLocale(note.updated || note.created, locale).text}
           </time>

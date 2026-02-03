@@ -22,21 +22,11 @@ describe('transformWikilinks', () => {
     expect(result).toBe('참고: <WikiLink href="/ko/garden/existing-note" slug="existing-note">기존 노트</WikiLink>');
   });
 
-  it('존재하지 않는 노트는 broken link span으로 변환한다', () => {
+  it('존재하지 않는 노트는 BrokenWikiLink 컴포넌트로 변환한다', () => {
     const content = '없는 노트: [[non-existent]]';
     const result = transformWikilinks(content, { resolver: mockResolver });
 
-    expect(result).toBe('없는 노트: <span class="wikilink-broken" data-slug="non-existent">non-existent</span>');
-  });
-
-  it('커스텀 brokenLinkClass를 적용한다', () => {
-    const content = '[[non-existent]]';
-    const result = transformWikilinks(content, {
-      resolver: mockResolver,
-      brokenLinkClass: 'custom-broken',
-    });
-
-    expect(result).toContain('class="custom-broken"');
+    expect(result).toBe('없는 노트: <BrokenWikiLink slug="non-existent">non-existent</BrokenWikiLink>');
   });
 
   it('여러 링크를 동시에 변환한다', () => {
@@ -44,7 +34,7 @@ describe('transformWikilinks', () => {
     const result = transformWikilinks(content, { resolver: mockResolver });
 
     expect(result).toContain('<WikiLink');
-    expect(result).toContain('wikilink-broken');
+    expect(result).toContain('<BrokenWikiLink');
   });
 });
 
