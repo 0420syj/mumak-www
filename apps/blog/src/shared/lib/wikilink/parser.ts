@@ -17,6 +17,7 @@ export interface ParsedContent {
 const WIKILINK_REGEX = /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g;
 
 export function parseWikilinks(content: string): WikiLink[] {
+  WIKILINK_REGEX.lastIndex = 0;
   const wikilinks: WikiLink[] = [];
   let match: RegExpExecArray | null;
 

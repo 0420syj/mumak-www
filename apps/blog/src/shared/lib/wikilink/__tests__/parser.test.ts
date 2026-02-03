@@ -70,3 +70,25 @@ describe('hasWikilinks', () => {
     expect(hasWikilinks('일반 텍스트')).toBe(false);
   });
 });
+
+describe('regex lastIndex 상태 관리', () => {
+  it('hasWikilinks 후 extractWikilinkSlugs 호출 시 모든 링크를 찾는다', () => {
+    const content = '[[note-a]] and [[note-b]]';
+
+    hasWikilinks(content);
+    const slugs = extractWikilinkSlugs(content);
+
+    expect(slugs).toEqual(['note-a', 'note-b']);
+  });
+
+  it('연속 호출 시에도 모든 링크를 찾는다', () => {
+    const content = '[[first]] and [[second]] and [[third]]';
+
+    parseWikilinks(content);
+    parseWikilinks(content);
+    const result = parseWikilinks(content);
+
+    expect(result).toHaveLength(3);
+    expect(result.map(r => r.slug)).toEqual(['first', 'second', 'third']);
+  });
+});
