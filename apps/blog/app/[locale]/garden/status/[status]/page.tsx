@@ -2,11 +2,10 @@ import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 
-import { getAllNoteTags, getNotesByStatus, type NoteStatus } from '@/src/entities/note';
+import { getNotesByStatus, type NoteStatus } from '@/src/entities/note';
 import { locales, type Locale } from '@/src/shared/config/i18n';
 import { GardenNav } from '@/src/widgets/garden-nav';
 import { NoteCard } from '@/src/widgets/note-card';
-import { TagCloud } from '@/src/widgets/tag-cloud';
 
 const VALID_STATUSES: NoteStatus[] = ['seedling', 'budding', 'evergreen'];
 
@@ -44,10 +43,6 @@ export default async function GardenStatusPage({ params }: GardenStatusPageProps
   const t = await getTranslations('garden');
   const tCommon = await getTranslations('common');
   const notes = getNotesByStatus(locale as Locale, status as NoteStatus);
-  const tags = getAllNoteTags(locale as Locale).map(tag => ({
-    ...tag,
-    slug: encodeURIComponent(tag.name),
-  }));
 
   const statusLabels = {
     seedling: t('status.seedling'),
@@ -63,8 +58,6 @@ export default async function GardenStatusPage({ params }: GardenStatusPageProps
       </header>
 
       <GardenNav allLabel={tCommon('all')} statusLabels={statusLabels} tagsLabel={tCommon('tags')} />
-
-      {tags.length > 0 && <TagCloud tags={tags.slice(0, 10)} basePath="/garden/tags" />}
 
       <section className="space-y-4">
         {notes.length === 0 ? (
