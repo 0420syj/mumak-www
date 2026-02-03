@@ -21,7 +21,7 @@ export async function PostCard({ post, locale, categoryLabel, readMoreLabel }: P
 
   return (
     <Link href={`/blog/${post.category}/${post.slug}`} className="block">
-      <article className="border border-border rounded-lg p-4 hover:bg-muted/50 transition-colors">
+      <article className="border border-border rounded-lg p-4 hover:bg-muted/50 active:scale-[0.98] transition-all duration-150">
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
           {categoryLabel && <Badge variant="secondary">{categoryLabel}</Badge>}
           <time dateTime={formatDateForLocale(post.date, locale).dateTime}>

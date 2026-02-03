@@ -2,6 +2,7 @@
   "common": {
     "home": "홈",
     "blog": "블로그",
+    "garden": "가든",
     "all": "전체",
     "essay": "에세이",
     "articles": "아티클",
@@ -74,5 +75,19 @@
   "feed": {
     "title": "Wan Sim - 블로그",
     "description": "생각과 기록을 담는 공간"
+  },
+  "garden": {
+    "title": "디지털 가든",
+    "description": "성장하는 생각들",
+    "noteCount": "{count}개의 노트",
+    "empty": "아직 노트가 없습니다",
+    "backlinks": "연결된 노트",
+    "backToGarden": "가든으로 돌아가기",
+    "updated": "수정됨",
+    "status": {
+      "seedling": "씨앗",
+      "budding": "새싹",
+      "evergreen": "상록수"
+    }
   }
 }

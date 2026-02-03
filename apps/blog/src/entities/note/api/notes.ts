@@ -1,0 +1,151 @@
+import fs from 'fs';
+import matter from 'gray-matter';
+import path from 'path';
+
+import { extractWikilinkSlugs } from '@/src/shared/lib/wikilink';
+
+import type { Locale } from '@/src/shared/config/i18n';
+
+export type NoteStatus = 'seedling' | 'budding' | 'evergreen';
+
+export interface NoteMeta {
+  slug: string;
+  title: string;
+  created: string;
+  updated?: string;
+  status: NoteStatus;
+  tags?: string[];
+  draft?: boolean;
+  outgoingLinks: string[];
+}
+
+export interface Note {
+  meta: NoteMeta;
+  content: string;
+}
+
+const GARDEN_DIR = 'garden';
+const CONTENT_DIR = path.join(process.cwd(), 'content');
+
+function getGardenPath(locale: Locale): string {
+  return path.join(CONTENT_DIR, locale, GARDEN_DIR);
+}
+
+function getMdxFiles(dirPath: string): string[] {
+  if (!fs.existsSync(dirPath)) {
+    return [];
+  }
+
+  return fs.readdirSync(dirPath).filter(file => file.endsWith('.mdx'));
+}
+
+function parseNoteFile(filePath: string, slug: string): NoteMeta | null {
+  try {
+    const fileContent = fs.readFileSync(filePath, 'utf-8');
+    const { data, content } = matter(fileContent);
+
+    return {
+      slug,
+      title: data.title || 'Untitled',
+      created: data.created || new Date().toISOString(),
+      updated: data.updated,
+      status: data.status || 'seedling',
+      tags: data.tags || [],
+      draft: data.draft || false,
+      outgoingLinks: extractWikilinkSlugs(content),
+    };
+  } catch {
+    return null;
+  }
+}
+
+export function getNotes(locale: Locale): NoteMeta[] {
+  const notes: NoteMeta[] = [];
+  const isProduction = process.env.NODE_ENV === 'production';
+  const gardenPath = getGardenPath(locale);
+  const files = getMdxFiles(gardenPath);
+
+  for (const file of files) {
+    const slug = file.replace(/\.mdx$/, '');
+    const filePath = path.join(gardenPath, file);
+    const note = parseNoteFile(filePath, slug);
+
+    if (note) {
+      if (isProduction && note.draft) {
+        continue;
+      }
+      notes.push(note);
+    }
+  }
+
+  return notes.sort((a, b) => {
+    const dateA = a.updated || a.created;
+    const dateB = b.updated || b.created;
+    return new Date(dateB).getTime() - new Date(dateA).getTime();
+  });
+}
+
+export function getNote(locale: Locale, slug: string): Note | null {
+  const filePath = path.join(getGardenPath(locale), `${slug}.mdx`);
+
+  if (!fs.existsSync(filePath)) {
+    return null;
+  }
+
+  try {
+    const fileContent = fs.readFileSync(filePath, 'utf-8');
+    const { data, content } = matter(fileContent);
+
+    const meta: NoteMeta = {
+      slug,
+      title: data.title || 'Untitled',
+      created: data.created || new Date().toISOString(),
+      updated: data.updated,
+      status: data.status || 'seedling',
+      tags: data.tags || [],
+      draft: data.draft || false,
+      outgoingLinks: extractWikilinkSlugs(content),
+    };
+
+    return { meta, content };
+  } catch {
+    return null;
+  }
+}
+
+export function getAllNoteSlugs(locale: Locale): string[] {
+  const gardenPath = getGardenPath(locale);
+  const files = getMdxFiles(gardenPath);
+
+  return files.map(file => file.replace(/\.mdx$/, ''));
+}
+
+export function getExistingNoteSlugs(locale: Locale): Set<string> {
+  return new Set(getAllNoteSlugs(locale));
+}
+
+export function getBacklinks(locale: Locale, targetSlug: string): NoteMeta[] {
+  const allNotes = getNotes(locale);
+
+  return allNotes.filter(note => note.outgoingLinks.includes(targetSlug) && note.slug !== targetSlug);
+}
+
+export function getNotesByTag(locale: Locale, tag: string): NoteMeta[] {
+  const notes = getNotes(locale);
+  return notes.filter(note => note.tags?.includes(tag));
+}
+
+export function getAllNoteTags(locale: Locale): Array<{ name: string; count: number }> {
+  const notes = getNotes(locale);
+  const tagMap = new Map<string, number>();
+
+  for (const note of notes) {
+    for (const tag of note.tags ?? []) {
+      tagMap.set(tag, (tagMap.get(tag) ?? 0) + 1);
+    }
+  }
+
+  return Array.from(tagMap.entries())
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => b.count - a.count);
+}

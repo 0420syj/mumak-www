@@ -2,6 +2,7 @@
   "common": {
     "home": "Home",
     "blog": "Blog",
+    "garden": "Garden",
     "all": "All",
     "essay": "Essay",
     "articles": "Articles",
@@ -74,5 +75,19 @@
   "feed": {
     "title": "Wan Sim",
     "description": "A space for thoughts and records"
+  },
+  "garden": {
+    "title": "Digital Garden",
+    "description": "Growing thoughts and ideas",
+    "noteCount": "{count} notes",
+    "empty": "No notes yet",
+    "backlinks": "Linked References",
+    "backToGarden": "Back to Garden",
+    "updated": "Updated",
+    "status": {
+      "seedling": "Seedling",
+      "budding": "Budding",
+      "evergreen": "Evergreen"
+    }
   }
 }
