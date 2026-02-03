@@ -36,6 +36,38 @@ describe('transformWikilinks', () => {
     expect(result).toContain('<WikiLink');
     expect(result).toContain('<BrokenWikiLink');
   });
+
+  it('slug의 특수문자를 escape하여 attribute injection을 방지한다', () => {
+    const content = '[[test" onclick="alert(1)]]';
+    const result = transformWikilinks(content, { resolver: mockResolver });
+
+    // " 문자가 &quot;로 escape되어 attribute를 닫을 수 없음
+    expect(result).toContain('&quot;');
+    expect(result).toContain('slug="test&quot;');
+  });
+
+  it('label의 특수문자를 escape하여 HTML injection을 방지한다', () => {
+    const content = '[[existing-note|<script>alert(1)</script>]]';
+    const result = transformWikilinks(content, { resolver: mockResolver });
+
+    // < > 문자가 escape되어 HTML 태그로 해석되지 않음
+    expect(result).not.toContain('<script>');
+    expect(result).toContain('&lt;script&gt;');
+  });
+
+  it('href의 특수문자도 escape하여 attribute injection을 방지한다', () => {
+    const maliciousResolver: LinkResolver = {
+      resolve: () => '/garden/test"><img src=x onerror=alert(1)>',
+      exists: () => true,
+    };
+    const content = '[[test]]';
+    const result = transformWikilinks(content, { resolver: maliciousResolver });
+
+    // " > < 문자가 escape되어 attribute를 닫거나 새 태그를 열 수 없음
+    expect(result).toContain('&quot;');
+    expect(result).toContain('&gt;');
+    expect(result).toContain('&lt;');
+  });
 });
 
 describe('createGardenResolver', () => {

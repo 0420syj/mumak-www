@@ -181,8 +181,8 @@ export function getAllPostSlugs(locale: Locale): Array<{
       const filePath = path.join(categoryPath, file);
       const post = parsePostFile(filePath, slug, category);
 
-      // 프로덕션에서 draft 포스트는 정적 페이지 생성 제외
-      if (post && isProduction && post.draft) {
+      // 파싱 실패 또는 프로덕션에서 draft 포스트는 정적 페이지 생성 제외
+      if (!post || (isProduction && post.draft)) {
         continue;
       }
 

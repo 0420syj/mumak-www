@@ -13,6 +13,14 @@ export interface TransformOptions {
 
 const WIKILINK_REGEX = /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g;
 
+function escapeForAttribute(str: string): string {
+  return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function escapeForContent(str: string): string {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
 export function transformWikilinks(content: string, options: TransformOptions): string {
   const { resolver } = options;
 
@@ -21,11 +29,15 @@ export function transformWikilinks(content: string, options: TransformOptions): 
     const trimmedLabel = label?.trim() || trimmedSlug;
     const href = resolver.resolve(trimmedSlug);
 
+    const safeSlug = escapeForAttribute(trimmedSlug);
+    const safeLabel = escapeForContent(trimmedLabel);
+
     if (!href || !resolver.exists(trimmedSlug)) {
-      return `<BrokenWikiLink slug="${trimmedSlug}">${trimmedLabel}</BrokenWikiLink>`;
+      return `<BrokenWikiLink slug="${safeSlug}">${safeLabel}</BrokenWikiLink>`;
     }
 
-    return `<WikiLink href="${href}" slug="${trimmedSlug}">${trimmedLabel}</WikiLink>`;
+    const safeHref = escapeForAttribute(href);
+    return `<WikiLink href="${safeHref}" slug="${safeSlug}">${safeLabel}</WikiLink>`;
   });
 }
 

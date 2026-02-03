@@ -132,8 +132,8 @@ export function getAllNoteSlugs(locale: Locale): string[] {
     const filePath = path.join(gardenPath, file);
     const note = parseNoteFile(filePath, slug);
 
-    // 프로덕션에서 draft 노트는 정적 페이지 생성 제외
-    if (note && isProduction && note.draft) {
+    // 파싱 실패 또는 프로덕션에서 draft 노트는 정적 페이지 생성 제외
+    if (!note || (isProduction && note.draft)) {
       continue;
     }
 

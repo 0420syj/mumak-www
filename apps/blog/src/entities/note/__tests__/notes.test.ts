@@ -140,7 +140,7 @@ describe('getAllNoteTags', () => {
     const tags = getAllNoteTags('ko');
 
     for (let i = 0; i < tags.length - 1; i++) {
-      expect(tags[i].count).toBeGreaterThanOrEqual(tags[i + 1].count);
+      expect(tags[i]!.count).toBeGreaterThanOrEqual(tags[i + 1]!.count);
     }
   });
 
@@ -158,14 +158,14 @@ describe('getOutgoingNotes', () => {
     const outgoing = getOutgoingNotes('ko', ['another-note']);
 
     expect(outgoing.length).toBe(1);
-    expect(outgoing[0].slug).toBe('another-note');
+    expect(outgoing[0]!.slug).toBe('another-note');
   });
 
   it('존재하지 않는 slug는 필터링된다', () => {
     const outgoing = getOutgoingNotes('ko', ['another-note', 'non-existent']);
 
     expect(outgoing.length).toBe(1);
-    expect(outgoing[0].slug).toBe('another-note');
+    expect(outgoing[0]!.slug).toBe('another-note');
   });
 
   it('빈 배열을 주면 빈 배열 반환', () => {
