@@ -3,8 +3,10 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 
 import { getAllNoteTags, getNotesByTag } from '@/src/entities/note';
-import { Link, locales, type Locale } from '@/src/shared/config/i18n';
+import { locales, type Locale } from '@/src/shared/config/i18n';
+import { GardenNav } from '@/src/widgets/garden-nav';
 import { NoteCard } from '@/src/widgets/note-card';
+import { TagCloud } from '@/src/widgets/tag-cloud';
 
 interface GardenTagPageProps {
   params: Promise<{ locale: string; tag: string }>;
@@ -34,7 +36,12 @@ export default async function GardenTagPage({ params }: GardenTagPageProps) {
 
   const decodedTag = decodeURIComponent(tag);
   const t = await getTranslations('garden.tags');
+  const tCommon = await getTranslations('common');
   const notes = getNotesByTag(locale as Locale, decodedTag);
+  const allTags = getAllNoteTags(locale as Locale).map(t => ({
+    ...t,
+    slug: encodeURIComponent(t.name),
+  }));
 
   if (notes.length === 0) {
     notFound();
@@ -47,20 +54,17 @@ export default async function GardenTagPage({ params }: GardenTagPageProps) {
         <p className="text-muted-foreground">{t('noteCount', { count: notes.length })}</p>
       </header>
 
+      <GardenNav allLabel={tCommon('all')} tagsLabel={tCommon('tags')} />
+
+      <section className="my-8">
+        <TagCloud tags={allTags.slice(0, 10)} activeTag={decodedTag} basePath="/garden/tags" />
+      </section>
+
       <div className="space-y-4">
         {notes.map(note => (
           <NoteCard key={note.slug} note={note} locale={locale} />
         ))}
       </div>
-
-      <nav className="mt-12 pt-8 border-t border-border flex gap-4">
-        <Link href="/garden/tags" className="text-sm font-medium hover:underline">
-          ← {t('title')}
-        </Link>
-        <Link href="/garden" className="text-sm font-medium hover:underline">
-          ← {await getTranslations('garden').then(t => t('backToGarden'))}
-        </Link>
-      </nav>
     </div>
   );
 }

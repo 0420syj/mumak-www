@@ -5,6 +5,7 @@ import { Badge } from '@mumak/ui/components/badge';
 
 import { getAllNoteTags } from '@/src/entities/note';
 import { Link, locales, type Locale } from '@/src/shared/config/i18n';
+import { GardenNav } from '@/src/widgets/garden-nav';
 
 interface GardenTagsPageProps {
   params: Promise<{ locale: string }>;
@@ -29,6 +30,7 @@ export default async function GardenTagsPage({ params }: GardenTagsPageProps) {
   setRequestLocale(locale);
 
   const t = await getTranslations('garden.tags');
+  const tCommon = await getTranslations('common');
   const tags = getAllNoteTags(locale as Locale);
 
   return (
@@ -38,7 +40,9 @@ export default async function GardenTagsPage({ params }: GardenTagsPageProps) {
         <p className="text-muted-foreground">{t('description', { count: tags.length })}</p>
       </header>
 
-      <div className="flex flex-wrap gap-3">
+      <GardenNav allLabel={tCommon('all')} tagsLabel={tCommon('tags')} />
+
+      <div className="flex flex-wrap gap-3 mt-8">
         {tags.map(tag => (
           <Link key={tag.name} href={`/garden/tags/${tag.name}`}>
             <Badge
@@ -51,12 +55,6 @@ export default async function GardenTagsPage({ params }: GardenTagsPageProps) {
           </Link>
         ))}
       </div>
-
-      <nav className="mt-12 pt-8 border-t border-border">
-        <Link href="/garden" className="text-sm font-medium hover:underline">
-          ← {await getTranslations('garden').then(t => t('backToGarden'))}
-        </Link>
-      </nav>
     </div>
   );
 }
