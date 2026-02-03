@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { getNotes } from '@/src/entities/note';
+import { getAllNoteTags, getNotes } from '@/src/entities/note';
 import { locales, type Locale } from '@/src/shared/config/i18n';
 import { NoteCard } from '@/src/widgets/note-card';
+import { TagCloud } from '@/src/widgets/tag-cloud';
 
 interface GardenPageProps {
   params: Promise<{ locale: string }>;
@@ -28,6 +29,10 @@ export default async function GardenPage({ params }: GardenPageProps) {
   setRequestLocale(locale);
 
   const notes = getNotes(locale as Locale);
+  const tags = getAllNoteTags(locale as Locale).map(tag => ({
+    ...tag,
+    slug: encodeURIComponent(tag.name),
+  }));
   const t = await getTranslations('garden');
 
   return (
@@ -36,6 +41,12 @@ export default async function GardenPage({ params }: GardenPageProps) {
         <h1 className="text-4xl font-bold mb-2">{t('title')}</h1>
         <p className="text-sm text-muted-foreground">{t('noteCount', { count: notes.length })}</p>
       </header>
+
+      {tags.length > 0 && (
+        <section className="mb-8">
+          <TagCloud tags={tags} basePath="/garden/tags" />
+        </section>
+      )}
 
       <div className="space-y-4">
         {notes.map(note => (

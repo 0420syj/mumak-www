@@ -10,16 +10,17 @@ interface TagCloudProps {
   tags: TagInfo[];
   activeTag?: string;
   showCount?: boolean;
+  basePath?: string;
 }
 
-export function TagCloud({ tags, activeTag, showCount = true }: TagCloudProps) {
+export function TagCloud({ tags, activeTag, showCount = true, basePath = '/blog/tags' }: TagCloudProps) {
   return (
     <div className="flex flex-wrap gap-2">
       {tags.map(tag => {
         const isActive = activeTag === tag.name;
 
         return (
-          <Link key={tag.name} href={`/blog/tags/${tag.slug}`}>
+          <Link key={tag.name} href={`${basePath}/${tag.slug}`}>
             <Badge
               variant={isActive ? 'default' : 'secondary'}
               className={cn(
