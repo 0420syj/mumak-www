@@ -41,6 +41,13 @@ describe('getNote', () => {
 
     expect(note).toBeNull();
   });
+
+  it('draft 속성이 메타에 포함된다', () => {
+    const note = getNote('ko', 'sample-note');
+
+    expect(note?.meta.draft).toBeDefined();
+    expect(typeof note?.meta.draft).toBe('boolean');
+  });
 });
 
 describe('getAllNoteSlugs', () => {

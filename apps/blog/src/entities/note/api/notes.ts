@@ -86,6 +86,7 @@ export function getNotes(locale: Locale): NoteMeta[] {
 }
 
 export function getNote(locale: Locale, slug: string): Note | null {
+  const isProduction = process.env.NODE_ENV === 'production';
   const filePath = path.join(getGardenPath(locale), `${slug}.mdx`);
 
   if (!fs.existsSync(filePath)) {
@@ -96,6 +97,13 @@ export function getNote(locale: Locale, slug: string): Note | null {
     const fileContent = fs.readFileSync(filePath, 'utf-8');
     const { data, content } = matter(fileContent);
 
+    const isDraft = data.draft || false;
+
+    // 프로덕션에서 draft 노트는 직접 URL 접근도 차단
+    if (isProduction && isDraft) {
+      return null;
+    }
+
     const meta: NoteMeta = {
       slug,
       title: data.title || 'Untitled',
@@ -103,7 +111,7 @@ export function getNote(locale: Locale, slug: string): Note | null {
       updated: data.updated,
       status: data.status || 'seedling',
       tags: data.tags || [],
-      draft: data.draft || false,
+      draft: isDraft,
       outgoingLinks: extractWikilinkSlugs(content),
     };
 
@@ -114,10 +122,25 @@ export function getNote(locale: Locale, slug: string): Note | null {
 }
 
 export function getAllNoteSlugs(locale: Locale): string[] {
+  const isProduction = process.env.NODE_ENV === 'production';
   const gardenPath = getGardenPath(locale);
   const files = getMdxFiles(gardenPath);
+  const slugs: string[] = [];
 
-  return files.map(file => file.replace(/\.mdx$/, ''));
+  for (const file of files) {
+    const slug = file.replace(/\.mdx$/, '');
+    const filePath = path.join(gardenPath, file);
+    const note = parseNoteFile(filePath, slug);
+
+    // 프로덕션에서 draft 노트는 정적 페이지 생성 제외
+    if (note && isProduction && note.draft) {
+      continue;
+    }
+
+    slugs.push(slug);
+  }
+
+  return slugs;
 }
 
 export function getExistingNoteSlugs(locale: Locale): Set<string> {
