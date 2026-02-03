@@ -1,4 +1,14 @@
-import { getAllNoteSlugs, getBacklinks, getExistingNoteSlugs, getNote, getNotes } from '../api/notes';
+import {
+  getAllNoteSlugs,
+  getAllNoteTags,
+  getBacklinks,
+  getExistingNoteSlugs,
+  getNote,
+  getNotes,
+  getNotesByStatus,
+  getNotesByTag,
+  getOutgoingNotes,
+} from '../api/notes';
 
 describe('getNotes', () => {
   it('ko locale의 모든 노트를 가져온다', () => {
@@ -80,5 +90,87 @@ describe('getBacklinks', () => {
     const backlinks = getBacklinks('ko', 'sample-note');
 
     expect(backlinks.every(n => n.slug !== 'sample-note')).toBe(true);
+  });
+});
+
+describe('getNotesByTag', () => {
+  it('특정 태그를 가진 노트들을 반환한다', () => {
+    const notes = getNotesByTag('ko', 'sample');
+
+    expect(notes.length).toBeGreaterThanOrEqual(1);
+    expect(notes.every(n => n.tags?.includes('sample'))).toBe(true);
+  });
+
+  it('존재하지 않는 태그는 빈 배열 반환', () => {
+    const notes = getNotesByTag('ko', 'non-existent-tag');
+
+    expect(notes).toEqual([]);
+  });
+});
+
+describe('getNotesByStatus', () => {
+  it('특정 status의 노트들을 반환한다', () => {
+    const seedlings = getNotesByStatus('ko', 'seedling');
+
+    expect(seedlings.length).toBeGreaterThanOrEqual(1);
+    expect(seedlings.every(n => n.status === 'seedling')).toBe(true);
+  });
+
+  it('해당 status가 없으면 빈 배열 반환', () => {
+    const notes = getNotes('ko');
+    const hasEvergreen = notes.some(n => n.status === 'evergreen');
+
+    if (!hasEvergreen) {
+      const evergreens = getNotesByStatus('ko', 'evergreen');
+      expect(evergreens).toEqual([]);
+    }
+  });
+});
+
+describe('getAllNoteTags', () => {
+  it('모든 태그와 개수를 반환한다', () => {
+    const tags = getAllNoteTags('ko');
+
+    expect(tags.length).toBeGreaterThanOrEqual(1);
+    expect(tags[0]).toHaveProperty('name');
+    expect(tags[0]).toHaveProperty('count');
+  });
+
+  it('태그는 count 내림차순으로 정렬된다', () => {
+    const tags = getAllNoteTags('ko');
+
+    for (let i = 0; i < tags.length - 1; i++) {
+      expect(tags[i].count).toBeGreaterThanOrEqual(tags[i + 1].count);
+    }
+  });
+
+  it('중복 태그는 하나로 합쳐진다', () => {
+    const tags = getAllNoteTags('ko');
+    const tagNames = tags.map(t => t.name);
+    const uniqueNames = new Set(tagNames);
+
+    expect(tagNames.length).toBe(uniqueNames.size);
+  });
+});
+
+describe('getOutgoingNotes', () => {
+  it('주어진 slug들에 해당하는 노트 메타를 반환한다', () => {
+    const outgoing = getOutgoingNotes('ko', ['another-note']);
+
+    expect(outgoing.length).toBe(1);
+    expect(outgoing[0].slug).toBe('another-note');
+  });
+
+  it('존재하지 않는 slug는 필터링된다', () => {
+    const outgoing = getOutgoingNotes('ko', ['another-note', 'non-existent']);
+
+    expect(outgoing.length).toBe(1);
+    expect(outgoing[0].slug).toBe('another-note');
+  });
+
+  it('빈 배열을 주면 빈 배열 반환', () => {
+    const outgoing = getOutgoingNotes('ko', []);
+
+    expect(outgoing).toEqual([]);
   });
 });
