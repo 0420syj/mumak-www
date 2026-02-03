@@ -88,7 +88,7 @@ export default async function NotePage({ params }: NotePageProps) {
           <h1 className="text-4xl font-bold mb-4">{note.meta.title}</h1>
           {note.meta.tags && note.meta.tags.length > 0 && (
             <div className="mt-4">
-              <PostTags tags={note.meta.tags} linkable={false} />
+              <PostTags tags={note.meta.tags} basePath="/garden/tags" />
             </div>
           )}
         </header>

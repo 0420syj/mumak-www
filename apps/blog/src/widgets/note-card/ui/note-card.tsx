@@ -39,7 +39,7 @@ export async function NoteCard({ note, locale }: NoteCardProps) {
         <h3 className="text-xl font-semibold mb-2">{note.title}</h3>
         {note.tags && note.tags.length > 0 && (
           <div className="mb-3">
-            <PostTags tags={note.tags} linkable={false} />
+            <PostTags tags={note.tags} basePath="/garden/tags" />
           </div>
         )}
       </article>
