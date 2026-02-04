@@ -26,7 +26,7 @@
     "version:check": "node scripts/sync-versions.mjs --check"
   },
   "devDependencies": {
-    "@playwright/test": "^1.58.0",
+    "@playwright/test": "^1.58.1",
     "eslint": "^9.39.2",
     "husky": "^9.0.11",
     "knip": "^5.82.1",
