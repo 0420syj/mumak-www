@@ -22,8 +22,21 @@ export const mdxComponents: MDXComponents = {
   blockquote: ({ children }) => (
     <blockquote className="my-4 border-l-4 border-muted pl-4 italic text-muted-foreground">{children}</blockquote>
   ),
-  code: ({ children }) => <code className="px-1.5 py-0.5 bg-muted rounded text-sm font-mono">{children}</code>,
-  pre: ({ children }) => <pre className="my-4 p-4 bg-muted rounded-lg overflow-x-auto">{children}</pre>,
+  // 인라인 코드만 스타일 적용 (코드 블럭은 Shiki가 처리)
+  code: ({ children, className }) =>
+    className ? (
+      // Shiki가 처리한 코드 블럭 내부 - 스타일 유지
+      <code className={className}>{children}</code>
+    ) : (
+      // 인라인 코드
+      <code className="px-1.5 py-0.5 bg-muted rounded text-sm font-mono">{children}</code>
+    ),
+  // Shiki 스타일 유지, 기본 레이아웃만 적용
+  pre: ({ children, className, style }) => (
+    <pre className={`my-4 p-4 rounded-lg overflow-x-auto ${className || ''}`} style={style}>
+      {children}
+    </pre>
+  ),
   img: ({ src, alt }) => (
     <Image src={src || ''} alt={alt || ''} width={800} height={400} className="my-4 rounded-lg" loading="lazy" />
   ),

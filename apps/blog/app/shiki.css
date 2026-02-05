@@ -1,0 +1,33 @@
+/* Shiki 코드 블록 기본 스타일 */
+pre.shiki {
+  border: 1px solid #e5e7eb;
+  background-color: #f9fafb !important;
+}
+
+html.dark pre.shiki {
+  border-color: #374151;
+}
+
+.shiki code {
+  background-color: inherit !important;
+}
+
+.shiki span,
+.shiki code span {
+  background-color: transparent !important;
+}
+
+/* Shiki 코드 하이라이팅 - 다크모드 지원 */
+html.dark .shiki,
+html.dark .shiki code {
+  background-color: var(--shiki-dark-bg) !important;
+}
+
+html.dark .shiki code span,
+html.dark .shiki span {
+  color: var(--shiki-dark) !important;
+  background-color: transparent !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
+}

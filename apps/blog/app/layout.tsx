@@ -1,4 +1,5 @@
 import '@mumak/ui/globals.css';
+import './shiki.css';
 
 import localFont from 'next/font/local';
 
