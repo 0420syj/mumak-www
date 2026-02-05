@@ -5,6 +5,7 @@ import { notFound } from 'next/navigation';
 
 import { mdxComponents } from '@/mdx-components';
 import { generateBlogPostingJsonLd, generateBreadcrumbJsonLd, JsonLdScript } from '@/src/app/seo';
+import { mdxOptions } from '@/src/shared/config/mdx';
 import { getAllPostSlugs, getPost, isValidCategory } from '@/src/entities/post';
 import { Link, locales, type Locale } from '@/src/shared/config/i18n';
 import { formatDateForLocale } from '@/src/shared/lib/date';
@@ -96,7 +97,7 @@ export default async function PostPage({ params }: PostPageProps) {
         </header>
 
         <div className="prose prose-neutral dark:prose-invert max-w-none">
-          <MDXRemote source={post.content} components={mdxComponents} />
+          <MDXRemote source={post.content} components={mdxComponents} options={mdxOptions} />
         </div>
       </article>
 

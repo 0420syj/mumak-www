@@ -3,10 +3,11 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { MDXRemote } from 'next-mdx-remote-client/rsc';
 import { notFound } from 'next/navigation';
 
+import { mdxComponents } from '@/mdx-components';
 import { getPage } from '@/src/entities/post';
+import { mdxOptions } from '@/src/shared/config/mdx';
 import { type Locale } from '@/src/shared/config/i18n';
 import { formatDateForLocale } from '@/src/shared/lib/date';
-import { mdxComponents } from '@/mdx-components';
 
 interface NowPageProps {
   params: Promise<{ locale: string }>;
@@ -42,7 +43,7 @@ export default async function NowPage({ params }: NowPageProps) {
       </header>
 
       <div className="prose prose-neutral dark:prose-invert">
-        <MDXRemote source={page.content} components={mdxComponents} />
+        <MDXRemote source={page.content} components={mdxComponents} options={mdxOptions} />
       </div>
 
       <footer className="mt-8 pt-4 border-t border-border text-sm text-muted-foreground">

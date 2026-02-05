@@ -7,6 +7,7 @@ import { Badge } from '@mumak/ui/components/badge';
 
 import { mdxComponents } from '@/mdx-components';
 import { generateBreadcrumbJsonLd, JsonLdScript } from '@/src/app/seo';
+import { mdxOptions } from '@/src/shared/config/mdx';
 import {
   getAllNoteSlugs,
   getBacklinks,
@@ -114,7 +115,7 @@ export default async function NotePage({ params }: NotePageProps) {
         </header>
 
         <div className="prose prose-neutral dark:prose-invert max-w-none">
-          <MDXRemote source={transformedContent} components={mdxComponents} />
+          <MDXRemote source={transformedContent} components={mdxComponents} options={mdxOptions} />
         </div>
       </article>
 
