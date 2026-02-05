@@ -1,0 +1,187 @@
+/* Prism.js GitHub 스타일 테마 */
+
+/* 코드 블록 기본 스타일 */
+pre[class*='language-'] {
+  border: 1px solid #e5e7eb;
+  background-color: #f6f8fa !important;
+  border-radius: 6px;
+  padding: 1rem;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+code[class*='language-'] {
+  background-color: transparent !important;
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+}
+
+/* Light mode 토큰 스타일 */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: #6a737d;
+}
+
+.token.punctuation {
+  color: #24292e;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+  color: #005cc5;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+  color: #032f62;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  color: #d73a49;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+  color: #d73a49;
+}
+
+.token.function,
+.token.class-name {
+  color: #6f42c1;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+  color: #e36209;
+}
+
+/* Dark mode */
+html.dark pre[class*='language-'] {
+  background-color: #161b22 !important;
+  border-color: #30363d;
+}
+
+html.dark code[class*='language-'] {
+  color: #c9d1d9;
+}
+
+html.dark .token.comment,
+html.dark .token.prolog,
+html.dark .token.doctype,
+html.dark .token.cdata {
+  color: #8b949e;
+}
+
+html.dark .token.punctuation {
+  color: #c9d1d9;
+}
+
+html.dark .token.property,
+html.dark .token.tag,
+html.dark .token.boolean,
+html.dark .token.number,
+html.dark .token.constant,
+html.dark .token.symbol,
+html.dark .token.deleted {
+  color: #79c0ff;
+}
+
+html.dark .token.selector,
+html.dark .token.attr-name,
+html.dark .token.string,
+html.dark .token.char,
+html.dark .token.builtin,
+html.dark .token.inserted {
+  color: #a5d6ff;
+}
+
+html.dark .token.operator,
+html.dark .token.entity,
+html.dark .token.url,
+html.dark .language-css .token.string,
+html.dark .style .token.string {
+  color: #ff7b72;
+}
+
+html.dark .token.atrule,
+html.dark .token.attr-value,
+html.dark .token.keyword {
+  color: #ff7b72;
+}
+
+html.dark .token.function,
+html.dark .token.class-name {
+  color: #d2a8ff;
+}
+
+html.dark .token.regex,
+html.dark .token.important,
+html.dark .token.variable {
+  color: #ffa657;
+}
+
+/* 라인 하이라이팅 (rehype-prism-plus) */
+.code-highlight {
+  float: left;
+  min-width: 100%;
+}
+
+.code-line {
+  display: block;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  margin-left: -1rem;
+  margin-right: -1rem;
+  border-left: 4px solid transparent;
+}
+
+.code-line.inserted {
+  background-color: rgba(16, 185, 129, 0.1);
+}
+
+.code-line.deleted {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.highlight-line {
+  margin-left: -1rem;
+  margin-right: -1rem;
+  padding-left: calc(1rem - 4px);
+  background-color: rgba(55, 65, 81, 0.1);
+  border-left: 4px solid #3b82f6;
+}
+
+html.dark .highlight-line {
+  background-color: rgba(55, 65, 81, 0.5);
+}
+
+/* 라인 번호 */
+.line-number::before {
+  display: inline-block;
+  width: 1rem;
+  text-align: right;
+  margin-right: 1rem;
+  color: #6b7280;
+  content: attr(line);
+}
+
+html.dark .line-number::before {
+  color: #6b7280;
+}
