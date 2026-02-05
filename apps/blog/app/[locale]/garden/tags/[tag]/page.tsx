@@ -15,7 +15,7 @@ interface GardenTagPageProps {
 export function generateStaticParams() {
   return locales.flatMap(locale => {
     const tags = getAllNoteTags(locale);
-    return tags.map(tag => ({ locale, tag: tag.name }));
+    return tags.map(tag => ({ locale, tag: encodeURIComponent(tag.name) }));
   });
 }
 
