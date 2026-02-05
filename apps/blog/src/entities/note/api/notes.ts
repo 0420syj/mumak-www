@@ -47,7 +47,7 @@ function parseNoteFile(filePath: string, slug: string): NoteMeta | null {
     return {
       slug,
       title: data.title || 'Untitled',
-      created: data.created || new Date().toISOString(),
+      created: data.created || '1970-01-01',
       updated: data.updated,
       status: data.status || 'seedling',
       tags: data.tags || [],
@@ -92,7 +92,7 @@ export function getNote(locale: Locale, slug: string): Note | null {
     const meta: NoteMeta = {
       slug,
       title: data.title || 'Untitled',
-      created: data.created || new Date().toISOString(),
+      created: data.created || '1970-01-01',
       updated: data.updated,
       status: data.status || 'seedling',
       tags: data.tags || [],

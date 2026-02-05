@@ -78,7 +78,7 @@ function parsePostFile(filePath: string, slug: string, category: string): PostMe
     return {
       slug,
       title: data.title || 'Untitled',
-      date: data.date || new Date().toISOString(),
+      date: data.date || '1970-01-01',
       description: data.description || '',
       category,
       tags: data.tags || [],
@@ -148,7 +148,7 @@ export function getPost(locale: Locale, category: string, slug: string): Post | 
     const meta: PostMeta = {
       slug,
       title: data.title || 'Untitled',
-      date: data.date || new Date().toISOString(),
+      date: data.date || '1970-01-01',
       description: data.description || '',
       category,
       tags: data.tags || [],
