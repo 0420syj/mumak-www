@@ -51,6 +51,12 @@ const statusVariants: Record<NoteStatus, 'default' | 'secondary' | 'outline'> = 
   evergreen: 'default',
 };
 
+const directionIcons = {
+  bidirectional: '↔',
+  outgoing: '→',
+  incoming: '←',
+} as const;
+
 export default async function NotePage({ params }: NotePageProps) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
@@ -106,25 +112,20 @@ export default async function NotePage({ params }: NotePageProps) {
             {t('linkedNotes')} ({linkedNotes.length})
           </h2>
           <ul className="space-y-2">
-            {linkedNotes.map(linkedNote => {
-              const directionIcon =
-                linkedNote.direction === 'bidirectional' ? '↔' : linkedNote.direction === 'outgoing' ? '→' : '←';
-
-              return (
-                <li key={linkedNote.slug} className="flex items-center gap-2">
-                  <span
-                    className="text-muted-foreground text-sm w-5 text-center"
-                    title={t(`linkDirection.${linkedNote.direction}`)}
-                  >
-                    {directionIcon}
-                  </span>
-                  <Link href={`/garden/${linkedNote.slug}`} className="text-primary hover:underline underline-offset-4">
-                    {linkedNote.title}
-                  </Link>
-                  <span className="text-xs text-muted-foreground">{t(`linkDirection.${linkedNote.direction}`)}</span>
-                </li>
-              );
-            })}
+            {linkedNotes.map(linkedNote => (
+              <li key={linkedNote.slug} className="flex items-center gap-2">
+                <span
+                  className="text-muted-foreground text-sm w-5 text-center"
+                  title={t(`linkDirection.${linkedNote.direction}`)}
+                >
+                  {directionIcons[linkedNote.direction]}
+                </span>
+                <Link href={`/garden/${linkedNote.slug}`} className="text-primary hover:underline underline-offset-4">
+                  {linkedNote.title}
+                </Link>
+                <span className="text-xs text-muted-foreground">{t(`linkDirection.${linkedNote.direction}`)}</span>
+              </li>
+            ))}
           </ul>
         </section>
       )}

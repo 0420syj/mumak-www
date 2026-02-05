@@ -59,34 +59,26 @@ function parseNoteFile(filePath: string, slug: string): NoteMeta | null {
   }
 }
 
+const isProduction = () => process.env.NODE_ENV === 'production';
+
+const isPublishable = (note: NoteMeta) => !isProduction() || !note.draft;
+
+const byMostRecentFirst = (a: NoteMeta, b: NoteMeta) => {
+  const dateA = new Date(a.updated || a.created);
+  const dateB = new Date(b.updated || b.created);
+  return dateB.getTime() - dateA.getTime();
+};
+
 export function getNotes(locale: Locale): NoteMeta[] {
-  const notes: NoteMeta[] = [];
-  const isProduction = process.env.NODE_ENV === 'production';
   const gardenPath = getGardenPath(locale);
-  const files = getMdxFiles(gardenPath);
 
-  for (const file of files) {
-    const slug = file.replace(/\.mdx$/, '');
-    const filePath = path.join(gardenPath, file);
-    const note = parseNoteFile(filePath, slug);
-
-    if (note) {
-      if (isProduction && note.draft) {
-        continue;
-      }
-      notes.push(note);
-    }
-  }
-
-  return notes.sort((a, b) => {
-    const dateA = a.updated || a.created;
-    const dateB = b.updated || b.created;
-    return new Date(dateB).getTime() - new Date(dateA).getTime();
-  });
+  return getMdxFiles(gardenPath)
+    .map(file => parseNoteFile(path.join(gardenPath, file), file.replace(/\.mdx$/, '')))
+    .filter((note): note is NoteMeta => note !== null && isPublishable(note))
+    .sort(byMostRecentFirst);
 }
 
 export function getNote(locale: Locale, slug: string): Note | null {
-  const isProduction = process.env.NODE_ENV === 'production';
   const filePath = path.join(getGardenPath(locale), `${slug}.mdx`);
 
   if (!fs.existsSync(filePath)) {
@@ -97,13 +89,6 @@ export function getNote(locale: Locale, slug: string): Note | null {
     const fileContent = fs.readFileSync(filePath, 'utf-8');
     const { data, content } = matter(fileContent);
 
-    const isDraft = data.draft || false;
-
-    // 프로덕션에서 draft 노트는 직접 URL 접근도 차단
-    if (isProduction && isDraft) {
-      return null;
-    }
-
     const meta: NoteMeta = {
       slug,
       title: data.title || 'Untitled',
@@ -111,36 +96,18 @@ export function getNote(locale: Locale, slug: string): Note | null {
       updated: data.updated,
       status: data.status || 'seedling',
       tags: data.tags || [],
-      draft: isDraft,
+      draft: data.draft || false,
       outgoingLinks: extractWikilinkSlugs(content),
     };
 
-    return { meta, content };
+    return isPublishable(meta) ? { meta, content } : null;
   } catch {
     return null;
   }
 }
 
 export function getAllNoteSlugs(locale: Locale): string[] {
-  const isProduction = process.env.NODE_ENV === 'production';
-  const gardenPath = getGardenPath(locale);
-  const files = getMdxFiles(gardenPath);
-  const slugs: string[] = [];
-
-  for (const file of files) {
-    const slug = file.replace(/\.mdx$/, '');
-    const filePath = path.join(gardenPath, file);
-    const note = parseNoteFile(filePath, slug);
-
-    // 파싱 실패 또는 프로덕션에서 draft 노트는 정적 페이지 생성 제외
-    if (!note || (isProduction && note.draft)) {
-      continue;
-    }
-
-    slugs.push(slug);
-  }
-
-  return slugs;
+  return getNotes(locale).map(note => note.slug);
 }
 
 export function getExistingNoteSlugs(locale: Locale): Set<string> {
@@ -148,9 +115,9 @@ export function getExistingNoteSlugs(locale: Locale): Set<string> {
 }
 
 export function getBacklinks(locale: Locale, targetSlug: string): NoteMeta[] {
-  const allNotes = getNotes(locale);
+  const linksToTarget = (note: NoteMeta) => note.outgoingLinks.includes(targetSlug) && note.slug !== targetSlug;
 
-  return allNotes.filter(note => note.outgoingLinks.includes(targetSlug) && note.slug !== targetSlug);
+  return getNotes(locale).filter(linksToTarget);
 }
 
 export function getNotesByTag(locale: Locale, tag: string): NoteMeta[] {
@@ -164,18 +131,11 @@ export function getNotesByStatus(locale: Locale, status: NoteStatus): NoteMeta[]
 }
 
 export function getAllNoteTags(locale: Locale): Array<{ name: string; count: number }> {
-  const notes = getNotes(locale);
-  const tagMap = new Map<string, number>();
+  const tagCounts = getNotes(locale)
+    .flatMap(note => note.tags ?? [])
+    .reduce((counts, tag) => counts.set(tag, (counts.get(tag) ?? 0) + 1), new Map<string, number>());
 
-  for (const note of notes) {
-    for (const tag of note.tags ?? []) {
-      tagMap.set(tag, (tagMap.get(tag) ?? 0) + 1);
-    }
-  }
-
-  return Array.from(tagMap.entries())
-    .map(([name, count]) => ({ name, count }))
-    .sort((a, b) => b.count - a.count);
+  return Array.from(tagCounts, ([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count);
 }
 
 export function getOutgoingNotes(locale: Locale, slugs: string[]): NoteMeta[] {
@@ -208,28 +168,12 @@ export function getMergedLinkedNotes(outgoingNotes: NoteMeta[], backlinks: NoteM
   const outgoingSlugs = new Set(outgoingNotes.map(n => n.slug));
   const backlinkSlugs = new Set(backlinks.map(n => n.slug));
 
-  const seenSlugs = new Set<string>();
-  const result: LinkedNote[] = [];
+  const toLinkedNote = (note: NoteMeta): LinkedNote => ({
+    ...note,
+    direction: getLinkDirection(note.slug, outgoingSlugs, backlinkSlugs),
+  });
 
-  for (const note of outgoingNotes) {
-    if (!seenSlugs.has(note.slug)) {
-      seenSlugs.add(note.slug);
-      result.push({
-        ...note,
-        direction: getLinkDirection(note.slug, outgoingSlugs, backlinkSlugs),
-      });
-    }
-  }
+  const incomingOnly = backlinks.filter(note => !outgoingSlugs.has(note.slug));
 
-  for (const note of backlinks) {
-    if (!seenSlugs.has(note.slug)) {
-      seenSlugs.add(note.slug);
-      result.push({
-        ...note,
-        direction: 'incoming',
-      });
-    }
-  }
-
-  return result;
+  return [...outgoingNotes.map(toLinkedNote), ...incomingOnly.map(toLinkedNote)];
 }
