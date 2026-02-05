@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation';
 import { Badge } from '@mumak/ui/components/badge';
 
 import { mdxComponents } from '@/mdx-components';
+import { generateBreadcrumbJsonLd, JsonLdScript } from '@/src/app/seo';
 import {
   getAllNoteSlugs,
   getBacklinks,
@@ -19,6 +20,8 @@ import { Link, locales, type Locale } from '@/src/shared/config/i18n';
 import { formatDateForLocale } from '@/src/shared/lib/date';
 import { createGardenResolver, transformWikilinks } from '@/src/shared/lib/wikilink';
 import { PostTags } from '@/src/widgets/post-card/ui/post-tags';
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://wannysim.com';
 
 interface NotePageProps {
   params: Promise<{ locale: string; slug: string }>;
@@ -75,8 +78,17 @@ export default async function NotePage({ params }: NotePageProps) {
   const resolver = createGardenResolver(existingSlugs);
   const transformedContent = transformWikilinks(note.content, { resolver });
 
+  const breadcrumbJsonLd = generateBreadcrumbJsonLd({
+    items: [
+      { name: locale === 'ko' ? '홈' : 'Home', url: `${BASE_URL}/${locale}` },
+      { name: locale === 'ko' ? '가든' : 'Garden', url: `${BASE_URL}/${locale}/garden` },
+      { name: note.meta.title, url: `${BASE_URL}/${locale}/garden/${slug}` },
+    ],
+  });
+
   return (
     <div className="max-w-3xl mx-auto">
+      <JsonLdScript data={breadcrumbJsonLd} />
       <article>
         <header className="mb-8">
           <div className="flex items-center gap-2 mb-2">

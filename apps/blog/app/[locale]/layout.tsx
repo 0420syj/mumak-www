@@ -2,7 +2,13 @@ import type { Metadata } from 'next';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 
-import { IntlProvider, JsonLdScript, VercelAnalytics, generateWebSiteJsonLd } from '@/src/app';
+import {
+  IntlProvider,
+  JsonLdScript,
+  VercelAnalytics,
+  generateSiteNavigationJsonLd,
+  generateWebSiteJsonLd,
+} from '@/src/app';
 import { locales, routing, type Locale } from '@/src/shared/config/i18n';
 import { Footer } from '@/src/widgets/footer';
 import { HeaderSpacer, Navigation, SmartHeader } from '@/src/widgets/header';
@@ -63,10 +69,12 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   const messages = await getMessages();
 
   const websiteJsonLd = generateWebSiteJsonLd({ locale });
+  const siteNavigationJsonLd = generateSiteNavigationJsonLd({ locale });
 
   return (
     <IntlProvider locale={locale} messages={messages}>
       <JsonLdScript data={websiteJsonLd} />
+      <JsonLdScript data={siteNavigationJsonLd} />
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-background focus:text-foreground focus:rounded-md focus:border focus:border-border focus:outline-none focus:ring-2 focus:ring-ring"
