@@ -49,7 +49,7 @@
     "readingTimeUnit": " min"
   },
   "tags": {
-    "title": "Tags",
+    "title": "Blog Tags",
     "metaDescription": "All tags in the blog",
     "description": "{count} tags available",
     "empty": "No tags found",
