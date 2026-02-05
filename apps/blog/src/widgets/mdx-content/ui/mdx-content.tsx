@@ -1,6 +1,5 @@
 import type { MDXComponents } from 'mdx/types';
 import { MDXRemote, type EvaluateOptions } from 'next-mdx-remote-client/rsc';
-import { connection } from 'next/server';
 
 import { Skeleton } from '@mumak/ui/components/skeleton';
 
@@ -10,9 +9,7 @@ interface MDXContentProps {
   options?: EvaluateOptions;
 }
 
-async function MDXContent({ source, components, options }: MDXContentProps) {
-  await connection();
-
+function MDXContent({ source, components, options }: MDXContentProps) {
   return <MDXRemote source={source} components={components} options={options} />;
 }
 
