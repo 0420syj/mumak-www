@@ -1,5 +1,6 @@
 import type { MDXComponents } from 'mdx/types';
 import { MDXRemote, type EvaluateOptions } from 'next-mdx-remote-client/rsc';
+import { connection } from 'next/server';
 
 import { Skeleton } from '@mumak/ui/components/skeleton';
 
@@ -9,7 +10,11 @@ interface MDXContentProps {
   options?: EvaluateOptions;
 }
 
-function MDXContent({ source, components, options }: MDXContentProps) {
+async function MDXContent({ source, components, options }: MDXContentProps) {
+  // Shiki가 Date.now() 사용하므로 동적 렌더링 필요
+  // Suspense로 감싸서 페이지 껍데기 먼저 표시, MDX는 스트리밍
+  await connection();
+
   return <MDXRemote source={source} components={components} options={options} />;
 }
 
