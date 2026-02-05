@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { MDXRemote } from 'next-mdx-remote-client/rsc';
+import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 
 import { mdxComponents } from '@/mdx-components';
 import { generateBlogPostingJsonLd, generateBreadcrumbJsonLd, JsonLdScript } from '@/src/app/seo';
@@ -10,8 +10,24 @@ import { getAllPostSlugs, getPost, isValidCategory } from '@/src/entities/post';
 import { Link, locales, type Locale } from '@/src/shared/config/i18n';
 import { formatDateForLocale } from '@/src/shared/lib/date';
 import { PostTags } from '@/src/widgets/post-card/ui/post-tags';
+import { MDXContent, MDXContentSkeleton } from '@/src/widgets/mdx-content';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://wannysim.com';
+
+const staticTranslations = {
+  ko: {
+    home: '홈',
+    blog: '블로그',
+    backToList: '목록으로 돌아가기',
+    category: { essay: '에세이', articles: '아티클', notes: '노트' },
+  },
+  en: {
+    home: 'Home',
+    blog: 'Blog',
+    backToList: 'Back to list',
+    category: { essay: 'Essay', articles: 'Articles', notes: 'Notes' },
+  },
+} as const;
 
 interface PostPageProps {
   params: Promise<{ locale: string; category: string; slug: string }>;
@@ -58,8 +74,9 @@ export default async function PostPage({ params }: PostPageProps) {
     notFound();
   }
 
-  const t = await getTranslations('post');
-  const tCategory = await getTranslations('category');
+  const localeKey = (locale === 'ko' ? 'ko' : 'en') as keyof typeof staticTranslations;
+  const translations = staticTranslations[localeKey];
+  const categoryTitle = translations.category[category as keyof typeof translations.category];
 
   const blogPostingJsonLd = generateBlogPostingJsonLd({
     post: post.meta,
@@ -69,9 +86,9 @@ export default async function PostPage({ params }: PostPageProps) {
 
   const breadcrumbJsonLd = generateBreadcrumbJsonLd({
     items: [
-      { name: locale === 'ko' ? '홈' : 'Home', url: `${BASE_URL}/${locale}` },
-      { name: locale === 'ko' ? '블로그' : 'Blog', url: `${BASE_URL}/${locale}/blog` },
-      { name: tCategory(`${category}.title`), url: `${BASE_URL}/${locale}/blog/${category}` },
+      { name: translations.home, url: `${BASE_URL}/${locale}` },
+      { name: translations.blog, url: `${BASE_URL}/${locale}/blog` },
+      { name: categoryTitle, url: `${BASE_URL}/${locale}/blog/${category}` },
       { name: post.meta.title, url: `${BASE_URL}/${locale}/blog/${category}/${slug}` },
     ],
   });
@@ -97,13 +114,15 @@ export default async function PostPage({ params }: PostPageProps) {
         </header>
 
         <div className="prose prose-neutral dark:prose-invert max-w-none">
-          <MDXRemote source={post.content} components={mdxComponents} options={mdxOptions} />
+          <Suspense fallback={<MDXContentSkeleton />}>
+            <MDXContent source={post.content} components={mdxComponents} options={mdxOptions} />
+          </Suspense>
         </div>
       </article>
 
       <nav className="mt-12 pt-8 border-t border-border">
         <Link href={`/blog/${category}`} className="text-sm font-medium hover:underline">
-          ← {t('backToList')}
+          ← {translations.backToList}
         </Link>
       </nav>
     </div>
