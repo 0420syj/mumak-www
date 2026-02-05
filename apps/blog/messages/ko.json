@@ -81,8 +81,12 @@
     "description": "성장하는 생각들",
     "noteCount": "{count}개의 노트",
     "empty": "아직 노트가 없습니다",
-    "backlinks": "연결된 노트",
-    "outgoingLinks": "참조하는 노트",
+    "linkedNotes": "연결된 노트",
+    "linkDirection": {
+      "outgoing": "이 노트가 참조",
+      "incoming": "이 노트를 참조",
+      "bidirectional": "서로 참조"
+    },
     "backToGarden": "가든으로 돌아가기",
     "updated": "수정됨",
     "status": {

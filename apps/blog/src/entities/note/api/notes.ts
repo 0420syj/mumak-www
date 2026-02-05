@@ -184,3 +184,52 @@ export function getOutgoingNotes(locale: Locale, slugs: string[]): NoteMeta[] {
 
   return slugs.map(slug => noteMap.get(slug)).filter((note): note is NoteMeta => note !== undefined);
 }
+
+export type LinkDirection = 'outgoing' | 'incoming' | 'bidirectional';
+
+export interface LinkedNote extends NoteMeta {
+  direction: LinkDirection;
+}
+
+export function getLinkDirection(slug: string, outgoingSlugs: Set<string>, backlinkSlugs: Set<string>): LinkDirection {
+  const isOutgoing = outgoingSlugs.has(slug);
+  const isBacklink = backlinkSlugs.has(slug);
+
+  if (isOutgoing && isBacklink) {
+    return 'bidirectional';
+  }
+  if (isOutgoing) {
+    return 'outgoing';
+  }
+  return 'incoming';
+}
+
+export function getMergedLinkedNotes(outgoingNotes: NoteMeta[], backlinks: NoteMeta[]): LinkedNote[] {
+  const outgoingSlugs = new Set(outgoingNotes.map(n => n.slug));
+  const backlinkSlugs = new Set(backlinks.map(n => n.slug));
+
+  const seenSlugs = new Set<string>();
+  const result: LinkedNote[] = [];
+
+  for (const note of outgoingNotes) {
+    if (!seenSlugs.has(note.slug)) {
+      seenSlugs.add(note.slug);
+      result.push({
+        ...note,
+        direction: getLinkDirection(note.slug, outgoingSlugs, backlinkSlugs),
+      });
+    }
+  }
+
+  for (const note of backlinks) {
+    if (!seenSlugs.has(note.slug)) {
+      seenSlugs.add(note.slug);
+      result.push({
+        ...note,
+        direction: 'incoming',
+      });
+    }
+  }
+
+  return result;
+}

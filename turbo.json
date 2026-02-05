@@ -67,6 +67,14 @@
       "outputs": ["test-results/**", "playwright-report/**"],
       "passThroughEnv": ["PLAYWRIGHT_*", "CI", "SPOTIFY_CLIENT_ID", "SPOTIFY_CLIENT_SECRET", "SPOTIFY_REFRESH_TOKEN"]
     },
+    "validate:content": {
+      "inputs": ["content/**/*.mdx", "scripts/validate-content.mjs"],
+      "outputs": []
+    },
+    "validate:garden": {
+      "inputs": ["content/**/garden/**/*.mdx", "scripts/validate-garden.mjs"],
+      "outputs": []
+    },
     "clean": {
       "cache": false
     },

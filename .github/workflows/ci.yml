@@ -117,6 +117,12 @@ jobs:
       - name: Test
         run: pnpm turbo run test:ci --filter=${{ matrix.app }}
 
+      - name: Validate Content (blog only)
+        if: matrix.app == 'blog'
+        run: |
+          pnpm turbo run validate:content --filter=blog
+          pnpm turbo run validate:garden --filter=blog
+
       - name: Build
         run: pnpm turbo run build --filter=${{ matrix.app }}
 

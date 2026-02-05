@@ -3,6 +3,8 @@ export {
   getAllNoteTags,
   getBacklinks,
   getExistingNoteSlugs,
+  getLinkDirection,
+  getMergedLinkedNotes,
   getNote,
   getNotes,
   getNotesByStatus,
@@ -10,4 +12,4 @@ export {
   getOutgoingNotes,
 } from './api/notes';
 
-export type { Note, NoteMeta, NoteStatus } from './api/notes';
+export type { LinkDirection, LinkedNote, Note, NoteMeta, NoteStatus } from './api/notes';

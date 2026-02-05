@@ -81,8 +81,12 @@
     "description": "Growing thoughts and ideas",
     "noteCount": "{count} notes",
     "empty": "No notes yet",
-    "backlinks": "Linked References",
-    "outgoingLinks": "References",
+    "linkedNotes": "Linked Notes",
+    "linkDirection": {
+      "outgoing": "This note references",
+      "incoming": "References this note",
+      "bidirectional": "Mutual reference"
+    },
     "backToGarden": "Back to Garden",
     "updated": "Updated",
     "status": {
