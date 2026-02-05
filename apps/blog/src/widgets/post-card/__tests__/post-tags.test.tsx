@@ -80,4 +80,22 @@ describe('PostTags', () => {
     const wrapper = container.firstChild;
     expect(wrapper).toHaveClass('flex', 'flex-wrap', 'gap-1');
   });
+
+  it('uses custom basePath for navigation', async () => {
+    const user = userEvent.setup();
+    render(<PostTags tags={['thought']} basePath="/garden/tags" />);
+
+    await user.click(screen.getByText('#thought'));
+
+    expect(mockPush).toHaveBeenCalledWith('/garden/tags/thought');
+  });
+
+  it('defaults to /blog/tags when basePath is not provided', async () => {
+    const user = userEvent.setup();
+    render(<PostTags tags={['thought']} />);
+
+    await user.click(screen.getByText('#thought'));
+
+    expect(mockPush).toHaveBeenCalledWith('/blog/tags/thought');
+  });
 });

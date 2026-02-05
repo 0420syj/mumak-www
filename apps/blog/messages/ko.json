@@ -2,6 +2,7 @@
   "common": {
     "home": "홈",
     "blog": "블로그",
+    "garden": "가든",
     "all": "전체",
     "essay": "에세이",
     "articles": "아티클",
@@ -48,7 +49,7 @@
     "readingTimeUnit": "분"
   },
   "tags": {
-    "title": "태그",
+    "title": "블로그 태그",
     "metaDescription": "블로그의 모든 태그 목록",
     "description": "총 {count}개의 태그가 있습니다",
     "empty": "태그가 없습니다",
@@ -74,5 +75,31 @@
   "feed": {
     "title": "Wan Sim - 블로그",
     "description": "생각과 기록을 담는 공간"
+  },
+  "garden": {
+    "title": "디지털 가든",
+    "description": "성장하는 생각들",
+    "noteCount": "{count}개의 노트",
+    "empty": "아직 노트가 없습니다",
+    "linkedNotes": "연결된 노트",
+    "linkDirection": {
+      "outgoing": "이 노트가 참조",
+      "incoming": "이 노트를 참조",
+      "bidirectional": "서로 참조"
+    },
+    "backToGarden": "가든으로 돌아가기",
+    "updated": "수정됨",
+    "status": {
+      "seedling": "씨앗",
+      "budding": "새싹",
+      "evergreen": "상록수"
+    },
+    "tags": {
+      "title": "가든 태그",
+      "description": "총 {count}개의 태그",
+      "noteCount": "{count}개의 노트",
+      "tagTitle": "#{tag}",
+      "tagDescription": "{tag} 태그가 포함된 노트"
+    }
   }
 }

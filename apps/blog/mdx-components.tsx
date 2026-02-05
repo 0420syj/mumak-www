@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { SocialLinks } from '@/src/widgets/footer';
+import { BrokenWikiLink, WikiLink } from '@/src/shared/ui';
 
 export const mdxComponents: MDXComponents = {
   // Override default elements with custom styling
@@ -36,6 +37,9 @@ export const mdxComponents: MDXComponents = {
   td: ({ children }) => <td className="border border-border px-4 py-2">{children}</td>,
   // Custom components
   SocialLinks,
+  // Garden wikilink components
+  WikiLink,
+  BrokenWikiLink,
 };
 
 // For @next/mdx compatibility (if needed in the future)

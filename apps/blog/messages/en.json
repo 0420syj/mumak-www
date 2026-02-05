@@ -2,6 +2,7 @@
   "common": {
     "home": "Home",
     "blog": "Blog",
+    "garden": "Garden",
     "all": "All",
     "essay": "Essay",
     "articles": "Articles",
@@ -48,7 +49,7 @@
     "readingTimeUnit": " min"
   },
   "tags": {
-    "title": "Tags",
+    "title": "Blog Tags",
     "metaDescription": "All tags in the blog",
     "description": "{count} tags available",
     "empty": "No tags found",
@@ -74,5 +75,31 @@
   "feed": {
     "title": "Wan Sim",
     "description": "A space for thoughts and records"
+  },
+  "garden": {
+    "title": "Digital Garden",
+    "description": "Growing thoughts and ideas",
+    "noteCount": "{count} notes",
+    "empty": "No notes yet",
+    "linkedNotes": "Linked Notes",
+    "linkDirection": {
+      "outgoing": "This note references",
+      "incoming": "References this note",
+      "bidirectional": "Mutual reference"
+    },
+    "backToGarden": "Back to Garden",
+    "updated": "Updated",
+    "status": {
+      "seedling": "Seedling",
+      "budding": "Budding",
+      "evergreen": "Evergreen"
+    },
+    "tags": {
+      "title": "Garden Tags",
+      "description": "{count} tags",
+      "noteCount": "{count} notes",
+      "tagTitle": "#{tag}",
+      "tagDescription": "Notes tagged with {tag}"
+    }
   }
 }

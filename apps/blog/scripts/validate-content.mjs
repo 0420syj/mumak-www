@@ -1,18 +1,5 @@
 #!/usr/bin/env node
 
-/**
- * 블로그 콘텐츠 검증 스크립트
- *
- * 검증 항목:
- * 1. ko/en 폴더에 동일한 파일(slug)이 존재하는지
- * 2. 동일 slug의 파일들이 같은 date를 가지는지
- * 3. 동일 slug의 파일들이 같은 tags를 가지는지
- *
- * 사용법:
- *   node validate-content.mjs              # 일반 출력
- *   node validate-content.mjs --summary    # GitHub Actions Summary용 마크다운 출력
- */
-
 import fs from 'fs';
 import matter from 'gray-matter';
 import path from 'path';
@@ -26,59 +13,38 @@ const LANGUAGES = ['ko', 'en'];
 const PRIMARY_LANG = 'ko';
 const OUTPUT_SUMMARY = process.argv.includes('--summary');
 
-/**
- * 디렉토리 내 모든 .mdx 파일을 재귀적으로 찾음
- */
-function findMdxFiles(dir, baseDir = dir) {
-  const files = [];
-
-  if (!fs.existsSync(dir)) {
-    return files;
-  }
+function getMdxFilesRecursive(dir, baseDir = dir) {
+  if (!fs.existsSync(dir)) return [];
 
   const entries = fs.readdirSync(dir, { withFileTypes: true });
 
-  for (const entry of entries) {
+  return entries.flatMap(entry => {
     const fullPath = path.join(dir, entry.name);
 
     if (entry.isDirectory()) {
-      files.push(...findMdxFiles(fullPath, baseDir));
-    } else if (entry.isFile() && entry.name.endsWith('.mdx')) {
-      const relativePath = path.relative(baseDir, fullPath);
-      files.push(relativePath);
+      return getMdxFilesRecursive(fullPath, baseDir);
     }
-  }
-
-  return files;
+    if (entry.isFile() && entry.name.endsWith('.mdx')) {
+      return [path.relative(baseDir, fullPath)];
+    }
+    return [];
+  });
 }
 
-/**
- * frontmatter 파싱
- */
 function parseFrontmatter(filePath) {
-  const content = fs.readFileSync(filePath, 'utf-8');
-  const { data } = matter(content);
-  return data;
+  return matter(fs.readFileSync(filePath, 'utf-8')).data;
 }
 
-/**
- * 배열 동일성 비교 (undefined도 처리)
- */
-function arraysEqual(a, b) {
-  // 둘 다 undefined거나 null이면 동일
+function arraysHaveSameElements(a, b) {
   if (a == null && b == null) return true;
-  // 하나만 undefined/null이면 다름
   if (a == null || b == null) return false;
   if (!Array.isArray(a) || !Array.isArray(b)) return false;
   if (a.length !== b.length) return false;
-  const sortedA = [...a].sort();
-  const sortedB = [...b].sort();
-  return sortedA.every((val, idx) => val === sortedB[idx]);
+
+  const sorted = arr => [...arr].sort();
+  return sorted(a).every((val, idx) => val === sorted(b)[idx]);
 }
 
-/**
- * GitHub Actions Summary용 마크다운 생성
- */
 function generateSummary(errors, warnings, commonFiles) {
   const lines = [];
 
@@ -143,29 +109,16 @@ function generateSummary(errors, warnings, commonFiles) {
   return lines.join('\n');
 }
 
-/**
- * 메인 검증 로직
- */
-function validateContent() {
+function collectFilesByLanguage() {
+  return LANGUAGES.reduce((acc, lang) => {
+    acc[lang] = new Set(getMdxFilesRecursive(path.join(CONTENT_DIR, lang)));
+    return acc;
+  }, {});
+}
+
+function checkLanguageSync(filesByLang, primaryFiles, secondaryLangs) {
   const errors = [];
-  const warnings = [];
 
-  // 각 언어별 파일 목록 수집
-  const filesByLang = {};
-  for (const lang of LANGUAGES) {
-    const langDir = path.join(CONTENT_DIR, lang);
-    filesByLang[lang] = new Set(findMdxFiles(langDir));
-  }
-
-  const primaryFiles = filesByLang[PRIMARY_LANG];
-  const secondaryLangs = LANGUAGES.filter(l => l !== PRIMARY_LANG);
-
-  if (!OUTPUT_SUMMARY) {
-    console.log('\n📁 파일 존재 여부 검증...\n');
-  }
-
-  // 1. 파일 존재 여부 검증
-  // Primary 언어에만 있는 파일
   for (const file of primaryFiles) {
     for (const lang of secondaryLangs) {
       if (!filesByLang[lang].has(file)) {
@@ -174,7 +127,6 @@ function validateContent() {
     }
   }
 
-  // Secondary 언어에만 있는 파일
   for (const lang of secondaryLangs) {
     for (const file of filesByLang[lang]) {
       if (!primaryFiles.has(file)) {
@@ -183,68 +135,50 @@ function validateContent() {
     }
   }
 
-  if (!OUTPUT_SUMMARY) {
-    console.log('📝 Frontmatter 검증...\n');
+  return errors;
+}
+
+function validateFrontmatter(file, secondaryLangs) {
+  const errors = [];
+  const warnings = [];
+
+  const frontmatters = LANGUAGES.reduce((acc, lang) => {
+    try {
+      acc[lang] = parseFrontmatter(path.join(CONTENT_DIR, lang, file));
+    } catch (e) {
+      errors.push(`[${lang}/${file}] frontmatter 파싱 실패: ${e.message}`);
+    }
+    return acc;
+  }, {});
+
+  if (Object.keys(frontmatters).length !== LANGUAGES.length) {
+    return { errors, warnings };
   }
 
-  // 2. Frontmatter 동일성 검증
-  // 모든 언어에 공통으로 존재하는 파일만 검증
-  const commonFiles = [...primaryFiles].filter(file =>
-    secondaryLangs.every(lang => filesByLang[lang].has(file))
-  );
+  const primaryFm = frontmatters[PRIMARY_LANG];
 
-  for (const file of commonFiles) {
-    const frontmatters = {};
+  for (const lang of secondaryLangs) {
+    const secondaryFm = frontmatters[lang];
 
-    for (const lang of LANGUAGES) {
-      const filePath = path.join(CONTENT_DIR, lang, file);
-      try {
-        frontmatters[lang] = parseFrontmatter(filePath);
-      } catch (e) {
-        errors.push(`[${lang}/${file}] frontmatter 파싱 실패: ${e.message}`);
-      }
+    if (primaryFm.date !== secondaryFm.date) {
+      errors.push(`[${file}] date 불일치: [${PRIMARY_LANG}]="${primaryFm.date}" vs [${lang}]="${secondaryFm.date}"`);
     }
 
-    // 모든 언어의 frontmatter가 파싱되었는지 확인
-    if (Object.keys(frontmatters).length !== LANGUAGES.length) {
-      continue;
+    if (!arraysHaveSameElements(primaryFm.tags, secondaryFm.tags)) {
+      errors.push(
+        `[${file}] tags 불일치: [${PRIMARY_LANG}]=${JSON.stringify(primaryFm.tags)} vs [${lang}]=${JSON.stringify(secondaryFm.tags)}`
+      );
     }
 
-    const primaryFm = frontmatters[PRIMARY_LANG];
-
-    for (const lang of secondaryLangs) {
-      const secondaryFm = frontmatters[lang];
-
-      // date 비교
-      if (primaryFm.date !== secondaryFm.date) {
-        errors.push(
-          `[${file}] date 불일치: [${PRIMARY_LANG}]="${primaryFm.date}" vs [${lang}]="${secondaryFm.date}"`
-        );
-      }
-
-      // tags 비교
-      if (!arraysEqual(primaryFm.tags, secondaryFm.tags)) {
-        errors.push(
-          `[${file}] tags 불일치: [${PRIMARY_LANG}]=${JSON.stringify(primaryFm.tags)} vs [${lang}]=${JSON.stringify(secondaryFm.tags)}`
-        );
-      }
-
-      // draft 비교 (선택적 경고)
-      if (primaryFm.draft !== secondaryFm.draft) {
-        warnings.push(
-          `[${file}] draft 불일치: [${PRIMARY_LANG}]=${primaryFm.draft} vs [${lang}]=${secondaryFm.draft}`
-        );
-      }
+    if (primaryFm.draft !== secondaryFm.draft) {
+      warnings.push(`[${file}] draft 불일치: [${PRIMARY_LANG}]=${primaryFm.draft} vs [${lang}]=${secondaryFm.draft}`);
     }
   }
 
-  // Summary 모드: 마크다운만 출력
-  if (OUTPUT_SUMMARY) {
-    console.log(generateSummary(errors, warnings, commonFiles));
-    process.exit(errors.length > 0 ? 1 : 0);
-  }
+  return { errors, warnings };
+}
 
-  // 일반 모드: 콘솔 출력
+function printResults(errors, warnings, commonFiles) {
   console.log('━'.repeat(50));
 
   if (warnings.length > 0) {
@@ -262,6 +196,40 @@ function validateContent() {
   console.log('\n✅ 모든 콘텐츠 검증 통과!\n');
   console.log(`  - 검증된 파일: ${commonFiles.length}개`);
   console.log(`  - 지원 언어: ${LANGUAGES.join(', ')}\n`);
+}
+
+function validateContent() {
+  const filesByLang = collectFilesByLanguage();
+  const primaryFiles = filesByLang[PRIMARY_LANG];
+  const secondaryLangs = LANGUAGES.filter(l => l !== PRIMARY_LANG);
+
+  if (!OUTPUT_SUMMARY) {
+    console.log('\n📁 파일 존재 여부 검증...\n');
+    console.log('📝 Frontmatter 검증...\n');
+  }
+
+  const syncErrors = checkLanguageSync(filesByLang, primaryFiles, secondaryLangs);
+
+  const commonFiles = [...primaryFiles].filter(file => secondaryLangs.every(lang => filesByLang[lang].has(file)));
+
+  const { errors: fmErrors, warnings } = commonFiles.reduce(
+    (acc, file) => {
+      const result = validateFrontmatter(file, secondaryLangs);
+      acc.errors.push(...result.errors);
+      acc.warnings.push(...result.warnings);
+      return acc;
+    },
+    { errors: [], warnings: [] }
+  );
+
+  const errors = [...syncErrors, ...fmErrors];
+
+  if (OUTPUT_SUMMARY) {
+    console.log(generateSummary(errors, warnings, commonFiles));
+    process.exit(errors.length > 0 ? 1 : 0);
+  }
+
+  printResults(errors, warnings, commonFiles);
 }
 
 validateContent();
