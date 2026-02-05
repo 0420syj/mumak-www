@@ -1,5 +1,6 @@
 import rehypeShiki from '@shikijs/rehype';
 import remarkGfm from 'remark-gfm';
+import type { EvaluateOptions } from 'next-mdx-remote-client/rsc';
 
 export const mdxOptions = {
   mdxOptions: {
@@ -16,4 +17,4 @@ export const mdxOptions = {
       ],
     ],
   },
-};
+} satisfies EvaluateOptions;
