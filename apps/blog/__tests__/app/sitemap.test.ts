@@ -56,15 +56,13 @@ describe('sitemap', () => {
 
   it('should include post pages with lower priority', () => {
     const result = sitemap();
-    const postEntries = result.filter(entry => entry.priority === 0.6);
+    const postEntries = result.filter(entry => entry.priority === 0.6 && entry.changeFrequency === 'monthly');
 
     // 포스트 페이지가 있다면 검증
     if (postEntries.length > 0) {
       postEntries.forEach(entry => {
-        expect(entry.changeFrequency).toBe('monthly');
-        // URL 패턴: /{locale}/{category}/{slug}
-        const urlParts = entry.url.split('/');
-        expect(urlParts.length).toBeGreaterThanOrEqual(5);
+        // URL 패턴: /{locale}/blog/{category}/{slug}
+        expect(entry.url).toMatch(/\/blog\/[^/]+\/[^/]+$/);
       });
     }
   });
@@ -74,6 +72,66 @@ describe('sitemap', () => {
 
     result.forEach(entry => {
       expect(entry.lastModified).toBeInstanceOf(Date);
+    });
+  });
+
+  describe('garden pages', () => {
+    it('should include garden main pages for all locales', () => {
+      const result = sitemap();
+
+      for (const locale of locales) {
+        const gardenEntry = result.find(
+          entry => entry.url.includes(`/${locale}/garden`) && !entry.url.includes(`/${locale}/garden/`)
+        );
+        expect(gardenEntry).toBeDefined();
+        expect(gardenEntry?.priority).toBe(0.8);
+        expect(gardenEntry?.changeFrequency).toBe('weekly');
+      }
+    });
+
+    it('should include garden tags page for all locales', () => {
+      const result = sitemap();
+
+      for (const locale of locales) {
+        const tagsEntry = result.find(
+          entry => entry.url.includes(`/${locale}/garden/tags`) && !entry.url.includes(`/${locale}/garden/tags/`)
+        );
+        expect(tagsEntry).toBeDefined();
+        expect(tagsEntry?.priority).toBe(0.6);
+      }
+    });
+
+    it('should include garden status pages for all locales', () => {
+      const result = sitemap();
+      const statuses = ['seedling', 'budding', 'evergreen'];
+
+      for (const locale of locales) {
+        for (const status of statuses) {
+          const statusEntry = result.find(entry => entry.url.includes(`/${locale}/garden/status/${status}`));
+          expect(statusEntry).toBeDefined();
+          expect(statusEntry?.priority).toBe(0.5);
+        }
+      }
+    });
+
+    it('should include garden note pages', () => {
+      const result = sitemap();
+      const gardenNoteEntries = result.filter(
+        entry =>
+          entry.url.includes('/garden/') &&
+          !entry.url.includes('/garden/tags') &&
+          !entry.url.includes('/garden/status') &&
+          entry.priority === 0.6 &&
+          entry.changeFrequency === 'weekly'
+      );
+
+      // 노트 페이지가 있다면 검증
+      if (gardenNoteEntries.length > 0) {
+        gardenNoteEntries.forEach(entry => {
+          // URL 패턴: /{locale}/garden/{slug}
+          expect(entry.url).toMatch(/\/garden\/[^/]+$/);
+        });
+      }
     });
   });
 });
