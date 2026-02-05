@@ -1,0 +1,152 @@
+import type { Metadata } from 'next';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { MDXRemote } from 'next-mdx-remote-client/rsc';
+import { notFound } from 'next/navigation';
+
+import { Badge } from '@mumak/ui/components/badge';
+
+import { mdxComponents } from '@/mdx-components';
+import { generateBreadcrumbJsonLd, JsonLdScript } from '@/src/app/seo';
+import {
+  getAllNoteSlugs,
+  getBacklinks,
+  getExistingNoteSlugs,
+  getMergedLinkedNotes,
+  getNote,
+  getOutgoingNotes,
+  type NoteStatus,
+} from '@/src/entities/note';
+import { Link, locales, type Locale } from '@/src/shared/config/i18n';
+import { formatDateForLocale } from '@/src/shared/lib/date';
+import { createGardenResolver, transformWikilinks } from '@/src/shared/lib/wikilink';
+import { PostTags } from '@/src/widgets/post-card/ui/post-tags';
+
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://wannysim.com';
+
+interface NotePageProps {
+  params: Promise<{ locale: string; slug: string }>;
+}
+
+export function generateStaticParams() {
+  return locales.flatMap(locale => {
+    const slugs = getAllNoteSlugs(locale);
+    return slugs.map(slug => ({ locale, slug }));
+  });
+}
+
+export async function generateMetadata({ params }: NotePageProps): Promise<Metadata> {
+  const { locale, slug } = await params;
+  const note = getNote(locale as Locale, slug);
+
+  if (!note) {
+    return { title: 'Not Found' };
+  }
+
+  return {
+    title: note.meta.title,
+    description: `${note.meta.title} - Digital Garden`,
+  };
+}
+
+const statusVariants: Record<NoteStatus, 'default' | 'secondary' | 'outline'> = {
+  seedling: 'outline',
+  budding: 'secondary',
+  evergreen: 'default',
+};
+
+const directionIcons = {
+  bidirectional: '↔',
+  outgoing: '→',
+  incoming: '←',
+} as const;
+
+export default async function NotePage({ params }: NotePageProps) {
+  const { locale, slug } = await params;
+  setRequestLocale(locale);
+
+  const note = getNote(locale as Locale, slug);
+
+  if (!note) {
+    notFound();
+  }
+
+  const t = await getTranslations('garden');
+  const backlinks = getBacklinks(locale as Locale, slug);
+  const outgoingNotes = getOutgoingNotes(locale as Locale, note.meta.outgoingLinks);
+  const linkedNotes = getMergedLinkedNotes(outgoingNotes, backlinks);
+  const existingSlugs = getExistingNoteSlugs(locale as Locale);
+  const resolver = createGardenResolver(existingSlugs);
+  const transformedContent = transformWikilinks(note.content, { resolver });
+
+  const breadcrumbJsonLd = generateBreadcrumbJsonLd({
+    items: [
+      { name: locale === 'ko' ? '홈' : 'Home', url: `${BASE_URL}/${locale}` },
+      { name: locale === 'ko' ? '가든' : 'Garden', url: `${BASE_URL}/${locale}/garden` },
+      { name: note.meta.title, url: `${BASE_URL}/${locale}/garden/${slug}` },
+    ],
+  });
+
+  return (
+    <div className="max-w-3xl mx-auto">
+      <JsonLdScript data={breadcrumbJsonLd} />
+      <article>
+        <header className="mb-8">
+          <div className="flex items-center gap-2 mb-2">
+            <Badge variant={statusVariants[note.meta.status]}>{t(`status.${note.meta.status}`)}</Badge>
+            <time className="text-sm text-muted-foreground" dateTime={note.meta.created}>
+              {formatDateForLocale(note.meta.created, locale).text}
+            </time>
+            {note.meta.updated && (
+              <>
+                <span className="text-muted-foreground">·</span>
+                <span className="text-sm text-muted-foreground">
+                  {t('updated')}: {formatDateForLocale(note.meta.updated, locale).text}
+                </span>
+              </>
+            )}
+          </div>
+          <h1 className="text-4xl font-bold mb-4">{note.meta.title}</h1>
+          {note.meta.tags && note.meta.tags.length > 0 && (
+            <div className="mt-4">
+              <PostTags tags={note.meta.tags} basePath="/garden/tags" />
+            </div>
+          )}
+        </header>
+
+        <div className="prose prose-neutral dark:prose-invert max-w-none">
+          <MDXRemote source={transformedContent} components={mdxComponents} />
+        </div>
+      </article>
+
+      {linkedNotes.length > 0 && (
+        <section className="mt-12 pt-8 border-t border-border">
+          <h2 className="text-lg font-semibold mb-4">
+            {t('linkedNotes')} ({linkedNotes.length})
+          </h2>
+          <ul className="space-y-2">
+            {linkedNotes.map(linkedNote => (
+              <li key={linkedNote.slug} className="flex items-center gap-2">
+                <span
+                  className="text-muted-foreground text-sm w-5 text-center"
+                  title={t(`linkDirection.${linkedNote.direction}`)}
+                >
+                  {directionIcons[linkedNote.direction]}
+                </span>
+                <Link href={`/garden/${linkedNote.slug}`} className="text-primary hover:underline underline-offset-4">
+                  {linkedNote.title}
+                </Link>
+                <span className="text-xs text-muted-foreground">{t(`linkDirection.${linkedNote.direction}`)}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      <nav className="mt-8 pt-8 border-t border-border">
+        <Link href="/garden" className="text-sm font-medium hover:underline">
+          ← {t('backToGarden')}
+        </Link>
+      </nav>
+    </div>
+  );
+}

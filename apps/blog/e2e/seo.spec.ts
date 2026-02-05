@@ -1,15 +1,27 @@
 import { expect, test } from '@playwright/test';
 
+// Helper to get JSON-LD by type
+async function getJsonLdByType(page: import('@playwright/test').Page, type: string) {
+  const scripts = await page.locator('script[type="application/ld+json"]').all();
+  for (const script of scripts) {
+    const content = await script.textContent();
+    if (content) {
+      const parsed = JSON.parse(content);
+      if (parsed['@type'] === type) {
+        return parsed;
+      }
+    }
+  }
+  return null;
+}
+
 test.describe('SEO - JSON-LD Structured Data', () => {
   test('should have WebSite JSON-LD on home page', async ({ page }) => {
     await page.goto('/ko');
 
-    const jsonLdScripts = await page.locator('script[type="application/ld+json"]').all();
-    expect(jsonLdScripts.length).toBeGreaterThan(0);
+    const jsonLd = await getJsonLdByType(page, 'WebSite');
 
-    const jsonLdContent = await jsonLdScripts[0]?.textContent();
-    const jsonLd = JSON.parse(jsonLdContent!);
-
+    expect(jsonLd).not.toBeNull();
     expect(jsonLd['@context']).toBe('https://schema.org');
     expect(jsonLd['@type']).toBe('WebSite');
     expect(jsonLd.name).toBe('Wan Sim');
@@ -19,27 +31,126 @@ test.describe('SEO - JSON-LD Structured Data', () => {
   test('should have WebSite JSON-LD in English', async ({ page }) => {
     await page.goto('/en');
 
-    const jsonLdScripts = await page.locator('script[type="application/ld+json"]').all();
-    const jsonLdContent = await jsonLdScripts[0]?.textContent();
-    const jsonLd = JSON.parse(jsonLdContent!);
+    const jsonLd = await getJsonLdByType(page, 'WebSite');
 
+    expect(jsonLd).not.toBeNull();
     expect(jsonLd.inLanguage).toBe('en-US');
+  });
+
+  test('should have SearchAction in WebSite JSON-LD for sitelinks searchbox', async ({ page }) => {
+    await page.goto('/ko');
+
+    const jsonLd = await getJsonLdByType(page, 'WebSite');
+
+    expect(jsonLd).not.toBeNull();
+    expect(jsonLd.potentialAction).toBeDefined();
+    expect(jsonLd.potentialAction['@type']).toBe('SearchAction');
+    expect(jsonLd.potentialAction.target).toBeDefined();
+    expect(jsonLd.potentialAction['query-input']).toBe('required name=search_term_string');
+  });
+
+  test('should have SiteNavigationElement JSON-LD on home page', async ({ page }) => {
+    await page.goto('/ko');
+
+    const jsonLd = await getJsonLdByType(page, 'SiteNavigationElement');
+
+    expect(jsonLd).not.toBeNull();
+    expect(jsonLd['@context']).toBe('https://schema.org');
+    expect(jsonLd.hasPart).toBeDefined();
+    expect(Array.isArray(jsonLd.hasPart)).toBe(true);
+    expect(jsonLd.hasPart.length).toBeGreaterThan(0);
+
+    // Check navigation items
+    const navNames = jsonLd.hasPart.map((item: { name: string }) => item.name);
+    expect(navNames).toContain('블로그');
+    expect(navNames).toContain('가든');
   });
 
   test('should have BlogPosting JSON-LD on post page', async ({ page }) => {
     await page.goto('/ko/blog/essay/first');
 
-    const jsonLdScripts = await page.locator('script[type="application/ld+json"]').all();
-    expect(jsonLdScripts.length).toBe(2);
+    const jsonLd = await getJsonLdByType(page, 'BlogPosting');
 
-    const blogPostingScript = jsonLdScripts[1];
-    const jsonLdContent = await blogPostingScript?.textContent();
-    const jsonLd = JSON.parse(jsonLdContent ?? '');
-
+    expect(jsonLd).not.toBeNull();
     expect(jsonLd['@type']).toBe('BlogPosting');
     expect(jsonLd.headline).toBeTruthy();
     expect(jsonLd.datePublished).toBeTruthy();
     expect(jsonLd.author['@type']).toBe('Person');
+  });
+});
+
+test.describe('SEO - BreadcrumbList JSON-LD', () => {
+  test('should have BreadcrumbList on blog post page', async ({ page }) => {
+    await page.goto('/ko/blog/essay/first');
+
+    const jsonLd = await getJsonLdByType(page, 'BreadcrumbList');
+
+    expect(jsonLd).not.toBeNull();
+    expect(jsonLd['@context']).toBe('https://schema.org');
+    expect(jsonLd['@type']).toBe('BreadcrumbList');
+    expect(jsonLd.itemListElement).toBeDefined();
+    expect(Array.isArray(jsonLd.itemListElement)).toBe(true);
+
+    // Blog post should have 4 breadcrumb items: Home > Blog > Category > Post
+    expect(jsonLd.itemListElement.length).toBe(4);
+
+    // Check structure of each item
+    jsonLd.itemListElement.forEach(
+      (item: { '@type': string; position: number; name: string; item: string }, index: number) => {
+        expect(item['@type']).toBe('ListItem');
+        expect(item.position).toBe(index + 1);
+        expect(item.name).toBeTruthy();
+        expect(item.item).toMatch(/^https?:\/\//);
+      }
+    );
+
+    // Check specific breadcrumb names
+    expect(jsonLd.itemListElement[0].name).toBe('홈');
+    expect(jsonLd.itemListElement[1].name).toBe('블로그');
+  });
+
+  test('should have BreadcrumbList on garden note page', async ({ page }) => {
+    await page.goto('/ko/garden/what-is-digital-garden');
+
+    const jsonLd = await getJsonLdByType(page, 'BreadcrumbList');
+
+    expect(jsonLd).not.toBeNull();
+    expect(jsonLd['@type']).toBe('BreadcrumbList');
+    expect(jsonLd.itemListElement).toBeDefined();
+
+    // Garden note should have 3 breadcrumb items: Home > Garden > Note
+    expect(jsonLd.itemListElement.length).toBe(3);
+
+    // Check specific breadcrumb names
+    expect(jsonLd.itemListElement[0].name).toBe('홈');
+    expect(jsonLd.itemListElement[1].name).toBe('가든');
+    expect(jsonLd.itemListElement[2].name).toBeTruthy();
+  });
+
+  test('should have correct breadcrumb URLs', async ({ page }) => {
+    await page.goto('/ko/blog/essay/first');
+
+    const jsonLd = await getJsonLdByType(page, 'BreadcrumbList');
+
+    expect(jsonLd).not.toBeNull();
+
+    // Check URL patterns
+    expect(jsonLd.itemListElement[0].item).toContain('/ko');
+    expect(jsonLd.itemListElement[1].item).toContain('/ko/blog');
+    expect(jsonLd.itemListElement[2].item).toContain('/ko/blog/essay');
+    expect(jsonLd.itemListElement[3].item).toContain('/ko/blog/essay/first');
+  });
+
+  test('should have BreadcrumbList in English', async ({ page }) => {
+    await page.goto('/en/blog/essay/first');
+
+    const jsonLd = await getJsonLdByType(page, 'BreadcrumbList');
+
+    expect(jsonLd).not.toBeNull();
+
+    // Check English breadcrumb names
+    expect(jsonLd.itemListElement[0].name).toBe('Home');
+    expect(jsonLd.itemListElement[1].name).toBe('Blog');
   });
 });
 

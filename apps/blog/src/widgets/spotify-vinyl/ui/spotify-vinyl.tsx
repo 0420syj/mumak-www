@@ -43,7 +43,7 @@ export const SpotifyVinyl = memo(function SpotifyVinyl({
               'bg-linear-to-br from-neutral-800 via-neutral-900 to-black',
               'shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.05)]',
               'transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)]',
-              isOpen ? 'translate-x-12 sm:translate-x-20 rotate-180' : 'translate-x-0 rotate-0',
+              isOpen ? 'translate-x-8 sm:translate-x-14 rotate-180' : 'translate-x-0 rotate-0',
               data.isPlaying && isOpen && 'animate-[spin_4s_linear_infinite]'
             )}
             aria-hidden="true"
@@ -93,7 +93,7 @@ export const SpotifyVinyl = memo(function SpotifyVinyl({
         {/* Track Info */}
         <div
           className={cn(
-            'flex-1 min-w-0 ml-6 sm:ml-8 flex flex-col justify-center z-20 pl-2',
+            'flex-1 min-w-0 ml-8 sm:ml-14 flex flex-col justify-center z-20 pl-2',
             isTransitioning && 'animate-[fadeInSlide_0.4s_ease-out]'
           )}
         >

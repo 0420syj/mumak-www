@@ -122,6 +122,8 @@ export function getPosts(locale: Locale, category?: string): PostMeta[] {
 }
 
 export function getPost(locale: Locale, category: string, slug: string): Post | null {
+  const isProduction = process.env.NODE_ENV === 'production';
+
   if (!isValidCategory(category)) {
     return null;
   }
@@ -136,6 +138,13 @@ export function getPost(locale: Locale, category: string, slug: string): Post | 
     const fileContent = fs.readFileSync(filePath, 'utf-8');
     const { data, content } = matter(fileContent);
 
+    const isDraft = data.draft || false;
+
+    // 프로덕션에서 draft 포스트는 직접 URL 접근도 차단
+    if (isProduction && isDraft) {
+      return null;
+    }
+
     const meta: PostMeta = {
       slug,
       title: data.title || 'Untitled',
@@ -143,7 +152,7 @@ export function getPost(locale: Locale, category: string, slug: string): Post | 
       description: data.description || '',
       category,
       tags: data.tags || [],
-      draft: data.draft || false,
+      draft: isDraft,
       readingTime: calculateReadingTime(content),
     };
 
@@ -160,6 +169,7 @@ export function getAllPostSlugs(locale: Locale): Array<{
   category: string;
   slug: string;
 }> {
+  const isProduction = process.env.NODE_ENV === 'production';
   const slugs: Array<{ category: string; slug: string }> = [];
 
   for (const category of CATEGORIES) {
@@ -168,6 +178,14 @@ export function getAllPostSlugs(locale: Locale): Array<{
 
     for (const file of files) {
       const slug = file.replace(/\.mdx$/, '');
+      const filePath = path.join(categoryPath, file);
+      const post = parsePostFile(filePath, slug, category);
+
+      // 파싱 실패 또는 프로덕션에서 draft 포스트는 정적 페이지 생성 제외
+      if (!post || (isProduction && post.draft)) {
+        continue;
+      }
+
       slugs.push({ category, slug });
     }
   }

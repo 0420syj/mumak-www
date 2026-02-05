@@ -1,4 +1,9 @@
-import { generateBlogPostingJsonLd, generateWebSiteJsonLd } from '../json-ld';
+import {
+  generateBlogPostingJsonLd,
+  generateBreadcrumbJsonLd,
+  generateSiteNavigationJsonLd,
+  generateWebSiteJsonLd,
+} from '../json-ld';
 import type { PostMeta } from '@/src/entities/post';
 
 describe('json-ld', () => {
@@ -8,14 +13,12 @@ describe('json-ld', () => {
 
       expect(result['@context']).toBe('https://schema.org');
       expect(result['@type']).toBe('WebSite');
+      expect(result['@id']).toContain('/#website');
       expect(result.name).toBe('Wan Sim');
       expect(result.url).toContain('/ko');
       expect(result.inLanguage).toBe('ko-KR');
-      expect(result.author).toEqual({
-        '@type': 'Person',
-        name: 'Wan Sim',
-        url: expect.any(String),
-      });
+      expect(result.author['@type']).toBe('Person');
+      expect(result.author.name).toBe('Wan Sim');
     });
 
     it('should generate WebSite schema for English locale', () => {
@@ -23,6 +26,52 @@ describe('json-ld', () => {
 
       expect(result.url).toContain('/en');
       expect(result.inLanguage).toBe('en-US');
+    });
+
+    it('should include SearchAction for sitelinks searchbox', () => {
+      const result = generateWebSiteJsonLd({ locale: 'ko' });
+
+      expect(result.potentialAction['@type']).toBe('SearchAction');
+      expect(result.potentialAction.target.urlTemplate).toContain('/ko/blog?q=');
+      expect(result.potentialAction['query-input']).toBe('required name=search_term_string');
+    });
+  });
+
+  describe('generateSiteNavigationJsonLd', () => {
+    it('should generate SiteNavigationElement schema for Korean locale', () => {
+      const result = generateSiteNavigationJsonLd({ locale: 'ko' });
+
+      expect(result['@context']).toBe('https://schema.org');
+      expect(result['@type']).toBe('SiteNavigationElement');
+      expect(result.hasPart).toHaveLength(4);
+      expect(result.hasPart[0].name).toBe('블로그');
+      expect(result.hasPart[1].name).toBe('가든');
+    });
+
+    it('should generate SiteNavigationElement schema for English locale', () => {
+      const result = generateSiteNavigationJsonLd({ locale: 'en' });
+
+      expect(result.hasPart[0].name).toBe('Blog');
+      expect(result.hasPart[1].name).toBe('Garden');
+    });
+  });
+
+  describe('generateBreadcrumbJsonLd', () => {
+    it('should generate BreadcrumbList schema', () => {
+      const result = generateBreadcrumbJsonLd({
+        items: [
+          { name: 'Home', url: 'https://example.com' },
+          { name: 'Blog', url: 'https://example.com/blog' },
+          { name: 'Post', url: 'https://example.com/blog/post' },
+        ],
+      });
+
+      expect(result['@context']).toBe('https://schema.org');
+      expect(result['@type']).toBe('BreadcrumbList');
+      expect(result.itemListElement).toHaveLength(3);
+      expect(result.itemListElement[0].position).toBe(1);
+      expect(result.itemListElement[0].name).toBe('Home');
+      expect(result.itemListElement[2].position).toBe(3);
     });
   });
 

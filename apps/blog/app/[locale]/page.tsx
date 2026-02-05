@@ -1,11 +1,10 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { Suspense } from 'react';
 
 import { getPosts, isValidCategory } from '@/src/entities/post';
 import { type Locale } from '@/src/shared/config/i18n';
 import { PostCard } from '@/src/widgets/post-card';
-import { SpotifyVinylServer, SpotifyVinylSkeleton } from '@/src/widgets/spotify-vinyl';
+import { SpotifyVinylClient } from '@/src/widgets/spotify-vinyl';
 
 const HOME_POST_LIMIT = 4;
 
@@ -45,9 +44,11 @@ export default async function HomePage({ params }: HomePageProps) {
         <p className="text-lg text-muted-foreground whitespace-pre-wrap leading-relaxed max-w-2xl">{t('intro')}</p>
 
         <div className="w-full md:w-auto">
-          <Suspense fallback={<SpotifyVinylSkeleton />}>
-            <SpotifyVinylServer listeningToLabel={t('listeningTo')} lastPlayedLabel={t('lastPlayed')} />
-          </Suspense>
+          <SpotifyVinylClient
+            initialData={null}
+            listeningToLabel={t('listeningTo')}
+            lastPlayedLabel={t('lastPlayed')}
+          />
         </div>
       </section>
 

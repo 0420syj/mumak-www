@@ -1,1 +1,7 @@
-export { generateWebSiteJsonLd, generateBlogPostingJsonLd, JsonLdScript } from './json-ld';
+export {
+  generateBreadcrumbJsonLd,
+  generateBlogPostingJsonLd,
+  generateSiteNavigationJsonLd,
+  generateWebSiteJsonLd,
+  JsonLdScript,
+} from './json-ld';

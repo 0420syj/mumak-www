@@ -70,4 +70,21 @@ describe('TagCloud', () => {
     const link = screen.getByRole('link', { name: /c\+\+/ });
     expect(link).toHaveAttribute('href', `/blog/tags/${encodeURIComponent('c++')}`);
   });
+
+  it('uses custom basePath for links', () => {
+    render(<TagCloud tags={mockTags} basePath="/garden/tags" />);
+
+    const thoughtLink = screen.getByRole('link', { name: /thought/ });
+    expect(thoughtLink).toHaveAttribute('href', '/garden/tags/thought');
+
+    const codeLink = screen.getByRole('link', { name: /code/ });
+    expect(codeLink).toHaveAttribute('href', '/garden/tags/code');
+  });
+
+  it('defaults to /blog/tags when basePath is not provided', () => {
+    render(<TagCloud tags={mockTags} />);
+
+    const link = screen.getByRole('link', { name: /thought/ });
+    expect(link).toHaveAttribute('href', '/blog/tags/thought');
+  });
 });
