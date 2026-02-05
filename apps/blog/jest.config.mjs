@@ -23,19 +23,18 @@ const customJestConfig = {
   ],
   collectCoverageFrom: [
     'src/**/*.{js,jsx,ts,tsx}',
-    'app/**/*.{js,jsx,ts,tsx}',
     '!**/*.d.ts',
     '!**/node_modules/**',
-    '!**/.next/**',
     '!**/coverage/**',
     '!**/__tests__/**',
     // 배럴 파일 제외 (단순 re-export)
     '!**/index.ts',
-    // Next.js 메타데이터 파일 제외 (E2E 테스트 권장)
-    '!**/opengraph-image.tsx',
-    '!**/icon.tsx',
-    // API 라우트 제외 (통합 테스트 권장)
-    '!app/api/**',
+    // RSC 페이지/레이아웃은 E2E로 커버
+    '!app/**/*.{js,jsx,ts,tsx}',
+    // 설정 파일 제외
+    '!src/shared/config/**',
+    // 외부 서비스 래퍼 제외 (GA 등)
+    '!src/app/analytics/**',
   ],
   // coverageThreshold: {
   //   global: {

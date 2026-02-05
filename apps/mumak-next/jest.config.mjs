@@ -15,13 +15,15 @@ const customJestConfig = {
   },
   testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/', '<rootDir>/e2e/'],
   collectCoverageFrom: [
-    'app/**/*.{js,jsx,ts,tsx}',
     'components/**/*.{js,jsx,ts,tsx}',
     '!**/*.d.ts',
     '!**/node_modules/**',
-    '!**/.next/**',
     '!**/coverage/**',
     '!**/__tests__/**',
+    // RSC 페이지/레이아웃은 E2E로 커버
+    '!app/**/*.{js,jsx,ts,tsx}',
+    // Provider/래퍼 컴포넌트 제외
+    '!components/providers.tsx',
   ],
   // coverageThreshold: {
   //   global: {
