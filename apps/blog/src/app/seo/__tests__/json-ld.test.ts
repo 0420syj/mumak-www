@@ -44,15 +44,15 @@ describe('json-ld', () => {
       expect(result['@context']).toBe('https://schema.org');
       expect(result['@type']).toBe('SiteNavigationElement');
       expect(result.hasPart).toHaveLength(4);
-      expect(result.hasPart[0].name).toBe('블로그');
-      expect(result.hasPart[1].name).toBe('가든');
+      expect(result.hasPart![0]!.name).toBe('블로그');
+      expect(result.hasPart![1]!.name).toBe('가든');
     });
 
     it('should generate SiteNavigationElement schema for English locale', () => {
       const result = generateSiteNavigationJsonLd({ locale: 'en' });
 
-      expect(result.hasPart[0].name).toBe('Blog');
-      expect(result.hasPart[1].name).toBe('Garden');
+      expect(result.hasPart![0]!.name).toBe('Blog');
+      expect(result.hasPart![1]!.name).toBe('Garden');
     });
   });
 
@@ -69,9 +69,9 @@ describe('json-ld', () => {
       expect(result['@context']).toBe('https://schema.org');
       expect(result['@type']).toBe('BreadcrumbList');
       expect(result.itemListElement).toHaveLength(3);
-      expect(result.itemListElement[0].position).toBe(1);
-      expect(result.itemListElement[0].name).toBe('Home');
-      expect(result.itemListElement[2].position).toBe(3);
+      expect(result.itemListElement[0]!.position).toBe(1);
+      expect(result.itemListElement[0]!.name).toBe('Home');
+      expect(result.itemListElement[2]!.position).toBe(3);
     });
   });
 

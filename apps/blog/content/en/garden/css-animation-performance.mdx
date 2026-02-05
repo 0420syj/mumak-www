@@ -1,0 +1,42 @@
+---
+title: 'CSS Animation Performance: width vs transform'
+created: '2026-02-06'
+status: 'seedling'
+tags: ['css', 'performance', 'animation', 'frontend']
+---
+
+Had a janky progress bar on mobile. Switching from `width` to `transform: scaleX()` fixed it instantly.
+
+## Why the Difference
+
+Understanding the [[browser-rendering-pipeline|browser rendering pipeline]] gives you the answer.
+
+- `width` change → **Recalculate from Layout** → Main thread blocking
+- `transform` change → **Composite only** → GPU handles it
+
+## Real Example
+
+```tsx
+// Before - reflow every frame
+<div style={{ width: `${progress}%` }} />
+
+// After - GPU-accelerated, no reflow
+<div 
+  className="w-full origin-left will-change-transform"
+  style={{ transform: `scaleX(${progress / 100})` }} 
+/>
+```
+
+The difference is dramatic for frequent animations like scroll events.
+
+## Key Takeaway
+
+- `width`, `height` → Layout trigger → Main thread blocking
+- `transform`, `opacity` → Composite only → GPU handles it
+
+Mobile has a weaker main thread, so the difference is more noticeable.
+
+## Resources
+
+- [CSS Triggers](https://csstriggers.com/) - Check which properties trigger which steps
+- Use `will-change` to hint the browser about upcoming changes

@@ -1,12 +1,14 @@
 import type { Metadata } from 'next';
-import { getTranslations, setRequestLocale } from 'next-intl/server';
-import { MDXRemote } from 'next-mdx-remote-client/rsc';
+import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 
 import { Badge } from '@mumak/ui/components/badge';
 
 import { mdxComponents } from '@/mdx-components';
 import { generateBreadcrumbJsonLd, JsonLdScript } from '@/src/app/seo';
+import { mdxOptions } from '@/src/shared/config/mdx';
+import { MDXContent, MDXContentSkeleton } from '@/src/widgets/mdx-content';
 import {
   getAllNoteSlugs,
   getBacklinks,
@@ -22,6 +24,31 @@ import { createGardenResolver, transformWikilinks } from '@/src/shared/lib/wikil
 import { PostTags } from '@/src/widgets/post-card/ui/post-tags';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://wannysim.com';
+
+const staticTranslations = {
+  ko: {
+    home: '홈',
+    garden: '가든',
+    updated: '수정됨',
+    linkedNotes: '연결된 노트',
+    backToGarden: '가든으로 돌아가기',
+    status: { seedling: '씨앗', budding: '새싹', evergreen: '상록수' },
+    linkDirection: { outgoing: '이 노트가 참조', incoming: '이 노트를 참조', bidirectional: '서로 참조' },
+  },
+  en: {
+    home: 'Home',
+    garden: 'Garden',
+    updated: 'Updated',
+    linkedNotes: 'Linked Notes',
+    backToGarden: 'Back to Garden',
+    status: { seedling: 'Seedling', budding: 'Budding', evergreen: 'Evergreen' },
+    linkDirection: {
+      outgoing: 'This note references',
+      incoming: 'References this note',
+      bidirectional: 'Mutual reference',
+    },
+  },
+} as const;
 
 interface NotePageProps {
   params: Promise<{ locale: string; slug: string }>;
@@ -70,7 +97,8 @@ export default async function NotePage({ params }: NotePageProps) {
     notFound();
   }
 
-  const t = await getTranslations('garden');
+  const localeKey = (locale === 'ko' ? 'ko' : 'en') as keyof typeof staticTranslations;
+  const t = staticTranslations[localeKey];
   const backlinks = getBacklinks(locale as Locale, slug);
   const outgoingNotes = getOutgoingNotes(locale as Locale, note.meta.outgoingLinks);
   const linkedNotes = getMergedLinkedNotes(outgoingNotes, backlinks);
@@ -80,8 +108,8 @@ export default async function NotePage({ params }: NotePageProps) {
 
   const breadcrumbJsonLd = generateBreadcrumbJsonLd({
     items: [
-      { name: locale === 'ko' ? '홈' : 'Home', url: `${BASE_URL}/${locale}` },
-      { name: locale === 'ko' ? '가든' : 'Garden', url: `${BASE_URL}/${locale}/garden` },
+      { name: t.home, url: `${BASE_URL}/${locale}` },
+      { name: t.garden, url: `${BASE_URL}/${locale}/garden` },
       { name: note.meta.title, url: `${BASE_URL}/${locale}/garden/${slug}` },
     ],
   });
@@ -92,7 +120,7 @@ export default async function NotePage({ params }: NotePageProps) {
       <article>
         <header className="mb-8">
           <div className="flex items-center gap-2 mb-2">
-            <Badge variant={statusVariants[note.meta.status]}>{t(`status.${note.meta.status}`)}</Badge>
+            <Badge variant={statusVariants[note.meta.status]}>{t.status[note.meta.status]}</Badge>
             <time className="text-sm text-muted-foreground" dateTime={note.meta.created}>
               {formatDateForLocale(note.meta.created, locale).text}
             </time>
@@ -100,7 +128,7 @@ export default async function NotePage({ params }: NotePageProps) {
               <>
                 <span className="text-muted-foreground">·</span>
                 <span className="text-sm text-muted-foreground">
-                  {t('updated')}: {formatDateForLocale(note.meta.updated, locale).text}
+                  {t.updated}: {formatDateForLocale(note.meta.updated, locale).text}
                 </span>
               </>
             )}
@@ -114,28 +142,30 @@ export default async function NotePage({ params }: NotePageProps) {
         </header>
 
         <div className="prose prose-neutral dark:prose-invert max-w-none">
-          <MDXRemote source={transformedContent} components={mdxComponents} />
+          <Suspense fallback={<MDXContentSkeleton />}>
+            <MDXContent source={transformedContent} components={mdxComponents} options={mdxOptions} />
+          </Suspense>
         </div>
       </article>
 
       {linkedNotes.length > 0 && (
         <section className="mt-12 pt-8 border-t border-border">
           <h2 className="text-lg font-semibold mb-4">
-            {t('linkedNotes')} ({linkedNotes.length})
+            {t.linkedNotes} ({linkedNotes.length})
           </h2>
           <ul className="space-y-2">
             {linkedNotes.map(linkedNote => (
               <li key={linkedNote.slug} className="flex items-center gap-2">
                 <span
                   className="text-muted-foreground text-sm w-5 text-center"
-                  title={t(`linkDirection.${linkedNote.direction}`)}
+                  title={t.linkDirection[linkedNote.direction]}
                 >
                   {directionIcons[linkedNote.direction]}
                 </span>
                 <Link href={`/garden/${linkedNote.slug}`} className="text-primary hover:underline underline-offset-4">
                   {linkedNote.title}
                 </Link>
-                <span className="text-xs text-muted-foreground">{t(`linkDirection.${linkedNote.direction}`)}</span>
+                <span className="text-xs text-muted-foreground">{t.linkDirection[linkedNote.direction]}</span>
               </li>
             ))}
           </ul>
@@ -144,7 +174,7 @@ export default async function NotePage({ params }: NotePageProps) {
 
       <nav className="mt-8 pt-8 border-t border-border">
         <Link href="/garden" className="text-sm font-medium hover:underline">
-          ← {t('backToGarden')}
+          ← {t.backToGarden}
         </Link>
       </nav>
     </div>
