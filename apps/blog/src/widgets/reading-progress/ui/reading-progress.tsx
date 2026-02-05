@@ -25,7 +25,10 @@ export function ReadingProgress({ className }: ReadingProgressProps) {
       aria-valuemax={100}
       aria-label="Reading progress"
     >
-      <div className="h-full bg-primary transition-[width] duration-150 ease-out" style={{ width: `${progress}%` }} />
+      <div
+        className="h-full w-full origin-left bg-primary will-change-transform"
+        style={{ transform: `scaleX(${progress / 100})` }}
+      />
     </div>
   );
 }
