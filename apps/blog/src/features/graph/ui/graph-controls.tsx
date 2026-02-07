@@ -114,11 +114,18 @@ function GraphControls({
       <div className="flex items-center gap-2">
         <Popover open={filterOpen} onOpenChange={setFilterOpen}>
           <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className="bg-background/80 backdrop-blur-sm">
-              <FilterIcon className="h-4 w-4 mr-1" />
+            <Button
+              variant="outline"
+              size="icon"
+              className="relative h-9 w-9 md:h-auto md:w-auto md:px-3 md:gap-1.5 bg-background/80 backdrop-blur-sm"
+            >
+              <FilterIcon className="h-4 w-4 md:mr-1" />
               <span className="hidden md:inline">{labels.filter}</span>
               {activeFilters.length > 0 && (
-                <Badge variant="secondary" className="ml-1 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                <Badge
+                  variant="secondary"
+                  className="ml-0 md:ml-1 h-5 w-5 p-0 flex items-center justify-center text-xs absolute -top-1.5 -right-1.5 md:static"
+                >
                   {activeFilters.length}
                 </Badge>
               )}
