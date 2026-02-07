@@ -31,6 +31,9 @@ type ForceGraphInstance = {
     transitionMs?: number
   ) => void;
   d3Force: (forceName: string, force?: unknown) => unknown;
+  controls: () => { dispose: () => void; handleResize: () => void } | undefined;
+  renderer: () => { dispose: () => void } | undefined;
+  scene: () => { traverse: (cb: (obj: { dispose?: () => void }) => void) => void } | undefined;
 };
 
 type ForceGraphNode = GraphNode & { x?: number; y?: number; z?: number };
@@ -52,6 +55,18 @@ function GraphCanvas({ data, onNodeClick, selectedNodeId, highlightNodeIds }: Gr
       setForceGraph(() => fg.default as unknown as React.ComponentType<Record<string, unknown>>);
       setSpriteText(() => st.default as unknown as { new (): unknown });
     });
+
+    const ref = fgRef;
+    return () => {
+      const fg = ref.current;
+      if (!fg) return;
+
+      fg.controls()?.dispose();
+      fg.renderer()?.dispose();
+      fg.scene()?.traverse(obj => {
+        if ('dispose' in obj && typeof obj.dispose === 'function') obj.dispose();
+      });
+    };
   }, []);
 
   useEffect(() => {
@@ -81,6 +96,10 @@ function GraphCanvas({ data, onNodeClick, selectedNodeId, highlightNodeIds }: Gr
     const center = fg.d3Force('center') as { strength?: (s: number) => void } | undefined;
     center?.strength?.(FORCE_CONFIG.centerStrength);
   }, [data]);
+
+  useEffect(() => {
+    fgRef.current?.controls()?.handleResize();
+  }, [dimensions]);
 
   const handleNodeClick = useCallback(
     (node: ForceGraphNode) => {
