@@ -82,7 +82,8 @@ describe('GraphControls', () => {
       />
     );
 
-    expect(screen.getByText('Filter')).toBeInTheDocument();
+    const filterButton = screen.getByRole('button', { expanded: false });
+    expect(filterButton).toBeInTheDocument();
   });
 
   it('활성 필터가 있으면 뱃지를 표시한다', () => {
