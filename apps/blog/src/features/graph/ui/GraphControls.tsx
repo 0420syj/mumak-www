@@ -1,0 +1,165 @@
+'use client';
+
+import { FilterIcon, SearchIcon, XIcon } from 'lucide-react';
+import { useCallback, useState } from 'react';
+
+import { Badge } from '@mumak/ui/components/badge';
+import { Button } from '@mumak/ui/components/button';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@mumak/ui/components/command';
+import { Input } from '@mumak/ui/components/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@mumak/ui/components/popover';
+
+import type { GraphData, GraphNode, GraphTab } from '../model/types';
+
+interface GraphControlsProps {
+  data: GraphData;
+  activeTab: GraphTab;
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
+  activeFilters: string[];
+  onFilterToggle: (filter: string) => void;
+  onClearFilters: () => void;
+  labels: {
+    search: string;
+    filter: string;
+    clearFilters: string;
+    noResults: string;
+    status: string;
+    tags: string;
+    categories: string;
+  };
+}
+
+function extractFilterOptions(data: GraphData, activeTab: GraphTab) {
+  const statuses = new Set<string>();
+  const tags = new Set<string>();
+  const categories = new Set<string>();
+
+  for (const node of data.nodes) {
+    if (node.type === 'tag') tags.add(node.name);
+    if (node.type === 'category') categories.add(node.name);
+    if (node.type === 'note' && node.status) statuses.add(node.status);
+  }
+
+  return { statuses: [...statuses], tags: [...tags], categories: [...categories], activeTab };
+}
+
+function GraphControls({
+  data,
+  activeTab,
+  searchQuery,
+  onSearchChange,
+  activeFilters,
+  onFilterToggle,
+  onClearFilters,
+  labels,
+}: GraphControlsProps) {
+  const [filterOpen, setFilterOpen] = useState(false);
+  const options = extractFilterOptions(data, activeTab);
+
+  const handleSelect = useCallback(
+    (value: string) => {
+      onFilterToggle(value);
+    },
+    [onFilterToggle]
+  );
+
+  return (
+    <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 max-w-xs">
+      <div className="relative">
+        <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+        <Input
+          placeholder={labels.search}
+          value={searchQuery}
+          onChange={e => onSearchChange(e.target.value)}
+          className="pl-9 bg-background/80 backdrop-blur-sm"
+        />
+      </div>
+
+      <div className="flex items-center gap-2">
+        <Popover open={filterOpen} onOpenChange={setFilterOpen}>
+          <PopoverTrigger asChild>
+            <Button variant="outline" size="sm" className="bg-background/80 backdrop-blur-sm">
+              <FilterIcon className="h-4 w-4 mr-1" />
+              {labels.filter}
+              {activeFilters.length > 0 && (
+                <Badge variant="secondary" className="ml-1 h-5 w-5 p-0 flex items-center justify-center text-xs">
+                  {activeFilters.length}
+                </Badge>
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-64 p-0" align="start">
+            <Command>
+              <CommandInput placeholder={labels.search} />
+              <CommandList>
+                <CommandEmpty>{labels.noResults}</CommandEmpty>
+                {activeTab === 'garden' && options.statuses.length > 0 && (
+                  <CommandGroup heading={labels.status}>
+                    {options.statuses.map(status => (
+                      <CommandItem key={`status:${status}`} onSelect={() => handleSelect(`status:${status}`)}>
+                        <span className={activeFilters.includes(`status:${status}`) ? 'font-semibold' : ''}>
+                          {status}
+                        </span>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                )}
+                {activeTab === 'blog' && options.categories.length > 0 && (
+                  <CommandGroup heading={labels.categories}>
+                    {options.categories.map(cat => (
+                      <CommandItem key={`category:${cat}`} onSelect={() => handleSelect(`category:${cat}`)}>
+                        <span className={activeFilters.includes(`category:${cat}`) ? 'font-semibold' : ''}>{cat}</span>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                )}
+                {options.tags.length > 0 && (
+                  <CommandGroup heading={labels.tags}>
+                    {options.tags.map(tag => (
+                      <CommandItem key={`tag:${tag}`} onSelect={() => handleSelect(`tag:${tag}`)}>
+                        <span className={activeFilters.includes(`tag:${tag}`) ? 'font-semibold' : ''}>{tag}</span>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                )}
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+
+        {activeFilters.length > 0 && (
+          <Button variant="ghost" size="sm" onClick={onClearFilters} className="h-8 px-2">
+            <XIcon className="h-3 w-3" />
+          </Button>
+        )}
+      </div>
+
+      {activeFilters.length > 0 && (
+        <div className="flex flex-wrap gap-1">
+          {activeFilters.map(filter => (
+            <Badge
+              key={filter}
+              variant="secondary"
+              className="cursor-pointer bg-background/80 backdrop-blur-sm"
+              onClick={() => onFilterToggle(filter)}
+            >
+              {filter.split(':')[1]}
+              <XIcon className="h-3 w-3 ml-1" />
+            </Badge>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export { GraphControls };
+export type { GraphControlsProps };

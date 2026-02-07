@@ -101,5 +101,37 @@
       "tagTitle": "#{tag}",
       "tagDescription": "Notes tagged with {tag}"
     }
+  },
+  "graph": {
+    "title": "Graph",
+    "description": "Visualize connections between content",
+    "tabs": {
+      "garden": "Garden",
+      "blog": "Blog"
+    },
+    "controls": {
+      "search": "Search nodes...",
+      "filter": "Filter",
+      "clearFilters": "Clear",
+      "noResults": "No results",
+      "status": "Status",
+      "tags": "Tags",
+      "categories": "Categories"
+    },
+    "panel": {
+      "viewDetail": "View detail",
+      "connections": "connections",
+      "type": {
+        "note": "Note",
+        "post": "Post",
+        "tag": "Tag",
+        "category": "Category"
+      },
+      "status": {
+        "seedling": "Seedling",
+        "budding": "Budding",
+        "evergreen": "Evergreen"
+      }
+    }
   }
 }

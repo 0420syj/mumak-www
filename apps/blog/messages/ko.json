@@ -101,5 +101,37 @@
       "tagTitle": "#{tag}",
       "tagDescription": "{tag} 태그가 포함된 노트"
     }
+  },
+  "graph": {
+    "title": "그래프",
+    "description": "콘텐츠 간 연결을 시각화합니다",
+    "tabs": {
+      "garden": "가든",
+      "blog": "블로그"
+    },
+    "controls": {
+      "search": "노드 검색...",
+      "filter": "필터",
+      "clearFilters": "초기화",
+      "noResults": "결과 없음",
+      "status": "상태",
+      "tags": "태그",
+      "categories": "카테고리"
+    },
+    "panel": {
+      "viewDetail": "자세히 보기",
+      "connections": "개의 연결",
+      "type": {
+        "note": "노트",
+        "post": "포스트",
+        "tag": "태그",
+        "category": "카테고리"
+      },
+      "status": {
+        "seedling": "씨앗",
+        "budding": "새싹",
+        "evergreen": "상록수"
+      }
+    }
   }
 }
