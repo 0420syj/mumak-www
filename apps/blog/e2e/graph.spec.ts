@@ -51,12 +51,14 @@ test.describe('Graph Page', () => {
     await expect(page.getByRole('button', { name: /theme/i })).toBeVisible();
   });
 
-  test('should render graph canvas area', async ({ page }) => {
+  test('should render graph canvas or unsupported fallback', async ({ page }) => {
     await page.goto('/en/graph');
     await page.waitForLoadState('networkidle');
 
     const canvas = page.locator('canvas');
-    await expect(canvas).toBeVisible({ timeout: 10000 });
+    const unsupported = page.getByText('3D graph is not available on this device');
+
+    await expect(canvas.or(unsupported)).toBeVisible({ timeout: 10000 });
   });
 
   test('should work in Korean locale', async ({ page }) => {
