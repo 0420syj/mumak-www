@@ -4,7 +4,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { getNotes } from '@/src/entities/note';
 import { getPosts } from '@/src/entities/post';
 import { buildBlogGraphData, buildGardenGraphData } from '@/src/features/graph';
-import { GraphView } from '@/src/features/graph/ui/GraphView';
+import { GraphView } from '@/src/features/graph/ui/graph-view';
 import { locales, type Locale } from '@/src/shared/config/i18n';
 
 interface GraphPageProps {

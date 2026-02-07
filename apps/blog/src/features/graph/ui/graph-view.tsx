@@ -5,11 +5,11 @@ import { useSearchParams } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 
 import type { GraphData, GraphNode, GraphTab } from '../model/types';
-import { GraphControls } from './GraphControls';
-import { GraphDetailPanel } from './GraphDetailPanel';
-import { GraphTabs } from './GraphTabs';
+import { GraphControls } from './graph-controls';
+import { GraphDetailPanel } from './graph-detail-panel';
+import { GraphTabs } from './graph-tabs';
 
-const GraphCanvas = dynamic(() => import('./GraphCanvas').then(m => ({ default: m.GraphCanvas })), {
+const GraphCanvas = dynamic(() => import('./graph-canvas').then(m => ({ default: m.GraphCanvas })), {
   ssr: false,
 });
 

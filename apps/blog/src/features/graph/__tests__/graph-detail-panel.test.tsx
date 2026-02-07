@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 
-import { GraphDetailPanel } from '../ui/GraphDetailPanel';
+import { GraphDetailPanel } from '../ui/graph-detail-panel';
 import type { GraphNode } from '../model/types';
 
 const mockMatchMedia = (matches: boolean) => {

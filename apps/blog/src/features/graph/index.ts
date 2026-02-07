@@ -10,4 +10,4 @@ export {
   getTagColor,
 } from './lib/graph-config';
 export type { GraphData, GraphLink, GraphNode, GraphNodeType, GraphTab } from './model/types';
-export { GraphView } from './ui/GraphView';
+export { GraphView } from './ui/graph-view';

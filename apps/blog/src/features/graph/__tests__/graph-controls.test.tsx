@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { GraphControls } from '../ui/GraphControls';
+import { GraphControls } from '../ui/graph-controls';
 import type { GraphData } from '../model/types';
 
 const mockData: GraphData = {
