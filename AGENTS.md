@@ -20,6 +20,13 @@ Turborepo 모노레포. 공유 패키지는 `packages/`에, 앱은 `apps/`에 �
 - `feature/*`: develop에서 분기 → develop으로 머지
 - `hotfix/*`: main에서 분기 → main, develop 둘 다 머지
 
+## 네이밍 컨벤션
+
+- 폴더명: **kebab-case** (`post-card`, `switch-theme`)
+- 파일명: **kebab-case** (`counter.tsx`, `theme-provider.tsx`)
+- 테스트 파일: `*.test.ts(x)`, E2E는 `*.spec.ts`
+- 설정 파일: kebab-case (`jest.config.mjs`, `vite.config.ts`)
+
 ## TypeScript
 
 - Prefer clear function/variable names over inline comments

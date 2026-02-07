@@ -1,5 +1,8 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { Suspense } from 'react';
+
+import { Skeleton } from '@mumak/ui/components/skeleton';
 
 import { getNotes } from '@/src/entities/note';
 import { getPosts } from '@/src/entities/post';
@@ -25,10 +28,15 @@ export async function generateMetadata({ params }: GraphPageProps): Promise<Meta
   };
 }
 
-export default async function GraphPage({ params }: GraphPageProps) {
-  const { locale } = await params;
-  setRequestLocale(locale);
+function GraphSkeleton() {
+  return (
+    <div className="relative w-full h-[calc(100vh-4rem)]">
+      <Skeleton className="w-full h-full rounded-none" />
+    </div>
+  );
+}
 
+async function GraphContent({ locale }: { locale: string }) {
   const notes = getNotes(locale as Locale);
   const posts = getPosts(locale as Locale);
 
@@ -69,4 +77,15 @@ export default async function GraphPage({ params }: GraphPageProps) {
   };
 
   return <GraphView gardenData={gardenData} blogData={blogData} locale={locale} labels={labels} />;
+}
+
+export default async function GraphPage({ params }: GraphPageProps) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+
+  return (
+    <Suspense fallback={<GraphSkeleton />}>
+      <GraphContent locale={locale} />
+    </Suspense>
+  );
 }
