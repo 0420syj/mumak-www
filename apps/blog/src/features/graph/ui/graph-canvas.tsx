@@ -75,7 +75,8 @@ type ForceGraphNode = GraphNode & { x?: number; y?: number; z?: number };
  *   - react-kapsule가 fiber 재사용 시 useEffectOnce를 재실행하도록 수정
  *   - 또는 3d-force-graph가 _destructor에서 controls/renderer/scene을 올바르게 dispose
  *
- * @see https://github.com/vasturiano/react-force-graph/issues/XXX
+ * @see https://github.com/vasturiano/react-force-graph/issues/596
+ * @see https://github.com/vasturiano/3d-force-graph/issues/732
  */
 const FORCE_GRAPH_REMOUNT_WORKAROUND = true;
 
