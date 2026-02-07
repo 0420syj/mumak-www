@@ -73,7 +73,7 @@ function GraphControls({
   );
 
   return (
-    <div className="absolute top-3 left-3 z-10 flex flex-col gap-2">
+    <div className="absolute top-14 left-3 z-10 flex flex-col gap-2">
       {/* Desktop: always show search input */}
       <div className="hidden md:block relative max-w-xs">
         <SearchIcon className="pointer-events-none absolute z-10 left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

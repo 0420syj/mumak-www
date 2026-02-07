@@ -8,6 +8,7 @@ import type { GraphData, GraphNode, GraphTab } from '../model/types';
 import { GraphControls } from './graph-controls';
 import { GraphDetailPanel } from './graph-detail-panel';
 import { GraphTabs } from './graph-tabs';
+import { GraphToolbar } from './graph-toolbar';
 
 const GraphCanvas = dynamic(() => import('./graph-canvas').then(m => ({ default: m.GraphCanvas })), {
   ssr: false,
@@ -138,8 +139,9 @@ function GraphView({ gardenData, blogData, locale, labels }: GraphViewProps) {
   );
 
   return (
-    <div className="relative w-full h-[calc(100dvh-4rem)] overflow-hidden">
-      {/* Desktop: tabs top center, Mobile: tabs bottom center */}
+    <div className="relative w-full h-dvh">
+      <GraphToolbar locale={locale} />
+
       <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 hidden md:block">
         <GraphTabs activeTab={activeTab} labels={labels.tabs} />
       </div>
@@ -147,7 +149,6 @@ function GraphView({ gardenData, blogData, locale, labels }: GraphViewProps) {
         <GraphTabs activeTab={activeTab} labels={labels.tabs} />
       </div>
 
-      {/* Desktop: controls top left, Mobile: controls top right (compact) */}
       <GraphControls
         data={data}
         activeTab={activeTab}
