@@ -138,11 +138,16 @@ function GraphView({ gardenData, blogData, locale, labels }: GraphViewProps) {
   );
 
   return (
-    <div className="relative w-full h-[calc(100vh-4rem)]">
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
+    <div className="relative w-full h-[calc(100dvh-4rem)] overflow-hidden">
+      {/* Desktop: tabs top center, Mobile: tabs bottom center */}
+      <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 hidden md:block">
+        <GraphTabs activeTab={activeTab} labels={labels.tabs} />
+      </div>
+      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 md:hidden">
         <GraphTabs activeTab={activeTab} labels={labels.tabs} />
       </div>
 
+      {/* Desktop: controls top left, Mobile: controls top right (compact) */}
       <GraphControls
         data={data}
         activeTab={activeTab}

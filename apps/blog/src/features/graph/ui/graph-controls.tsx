@@ -62,6 +62,7 @@ function GraphControls({
   labels,
 }: GraphControlsProps) {
   const [filterOpen, setFilterOpen] = useState(false);
+  const [searchExpanded, setSearchExpanded] = useState(false);
   const options = extractFilterOptions(data, activeTab);
 
   const handleSelect = useCallback(
@@ -72,8 +73,9 @@ function GraphControls({
   );
 
   return (
-    <div className="absolute top-4 left-4 z-10 flex flex-col gap-2 max-w-xs">
-      <div className="relative">
+    <div className="absolute top-3 left-3 z-10 flex flex-col gap-2">
+      {/* Desktop: always show search input */}
+      <div className="hidden md:block relative max-w-xs">
         <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input
           placeholder={labels.search}
@@ -83,12 +85,38 @@ function GraphControls({
         />
       </div>
 
+      {/* Mobile: collapsible search */}
+      <div className="md:hidden flex items-center gap-2">
+        {searchExpanded ? (
+          <div className="relative flex-1 max-w-[200px]">
+            <SearchIcon className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder={labels.search}
+              value={searchQuery}
+              onChange={e => onSearchChange(e.target.value)}
+              className="pl-9 h-9 bg-background/80 backdrop-blur-sm text-sm"
+              autoFocus
+              onBlur={() => !searchQuery && setSearchExpanded(false)}
+            />
+          </div>
+        ) : (
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-9 w-9 bg-background/80 backdrop-blur-sm"
+            onClick={() => setSearchExpanded(true)}
+          >
+            <SearchIcon className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
+
       <div className="flex items-center gap-2">
         <Popover open={filterOpen} onOpenChange={setFilterOpen}>
           <PopoverTrigger asChild>
             <Button variant="outline" size="sm" className="bg-background/80 backdrop-blur-sm">
               <FilterIcon className="h-4 w-4 mr-1" />
-              {labels.filter}
+              <span className="hidden md:inline">{labels.filter}</span>
               {activeFilters.length > 0 && (
                 <Badge variant="secondary" className="ml-1 h-5 w-5 p-0 flex items-center justify-center text-xs">
                   {activeFilters.length}
@@ -143,12 +171,12 @@ function GraphControls({
       </div>
 
       {activeFilters.length > 0 && (
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-1 max-w-[200px] md:max-w-xs">
           {activeFilters.map(filter => (
             <Badge
               key={filter}
               variant="secondary"
-              className="cursor-pointer bg-background/80 backdrop-blur-sm"
+              className="cursor-pointer bg-background/80 backdrop-blur-sm text-xs"
               onClick={() => onFilterToggle(filter)}
             >
               {filter.split(':')[1]}
