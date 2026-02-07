@@ -102,9 +102,16 @@ function GraphCanvas({ data, onNodeClick, selectedNodeId, highlightNodeIds, unsu
 
     setMounted(true);
 
-    const webGPUAvailable = 'GPUShaderStage' in globalThis;
+    const webGLAvailable = (() => {
+      try {
+        const canvas = document.createElement('canvas');
+        return !!(canvas.getContext('webgl2') || canvas.getContext('webgl'));
+      } catch {
+        return false;
+      }
+    })();
 
-    if (!webGPUAvailable) {
+    if (!webGLAvailable) {
       setIsSupported(false);
       return;
     }
