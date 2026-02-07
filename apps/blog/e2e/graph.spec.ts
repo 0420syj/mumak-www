@@ -32,16 +32,23 @@ test.describe('Graph Page', () => {
     await expect(blogTab).toHaveAttribute('aria-selected', 'true');
   });
 
-  test('should display search input', async ({ page }) => {
+  test('should display back button', async ({ page }) => {
     await page.goto('/en/graph');
 
-    await expect(page.getByPlaceholder('Search nodes...')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Back' })).toBeVisible();
   });
 
-  test('should display filter button', async ({ page }) => {
+  test('should not display header and footer', async ({ page }) => {
     await page.goto('/en/graph');
 
-    await expect(page.getByRole('button', { name: /Filter/ })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Wan Sim' })).not.toBeVisible();
+    await expect(page.locator('footer')).not.toBeVisible();
+  });
+
+  test('should display theme and locale switchers', async ({ page }) => {
+    await page.goto('/en/graph');
+
+    await expect(page.getByRole('button', { name: /theme/i })).toBeVisible();
   });
 
   test('should render graph canvas area', async ({ page }) => {
@@ -57,7 +64,16 @@ test.describe('Graph Page', () => {
 
     await expect(page.getByRole('tab', { name: '가든' })).toBeVisible();
     await expect(page.getByRole('tab', { name: '블로그' })).toBeVisible();
-    await expect(page.getByPlaceholder('노드 검색...')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Back' })).toBeVisible();
+  });
+
+  test('should navigate back to previous page', async ({ page }) => {
+    await page.goto('/en');
+    await page.getByRole('link', { name: 'Graph' }).click();
+    await expect(page).toHaveURL(/\/en\/graph/);
+
+    await page.getByRole('button', { name: 'Back' }).click();
+    await expect(page).toHaveURL(/\/en$/);
   });
 
   test('should be accessible from navigation', async ({ page }) => {
