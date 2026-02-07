@@ -8,7 +8,8 @@
     "articles": "아티클",
     "notes": "노트",
     "language": "언어",
-    "tags": "태그"
+    "tags": "태그",
+    "graph": "그래프"
   },
   "footer": {
     "about": "소개",

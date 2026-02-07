@@ -8,7 +8,8 @@
     "articles": "Articles",
     "notes": "Notes",
     "language": "Language",
-    "tags": "Tags"
+    "tags": "Tags",
+    "graph": "Graph"
   },
   "footer": {
     "about": "About",

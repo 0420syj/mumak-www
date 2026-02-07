@@ -10,6 +10,7 @@ import { NavLinks } from './nav-links';
 const navItems = [
   { href: '/blog', labelKey: 'blog' },
   { href: '/garden', labelKey: 'garden' },
+  { href: '/graph', labelKey: 'graph' },
 ] as const;
 
 export async function Navigation() {
