@@ -3,6 +3,8 @@
 import { useTheme } from 'next-themes';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+import { MonitorIcon } from 'lucide-react';
+
 import { Skeleton } from '@mumak/ui/components/skeleton';
 
 import {
@@ -17,11 +19,29 @@ import {
 } from '../lib/graph-config';
 import type { GraphData, GraphNode } from '../model/types';
 
+interface UnsupportedLabels {
+  title: string;
+  description: string;
+}
+
 interface GraphCanvasProps {
   data: GraphData;
   onNodeClick?: (node: GraphNode) => void;
   selectedNodeId?: string | null;
   highlightNodeIds?: Set<string>;
+  unsupportedLabels: UnsupportedLabels;
+}
+
+function GraphUnsupported({ title, description }: UnsupportedLabels) {
+  return (
+    <div className="w-full h-full flex flex-col items-center justify-center gap-3 p-8 text-center">
+      <MonitorIcon className="size-12 text-muted-foreground/50" strokeWidth={1.5} />
+      <div>
+        <p className="text-sm font-medium text-foreground">{title}</p>
+        <p className="text-xs text-muted-foreground mt-1">{description}</p>
+      </div>
+    </div>
+  );
 }
 
 type ForceGraphInstance = {
@@ -38,7 +58,7 @@ type ForceGraphInstance = {
 
 type ForceGraphNode = GraphNode & { x?: number; y?: number; z?: number };
 
-function GraphCanvas({ data, onNodeClick, selectedNodeId, highlightNodeIds }: GraphCanvasProps) {
+function GraphCanvas({ data, onNodeClick, selectedNodeId, highlightNodeIds, unsupportedLabels }: GraphCanvasProps) {
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
   const fgRef = useRef<ForceGraphInstance | null>(null);
@@ -47,14 +67,26 @@ function GraphCanvas({ data, onNodeClick, selectedNodeId, highlightNodeIds }: Gr
   const [ForceGraph, setForceGraph] = useState<React.ComponentType<Record<string, unknown>> | null>(null);
   const [SpriteText, setSpriteText] = useState<{ new (): unknown } | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [isSupported, setIsSupported] = useState(true);
 
   useEffect(() => {
     setMounted(true);
 
-    Promise.all([import('react-force-graph-3d'), import('three-spritetext')]).then(([fg, st]) => {
-      setForceGraph(() => fg.default as unknown as React.ComponentType<Record<string, unknown>>);
-      setSpriteText(() => st.default as unknown as { new (): unknown });
-    });
+    const webGPUAvailable = 'GPUShaderStage' in globalThis;
+
+    if (!webGPUAvailable) {
+      setIsSupported(false);
+      return;
+    }
+
+    Promise.all([import('react-force-graph-3d'), import('three-spritetext')])
+      .then(([fg, st]) => {
+        setForceGraph(() => fg.default as unknown as React.ComponentType<Record<string, unknown>>);
+        setSpriteText(() => st.default as unknown as { new (): unknown });
+      })
+      .catch(() => {
+        setIsSupported(false);
+      });
 
     const ref = fgRef;
     return () => {
@@ -173,6 +205,14 @@ function GraphCanvas({ data, onNodeClick, selectedNodeId, highlightNodeIds }: Gr
     }),
     [data]
   );
+
+  if (mounted && !isSupported) {
+    return (
+      <div ref={containerRef} className="w-full h-full">
+        <GraphUnsupported title={unsupportedLabels.title} description={unsupportedLabels.description} />
+      </div>
+    );
+  }
 
   if (!mounted || !ForceGraph) {
     return (

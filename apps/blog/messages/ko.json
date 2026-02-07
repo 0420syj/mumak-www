@@ -133,6 +133,14 @@
         "budding": "새싹",
         "evergreen": "상록수"
       }
+    },
+    "unsupported": {
+      "title": "이 기기에서 3D 그래프를 볼 수 없습니다",
+      "description": "WebGPU를 지원하는 데스크톱 브라우저에서 확인해 주세요."
+    },
+    "error": {
+      "title": "그래프를 렌더링할 수 없습니다",
+      "description": "예기치 못한 오류가 발생했습니다. 데스크톱 브라우저에서 다시 시도해 주세요."
     }
   }
 }

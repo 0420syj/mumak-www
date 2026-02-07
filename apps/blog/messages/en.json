@@ -133,6 +133,14 @@
         "budding": "Budding",
         "evergreen": "Evergreen"
       }
+    },
+    "unsupported": {
+      "title": "3D graph is not available on this device",
+      "description": "WebGPU is required. Please use a desktop browser."
+    },
+    "error": {
+      "title": "Failed to render the graph",
+      "description": "An unexpected error occurred. Please try again on a desktop browser."
     }
   }
 }

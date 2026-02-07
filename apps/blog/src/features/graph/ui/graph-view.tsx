@@ -2,7 +2,8 @@
 
 import dynamic from 'next/dynamic';
 import { useSearchParams } from 'next/navigation';
-import { useCallback, useMemo, useState } from 'react';
+import { Component, useCallback, useMemo, useState } from 'react';
+import type { ErrorInfo, ReactNode } from 'react';
 
 import type { GraphData, GraphNode, GraphTab } from '../model/types';
 import { GraphControls } from './graph-controls';
@@ -13,6 +14,39 @@ import { GraphToolbar } from './graph-toolbar';
 const GraphCanvas = dynamic(() => import('./graph-canvas').then(m => ({ default: m.GraphCanvas })), {
   ssr: false,
 });
+
+interface FallbackLabels {
+  title: string;
+  description: string;
+}
+
+class GraphErrorBoundary extends Component<{ children: ReactNode; labels: FallbackLabels }, { hasError: boolean }> {
+  constructor(props: { children: ReactNode; labels: FallbackLabels }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error('[GraphErrorBoundary]', error, info);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="w-full h-full flex flex-col items-center justify-center gap-3 p-8 text-center">
+          <p className="text-sm font-medium text-foreground">{this.props.labels.title}</p>
+          <p className="text-xs text-muted-foreground">{this.props.labels.description}</p>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 interface GraphViewProps {
   gardenData: GraphData;
@@ -35,6 +69,8 @@ interface GraphViewProps {
       type: Record<string, string>;
       status: Record<string, string>;
     };
+    unsupported: FallbackLabels;
+    error: FallbackLabels;
   };
 }
 
@@ -143,12 +179,15 @@ function GraphView({ gardenData, blogData, locale, labels }: GraphViewProps) {
         labels={labels.controls}
       />
 
-      <GraphCanvas
-        data={data}
-        onNodeClick={selectNode}
-        selectedNodeId={selectedNode?.id}
-        highlightNodeIds={highlightNodeIds.size > 0 ? highlightNodeIds : undefined}
-      />
+      <GraphErrorBoundary labels={labels.error}>
+        <GraphCanvas
+          data={data}
+          onNodeClick={selectNode}
+          selectedNodeId={selectedNode?.id}
+          highlightNodeIds={highlightNodeIds.size > 0 ? highlightNodeIds : undefined}
+          unsupportedLabels={labels.unsupported}
+        />
+      </GraphErrorBoundary>
 
       <GraphDetailPanel
         node={selectedNode}

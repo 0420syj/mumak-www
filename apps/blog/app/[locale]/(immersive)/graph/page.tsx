@@ -74,6 +74,14 @@ async function GraphContent({ locale }: { locale: string }) {
         evergreen: t('panel.status.evergreen'),
       },
     },
+    unsupported: {
+      title: t('unsupported.title'),
+      description: t('unsupported.description'),
+    },
+    error: {
+      title: t('error.title'),
+      description: t('error.description'),
+    },
   };
 
   return <GraphView gardenData={gardenData} blogData={blogData} locale={locale} labels={labels} />;
