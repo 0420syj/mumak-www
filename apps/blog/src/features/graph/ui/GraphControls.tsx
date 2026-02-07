@@ -16,7 +16,7 @@ import {
 import { Input } from '@mumak/ui/components/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@mumak/ui/components/popover';
 
-import type { GraphData, GraphNode, GraphTab } from '../model/types';
+import type { GraphData, GraphTab } from '../model/types';
 
 interface GraphControlsProps {
   data: GraphData;
