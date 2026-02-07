@@ -65,16 +65,10 @@ function GraphControls({
   const [searchExpanded, setSearchExpanded] = useState(false);
   const options = extractFilterOptions(data, activeTab);
 
-  const handleSelect = useCallback(
-    (value: string) => {
-      onFilterToggle(value);
-    },
-    [onFilterToggle]
-  );
+  const handleSelect = useCallback(onFilterToggle, [onFilterToggle]);
 
   return (
     <div className="absolute top-14 left-3 z-10 flex flex-col gap-2">
-      {/* Desktop: always show search input */}
       <div className="hidden md:block relative max-w-xs">
         <SearchIcon className="pointer-events-none absolute z-10 left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
@@ -85,7 +79,6 @@ function GraphControls({
         />
       </div>
 
-      {/* Mobile: collapsible search */}
       <div className="md:hidden flex items-center gap-2">
         {searchExpanded ? (
           <div className="relative flex-1 max-w-[200px]">

@@ -105,10 +105,11 @@ function GraphCanvas({ data, onNodeClick, selectedNodeId, highlightNodeIds }: Gr
   const getNodeColor = useCallback(
     (node: ForceGraphNode) => {
       const graphNode = node as GraphNode;
-      const isHighlighted = highlightNodeIds?.has(graphNode.id);
-      const isSelected = selectedNodeId === graphNode.id;
+      const hasActiveHighlights = highlightNodeIds && highlightNodeIds.size > 0;
+      const isFocused = highlightNodeIds?.has(graphNode.id) || selectedNodeId === graphNode.id;
+      const shouldDim = hasActiveHighlights && !isFocused;
 
-      if (highlightNodeIds && highlightNodeIds.size > 0 && !isHighlighted && !isSelected) {
+      if (shouldDim) {
         return isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
       }
 
@@ -133,21 +134,15 @@ function GraphCanvas({ data, onNodeClick, selectedNodeId, highlightNodeIds }: Gr
       if (!SpriteText) return undefined;
 
       const graphNode = node as GraphNode;
-      const sprite = new SpriteText() as {
-        text: string;
-        color: string;
-        textHeight: number;
-        backgroundColor: string | false;
-        padding: number;
-        borderRadius: number;
-      };
+      const isSecondaryNode = graphNode.type === 'tag' || graphNode.type === 'category';
+      const sprite = new SpriteText() as Record<string, unknown>;
       sprite.text = graphNode.name;
       sprite.color = isDark ? '#e5e5e5' : '#262626';
-      sprite.textHeight = graphNode.type === 'tag' || graphNode.type === 'category' ? 2 : 3;
+      sprite.textHeight = isSecondaryNode ? 2 : 3;
       sprite.backgroundColor = false;
       sprite.padding = 1;
       sprite.borderRadius = 2;
-      return sprite as unknown;
+      return sprite;
     },
     [SpriteText, isDark]
   );
