@@ -1,5 +1,7 @@
-import { Footer } from '@/src/widgets/footer';
-import { HeaderSpacer, Navigation, SmartHeader } from '@/src/widgets/header';
+import { Suspense } from 'react';
+
+import { Footer, FooterSkeleton } from '@/src/widgets/footer';
+import { HeaderSpacer, Navigation, NavigationSkeleton, SmartHeader } from '@/src/widgets/header';
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -12,13 +14,17 @@ export default function MainLayout({ children }: { children: React.ReactNode }) 
       </a>
       <div className="min-h-screen flex flex-col">
         <SmartHeader>
-          <Navigation />
+          <Suspense fallback={<NavigationSkeleton />}>
+            <Navigation />
+          </Suspense>
         </SmartHeader>
         <HeaderSpacer />
         <main id="main-content" className="flex-1">
           {children}
         </main>
-        <Footer />
+        <Suspense fallback={<FooterSkeleton />}>
+          <Footer />
+        </Suspense>
       </div>
     </>
   );

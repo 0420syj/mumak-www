@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 
 import {
   IntlProvider,
@@ -55,7 +56,7 @@ interface LocaleLayoutProps {
   params: Promise<{ locale: string }>;
 }
 
-export default async function LocaleLayout({ children, params }: LocaleLayoutProps) {
+async function LocaleContent({ params, children }: { params: Promise<{ locale: string }>; children: React.ReactNode }) {
   const { locale } = await params;
 
   if (!locales.includes(locale as Locale)) {
@@ -76,5 +77,13 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
       {children}
       <VercelAnalytics />
     </IntlProvider>
+  );
+}
+
+export default function LocaleLayout({ children, params }: LocaleLayoutProps) {
+  return (
+    <Suspense>
+      <LocaleContent params={params}>{children}</LocaleContent>
+    </Suspense>
   );
 }
