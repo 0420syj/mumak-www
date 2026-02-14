@@ -1,15 +1,16 @@
 ---
 title: 'CSS 애니메이션 성능: width vs transform'
-created: '2026-02-06'
-status: 'seedling'
+date: '2026-02-06'
+description: 'width에서 transform: scaleX()로 바꿔 모바일 프로그레스 바 버벅거림을 해결한 경험'
 tags: ['css', 'performance', 'animation', 'frontend']
+draft: false
 ---
 
 모바일에서 progress bar가 버벅거리는 문제를 겪었다. `width`를 `transform: scaleX()`로 바꾸니 바로 해결됐다.
 
 ## 왜 차이가 나는가
 
-[[browser-rendering-pipeline|브라우저 렌더링 파이프라인]]을 이해하면 답이 나온다.
+[브라우저 렌더링 파이프라인](/ko/garden/browser-rendering-pipeline)을 이해하면 답이 나온다.
 
 - `width` 변경 → **Layout부터 다시 계산** → 메인 스레드 블로킹
 - `transform` 변경 → **Composite만 실행** → GPU가 처리
@@ -21,9 +22,9 @@ tags: ['css', 'performance', 'animation', 'frontend']
 <div style={{ width: `${progress}%` }} />
 
 // After - GPU에서 처리, reflow 없음
-<div 
+<div
   className="w-full origin-left will-change-transform"
-  style={{ transform: `scaleX(${progress / 100})` }} 
+  style={{ transform: `scaleX(${progress / 100})` }}
 />
 ```
 

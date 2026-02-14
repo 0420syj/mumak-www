@@ -30,8 +30,12 @@ HTML → DOM → CSSOM → Render Tree → Layout → Paint → Composite
 **CSSOM 트리 생성**: CSS를 파싱하여 CSS Object Model 생성
 
 ```css
-.container { width: 100%; }
-p { color: black; }
+.container {
+  width: 100%;
+}
+p {
+  color: black;
+}
 ```
 
 ### 2. Render Tree
@@ -70,16 +74,16 @@ DOM + CSSOM을 결합하여 **실제로 화면에 그려질 요소**만 포함�
 
 각 단계를 트리거하는 CSS 속성이 다르다:
 
-| 속성 | Layout | Paint | Composite |
-|------|--------|-------|-----------|
-| `width`, `height` | O | O | O |
-| `background-color` | - | O | O |
-| `transform` | - | - | O |
-| `opacity` | - | - | O |
+| 속성               | Layout | Paint | Composite |
+| ------------------ | ------ | ----- | --------- |
+| `width`, `height`  | O      | O     | O         |
+| `background-color` | -      | O     | O         |
+| `transform`        | -      | -     | O         |
+| `opacity`          | -      | -     | O         |
 
 **핵심**: 애니메이션에는 `transform`과 `opacity`만 사용하라.
 
-자세한 내용은 [[css-animation-performance|CSS 애니메이션 성능 최적화]] 참고.
+자세한 내용은 [CSS 애니메이션 성능 최적화](/ko/blog/articles/css-animation-performance) 참고.
 
 ## Layout을 트리거하는 것들
 
