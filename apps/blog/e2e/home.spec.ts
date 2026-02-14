@@ -7,8 +7,7 @@ test.describe('Home Page', () => {
     // 로고 링크 확인 (Navigation에 있는 "Wan Sim" 텍스트)
     await expect(page.getByRole('link', { name: 'Wan Sim' })).toBeVisible();
 
-    const introSection = page.locator('section').first();
-    const introText = await introSection.textContent();
+    const introText = await page.locator('p.text-lg').first().textContent();
     expect(introText).toContain('글을 써보고 싶어서 만든 블로그입니다.');
     expect(introText).toContain('웹 기술과 사용자 경험에 관심이 많습니다.');
     expect(introText).toContain('사사로운 일상부터 개발자로서 고민한 흔적들을 기록하고자 합니다.');
@@ -32,7 +31,7 @@ test.describe('Home Page', () => {
 
     await expect(page.getByRole('heading', { level: 2, name: '이전 글' })).toBeVisible();
 
-    const recentPosts = page.locator('section').nth(2).locator('article');
+    const recentPosts = page.locator('section').nth(1).locator('article');
     const count = await recentPosts.count();
     expect(count).toBeGreaterThan(0);
   });
@@ -45,8 +44,7 @@ test.describe('Home Page', () => {
     await expect(page.getByRole('heading', { level: 2, name: 'Latest Post' })).toBeVisible();
     await expect(page.getByRole('heading', { level: 2, name: 'Recent Posts' })).toBeVisible();
 
-    const introSection = page.locator('section').first();
-    const introText = await introSection.textContent();
+    const introText = await page.locator('p.text-lg').first().textContent();
     expect(introText).toContain('Created this blog to write anything I want.');
     expect(introText).toContain("I'm interested in web technologies and user experience.");
     expect(introText).toContain("Gonna write about anything from daily life to developer's thoughts.");
