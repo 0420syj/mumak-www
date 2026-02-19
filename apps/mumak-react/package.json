@@ -26,7 +26,7 @@
   "dependencies": {
     "@mumak/ui": "workspace:*",
     "@tailwindcss/vite": "^4.1.18",
-    "lucide-react": "^0.563.0",
+    "lucide-react": "^0.574.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
   },
