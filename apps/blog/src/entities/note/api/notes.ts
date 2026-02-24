@@ -17,7 +17,12 @@ export interface NoteMeta {
   status: NoteStatus;
   tags?: string[];
   draft?: boolean;
+  parent?: string;
   outgoingLinks: string[];
+}
+
+export interface NoteTreeNode extends NoteMeta {
+  children: NoteTreeNode[];
 }
 
 export interface Note {
@@ -66,6 +71,7 @@ function parseNoteFile(filePath: string, slug: string, category: string = 'garde
       status: data.status || 'seedling',
       tags: data.tags || [],
       draft: data.draft || false,
+      parent: data.parent,
       outgoingLinks: extractWikilinkSlugs(content),
     };
   } catch {
@@ -90,7 +96,8 @@ export function getNotes(locale: Locale): NoteMeta[] {
     .map(filePath => {
       const slug = path.basename(filePath, '.mdx');
       const relativePath = path.relative(gardenPath, filePath);
-      const category = path.dirname(relativePath).split(path.sep)[0] || 'garden';
+      const rawCategory = path.dirname(relativePath).split(path.sep)[0];
+      const category = !rawCategory || rawCategory === '.' ? 'garden' : rawCategory;
       return parseNoteFile(filePath, slug, category);
     })
     .filter((note): note is NoteMeta => note !== null && isPublishable(note))
@@ -110,7 +117,8 @@ export function getNote(locale: Locale, slug: string): Note | null {
     const fileContent = fs.readFileSync(filePath, 'utf-8');
     const { data, content } = matter(fileContent);
     const relativePath = path.relative(gardenPath, filePath);
-    const category = path.dirname(relativePath).split(path.sep)[0] || 'garden';
+    const rawCategory = path.dirname(relativePath).split(path.sep)[0];
+    const category = !rawCategory || rawCategory === '.' ? 'garden' : rawCategory;
 
     const meta: NoteMeta = {
       category,
@@ -121,6 +129,7 @@ export function getNote(locale: Locale, slug: string): Note | null {
       status: data.status || 'seedling',
       tags: data.tags || [],
       draft: data.draft || false,
+      parent: data.parent,
       outgoingLinks: extractWikilinkSlugs(content),
     };
 
@@ -200,4 +209,23 @@ export function getMergedLinkedNotes(outgoingNotes: NoteMeta[], backlinks: NoteM
   const incomingOnly = backlinks.filter(note => !outgoingSlugs.has(note.slug));
 
   return [...outgoingNotes.map(toLinkedNote), ...incomingOnly.map(toLinkedNote)];
+}
+
+export function buildNoteTree(notes: NoteMeta[]): NoteTreeNode[] {
+  const nodeMap = new Map<string, NoteTreeNode>();
+  const roots: NoteTreeNode[] = [];
+
+  for (const note of notes) {
+    nodeMap.set(note.slug, { ...note, children: [] });
+  }
+
+  for (const node of nodeMap.values()) {
+    if (node.parent && nodeMap.has(node.parent)) {
+      nodeMap.get(node.parent)!.children.push(node);
+    } else {
+      roots.push(node);
+    }
+  }
+
+  return roots;
 }
