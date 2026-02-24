@@ -9,6 +9,7 @@ import type { Locale } from '@/src/shared/config/i18n';
 export type NoteStatus = 'seedling' | 'budding' | 'evergreen';
 
 export interface NoteMeta {
+  category: string;
   slug: string;
   title: string;
   created: string;
@@ -36,15 +37,28 @@ function getMdxFiles(dirPath: string): string[] {
     return [];
   }
 
-  return fs.readdirSync(dirPath).filter(file => file.endsWith('.mdx'));
+  const results: string[] = [];
+  const entries = fs.readdirSync(dirPath, { withFileTypes: true });
+
+  for (const entry of entries) {
+    const fullPath = path.join(dirPath, entry.name);
+    if (entry.isDirectory()) {
+      results.push(...getMdxFiles(fullPath));
+    } else if (entry.isFile() && entry.name.endsWith('.mdx')) {
+      results.push(fullPath);
+    }
+  }
+
+  return results;
 }
 
-function parseNoteFile(filePath: string, slug: string): NoteMeta | null {
+function parseNoteFile(filePath: string, slug: string, category: string = 'garden'): NoteMeta | null {
   try {
     const fileContent = fs.readFileSync(filePath, 'utf-8');
     const { data, content } = matter(fileContent);
 
     return {
+      category,
       slug,
       title: data.title || 'Untitled',
       created: data.created || '1970-01-01',
@@ -73,23 +87,33 @@ export function getNotes(locale: Locale): NoteMeta[] {
   const gardenPath = getGardenPath(locale);
 
   return getMdxFiles(gardenPath)
-    .map(file => parseNoteFile(path.join(gardenPath, file), file.replace(/\.mdx$/, '')))
+    .map(filePath => {
+      const slug = path.basename(filePath, '.mdx');
+      const relativePath = path.relative(gardenPath, filePath);
+      const category = path.dirname(relativePath).split(path.sep)[0] || 'garden';
+      return parseNoteFile(filePath, slug, category);
+    })
     .filter((note): note is NoteMeta => note !== null && isPublishable(note))
     .sort(byMostRecentFirst);
 }
 
 export function getNote(locale: Locale, slug: string): Note | null {
-  const filePath = path.join(getGardenPath(locale), `${slug}.mdx`);
+  const gardenPath = getGardenPath(locale);
+  const mdxFiles = getMdxFiles(gardenPath);
+  const filePath = mdxFiles.find(f => path.basename(f, '.mdx') === slug);
 
-  if (!fs.existsSync(filePath)) {
+  if (!filePath || !fs.existsSync(filePath)) {
     return null;
   }
 
   try {
     const fileContent = fs.readFileSync(filePath, 'utf-8');
     const { data, content } = matter(fileContent);
+    const relativePath = path.relative(gardenPath, filePath);
+    const category = path.dirname(relativePath).split(path.sep)[0] || 'garden';
 
     const meta: NoteMeta = {
+      category,
       slug,
       title: data.title || 'Untitled',
       created: data.created || '1970-01-01',

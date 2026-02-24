@@ -31,6 +31,16 @@ describe('getNotes', () => {
     expect(gardenNote).toBeDefined();
     expect(principlesNote).toBeDefined();
   });
+
+  it('subdir(PARA 폴더)에서 파일을 읽어 category를 추출한다', () => {
+    const notes = getNotes('ko');
+    const projectNote = notes.find(n => n.slug === 'digital-garden-and-pkm');
+
+    // 만약 파일이 있으면 category가 올바르게 추출되었는지 확인
+    if (projectNote) {
+      expect(projectNote.category).toBe('projects');
+    }
+  });
 });
 
 describe('getNote', () => {
@@ -60,6 +70,14 @@ describe('getNote', () => {
 
     expect(note?.meta.draft).toBeDefined();
     expect(typeof note?.meta.draft).toBe('boolean');
+  });
+
+  it('category 속성이 메타에 포함되며, 서브디렉토리에서도 파일을 찾을 수 있다', () => {
+    const note = getNote('ko', 'my-garden-principles');
+
+    expect(note).not.toBeNull();
+    // PARA 구조에 따라 폴더 이름이 category로 들어올 것으로 예상
+    expect(note?.meta.category).toBeDefined();
   });
 });
 

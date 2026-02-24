@@ -26,15 +26,42 @@ function extractWikilinkSlugs(content) {
 function getMdxSlugsInDir(dir) {
   if (!fs.existsSync(dir)) return [];
 
-  return fs
-    .readdirSync(dir, { withFileTypes: true })
-    .filter(entry => entry.isFile() && entry.name.endsWith('.mdx'))
-    .map(entry => entry.name.replace(/\.mdx$/, ''));
-}
+  const results = [];
+  const entries = fs.readdirSync(dir, { withFileTypes: true });
 
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      results.push(...getMdxSlugsInDir(fullPath));
+    } else if (entry.isFile() && entry.name.endsWith('.mdx')) {
+      results.push(entry.name.replace(/\.mdx$/, ''));
+    }
+  }
+
+  return results;
+}
 function parseNoteFile(filePath) {
   const { data, content } = matter(fs.readFileSync(filePath, 'utf-8'));
   return { frontmatter: data, content };
+}
+
+function findFilePath(baseDir, slug) {
+  const exts = ['.mdx'];
+  const entries = fs.readdirSync(baseDir, { withFileTypes: true });
+
+  for (const entry of entries) {
+    if (entry.isDirectory()) {
+      const found = findFilePath(path.join(baseDir, entry.name), slug);
+      if (found) return found;
+    } else if (entry.isFile()) {
+      for (const ext of exts) {
+        if (entry.name === `${slug}${ext}`) {
+          return path.join(baseDir, entry.name);
+        }
+      }
+    }
+  }
+  return null;
 }
 
 function arraysHaveSameElements(a, b) {
@@ -132,7 +159,12 @@ function checkLanguageSync(filesByLang, primaryFiles, secondaryLangs) {
 
 function validateNote(lang, slug, existingSlugs) {
   const errors = [];
-  const filePath = path.join(CONTENT_DIR, lang, GARDEN_DIR, `${slug}.mdx`);
+  const baseDir = path.join(CONTENT_DIR, lang, GARDEN_DIR);
+  const filePath = findFilePath(baseDir, slug);
+
+  if (!filePath) {
+    return { errors: [`[${lang}/${slug}] 파일을 찾을 수 없습니다.`], linkCount: 0 };
+  }
 
   let parsed;
   try {
@@ -143,9 +175,9 @@ function validateNote(lang, slug, existingSlugs) {
 
   const { frontmatter, content } = parsed;
 
-  REQUIRED_FIELDS
-    .filter(field => !frontmatter[field])
-    .forEach(field => errors.push(`[${lang}/${slug}] 필수 필드 누락: ${field}`));
+  REQUIRED_FIELDS.filter(field => !frontmatter[field]).forEach(field =>
+    errors.push(`[${lang}/${slug}] 필수 필드 누락: ${field}`)
+  );
 
   if (frontmatter.status && !VALID_STATUSES.includes(frontmatter.status)) {
     errors.push(`[${lang}/${slug}] 유효하지 않은 status: "${frontmatter.status}" (허용: ${VALID_STATUSES.join(', ')})`);
@@ -165,7 +197,11 @@ function checkFrontmatterConsistency(commonFiles, secondaryLangs) {
   for (const slug of commonFiles) {
     const frontmatters = LANGUAGES.reduce((acc, lang) => {
       try {
-        acc[lang] = parseNoteFile(path.join(CONTENT_DIR, lang, GARDEN_DIR, `${slug}.mdx`)).frontmatter;
+        const baseDir = path.join(CONTENT_DIR, lang, GARDEN_DIR);
+        const filePath = findFilePath(baseDir, slug);
+        if (filePath) {
+          acc[lang] = parseNoteFile(filePath).frontmatter;
+        }
       } catch {
         // 파싱 실패는 validateNote에서 이미 처리됨
       }
