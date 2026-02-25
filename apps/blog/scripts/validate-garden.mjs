@@ -45,6 +45,10 @@ function parseNoteFile(filePath) {
   return { frontmatter: data, content };
 }
 
+function normalizeParent(parent) {
+  return typeof parent === 'string' && parent.trim().length > 0 ? parent.trim() : undefined;
+}
+
 function findFilePath(baseDir, slug) {
   const exts = ['.mdx'];
   const entries = fs.readdirSync(baseDir, { withFileTypes: true });
@@ -183,6 +187,15 @@ function validateNote(lang, slug, existingSlugs) {
     errors.push(`[${lang}/${slug}] 유효하지 않은 status: "${frontmatter.status}" (허용: ${VALID_STATUSES.join(', ')})`);
   }
 
+  const parent = normalizeParent(frontmatter.parent);
+  if (parent) {
+    if (parent === slug) {
+      errors.push(`[${lang}/${slug}] 유효하지 않은 parent: 자기 자신("${parent}")을 parent로 지정할 수 없습니다.`);
+    } else if (!existingSlugs.has(parent)) {
+      errors.push(`[${lang}/${slug}] 유효하지 않은 parent: "${parent}" (존재하지 않는 노트)`);
+    }
+  }
+
   const wikilinks = extractWikilinkSlugs(content);
   wikilinks
     .filter(linkedSlug => !existingSlugs.has(linkedSlug))
@@ -230,6 +243,40 @@ function checkFrontmatterConsistency(commonFiles, secondaryLangs) {
   }
 
   return warnings;
+}
+
+function checkParentConsistency(commonFiles, secondaryLangs) {
+  const errors = [];
+
+  for (const slug of commonFiles) {
+    const parents = LANGUAGES.reduce((acc, lang) => {
+      try {
+        const baseDir = path.join(CONTENT_DIR, lang, GARDEN_DIR);
+        const filePath = findFilePath(baseDir, slug);
+        if (filePath) {
+          const frontmatter = parseNoteFile(filePath).frontmatter;
+          acc[lang] = normalizeParent(frontmatter.parent);
+        }
+      } catch {
+        // 파싱 실패는 validateNote에서 이미 처리됨
+      }
+      return acc;
+    }, {});
+
+    if (Object.keys(parents).length !== LANGUAGES.length) continue;
+
+    const primaryParent = parents[PRIMARY_LANG];
+    for (const lang of secondaryLangs) {
+      const secondaryParent = parents[lang];
+      if (primaryParent !== secondaryParent) {
+        errors.push(
+          `[${slug}] parent 불일치: [${PRIMARY_LANG}]=${JSON.stringify(primaryParent)} vs [${lang}]=${JSON.stringify(secondaryParent)}`
+        );
+      }
+    }
+  }
+
+  return errors;
 }
 
 function printResults(errors, warnings, stats) {
@@ -281,6 +328,7 @@ function validateGarden() {
 
   const commonFiles = [...primaryFiles].filter(file => secondaryLangs.every(lang => filesByLang[lang].has(file)));
   warnings.push(...checkFrontmatterConsistency(commonFiles, secondaryLangs));
+  errors.push(...checkParentConsistency(commonFiles, secondaryLangs));
 
   if (OUTPUT_SUMMARY) {
     console.log(generateSummary(errors, warnings, stats));
