@@ -38,25 +38,24 @@ export default async function GardenPage({ params }: GardenPageProps) {
 
       <section className="prose dark:prose-invert max-w-none">
         <p>
-          환영합니다! 이곳은 제 디지털 가든입니다. <br />
-          이 가든은 PARA(Projects, Areas, Resources, Archives) 구조를 통해 제 생각과 지식을 정리하고 공유하는
-          공간입니다. <br />
-          좌측 사이드바를 통해 각각의 카테고리별로 작성된 글들을 탐색할 수 있습니다.
+          {t('intro.line1')} <br />
+          {t('intro.line2')} <br />
+          {t('intro.line3')}
         </p>
 
-        <h3 className="text-xl font-semibold mt-8 mb-4">카테고리 설명</h3>
+        <h3 className="text-xl font-semibold mt-8 mb-4">{t('categories.title')}</h3>
         <ul className="space-y-4">
           <li>
-            <strong>Projects (프로젝트)</strong>: 명확한 목표와 기한이 있는 현재 진행 중인 작업들입니다.
+            <strong>{t('categories.projects.label')}</strong>: {t('categories.projects.description')}
           </li>
           <li>
-            <strong>Areas (영역)</strong>: 지속적으로 신경 쓰고 관리해야 하는 책임 영역입니다.
+            <strong>{t('categories.areas.label')}</strong>: {t('categories.areas.description')}
           </li>
           <li>
-            <strong>Resources (자원)</strong>: 미래에 유용할 수 있는 관심사나 참조할 만한 정보들입니다.
+            <strong>{t('categories.resources.label')}</strong>: {t('categories.resources.description')}
           </li>
           <li>
-            <strong>Archives (보관함)</strong>: 완료되었거나 더 이상 활성화되지 않은 위의 세 가지 항목들의 보관소입니다.
+            <strong>{t('categories.archives.label')}</strong>: {t('categories.archives.description')}
           </li>
         </ul>
       </section>
