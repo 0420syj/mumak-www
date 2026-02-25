@@ -5,6 +5,7 @@ import { useState } from 'react';
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@mumak/ui/components/accordion';
 import { Badge } from '@mumak/ui/components/badge';
+import { Button } from '@mumak/ui/components/button';
 import { ScrollArea } from '@mumak/ui/components/scroll-area';
 import { cn } from '@mumak/ui/lib/utils';
 
@@ -78,19 +79,32 @@ function hasActiveDescendant(node: SidebarTreeNode, pathname: string): boolean {
 
 export function GardenSidebar({ categories }: GardenSidebarProps) {
   const pathname = usePathname();
+  const [isMobileTreeOpen, setIsMobileTreeOpen] = useState(false);
 
-  const defaultValues = categories.filter(c => c.noteCount > 0).map(c => c.key);
+  const visibleCategories = categories.filter(category => category.noteCount > 0);
+  const defaultValues = visibleCategories.map(category => category.key);
 
   return (
     <aside className="w-full shrink-0 md:w-64">
-      <div className="sticky top-24">
-        <h2 className="mb-4 text-lg font-semibold tracking-tight">PARA Garden</h2>
-        <ScrollArea className="h-[calc(100vh-8rem)] w-full pr-4">
-          <Accordion type="multiple" defaultValue={defaultValues} className="w-full">
-            {categories.map(category => {
-              if (category.noteCount === 0) return null;
-
-              return (
+      <div className="md:sticky md:top-24">
+        <div className="mb-4 flex items-center justify-between gap-2">
+          <h2 className="text-lg font-semibold tracking-tight">PARA Garden</h2>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="md:hidden"
+            aria-expanded={isMobileTreeOpen}
+            aria-controls="garden-para-tree"
+            onClick={() => setIsMobileTreeOpen(prev => !prev)}
+          >
+            {isMobileTreeOpen ? '트리 닫기' : '트리 열기'}
+          </Button>
+        </div>
+        <div id="garden-para-tree" className={cn('md:block md:mb-0', isMobileTreeOpen ? 'mb-6 block' : 'hidden')}>
+          <ScrollArea className="w-full pr-4 h-[42svh] md:h-[70svh] overflow-hidden">
+            <Accordion type="multiple" defaultValue={defaultValues} className="w-full">
+              {visibleCategories.map(category => (
                 <AccordionItem key={category.key} value={category.key}>
                   <AccordionTrigger className="text-sm py-3 font-semibold hover:no-underline">
                     <div className="flex items-center gap-2">
@@ -108,10 +122,10 @@ export function GardenSidebar({ categories }: GardenSidebarProps) {
                     </ul>
                   </AccordionContent>
                 </AccordionItem>
-              );
-            })}
-          </Accordion>
-        </ScrollArea>
+              ))}
+            </Accordion>
+          </ScrollArea>
+        </div>
       </div>
     </aside>
   );
