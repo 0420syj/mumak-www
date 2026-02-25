@@ -4,13 +4,14 @@ import type { PostMeta } from '@/src/entities/post';
 import { buildBlogGraphData, buildGardenGraphData } from '../lib/build-graph-data';
 
 const createNote = (overrides: Partial<NoteMeta> = {}): NoteMeta => ({
-  slug: 'test-note',
-  title: 'Test Note',
-  created: '2025-01-01',
-  status: 'seedling',
-  tags: [],
-  outgoingLinks: [],
   ...overrides,
+  category: overrides.category ?? 'garden',
+  slug: overrides.slug ?? 'test-note',
+  title: overrides.title ?? 'Test Note',
+  created: overrides.created ?? '2025-01-01',
+  status: overrides.status ?? 'seedling',
+  tags: overrides.tags ?? [],
+  outgoingLinks: overrides.outgoingLinks ?? [],
 });
 
 const createPost = (overrides: Partial<PostMeta> = {}): PostMeta => ({
