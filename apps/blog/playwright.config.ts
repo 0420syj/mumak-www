@@ -14,8 +14,8 @@ export default defineConfig({
   forbidOnly: isCI,
   /* Retry on CI only */
   retries: isCI ? 2 : 0,
-  /* Use more workers in CI for parallel execution within each browser */
-  workers: isCI ? 2 : '50%',
+  /* Keep CI stable by reducing parallelism per browser job */
+  workers: isCI ? 1 : '50%',
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: isCI ? [['html'], ['github']] : 'list',
   /* Global timeout - reduce for faster feedback */
@@ -60,7 +60,7 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    // CI uses pre-built output (next start), local uses dev server
+    // CI: standalone server (output: standalone). Local: dev server
     command: isCI ? 'pnpm start:e2e' : 'pnpm dev',
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !isCI,

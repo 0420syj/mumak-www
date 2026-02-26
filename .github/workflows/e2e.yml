@@ -108,9 +108,6 @@ jobs:
             ${{ runner.os }}-turbo-e2e-
             ${{ runner.os }}-turbo-
 
-      - name: Build app
-        run: pnpm turbo run build --filter=${{ matrix.app }}
-
       - name: Run E2E tests
         run: pnpm turbo run test:e2e --filter=${{ matrix.app }} -- --project=${{ matrix.browser }}
 
