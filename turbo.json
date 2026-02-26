@@ -20,9 +20,9 @@
       "cache": false
     },
     "check-types": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["^build", "build"],
       "inputs": ["$TURBO_DEFAULT$", "tsconfig*.json"],
-      "outputs": ["*.tsbuildinfo"]
+      "outputs": []
     },
     "knip": {
       "inputs": ["$TURBO_DEFAULT$", "knip.config.ts", "**/*.{ts,tsx,js,jsx}"],
@@ -37,27 +37,20 @@
       "outputs": []
     },
     "test": {
-      "dependsOn": ["^build"],
-      "inputs": [
-        "$TURBO_DEFAULT$",
-        "**/*.{ts,tsx,js,jsx}",
-        "**/*.test.{ts,tsx,js,jsx}",
-        "**/*.spec.{ts,tsx,js,jsx}",
-        "jest.config.*",
-        "vitest.config.*"
-      ],
+      "dependsOn": ["^build", "build"],
+      "inputs": ["$TURBO_DEFAULT$", "jest.config.*", "vitest.config.*"],
       "outputs": ["coverage/**"],
       "passThroughEnv": ["SPOTIFY_CLIENT_ID", "SPOTIFY_CLIENT_SECRET", "SPOTIFY_REFRESH_TOKEN"]
     },
     "test:coverage": {
-      "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", "**/*.{ts,tsx,js,jsx}"],
+      "dependsOn": ["^build", "build"],
+      "inputs": ["$TURBO_DEFAULT$", "jest.config.*", "vitest.config.*"],
       "outputs": ["coverage/**"],
       "passThroughEnv": ["SPOTIFY_CLIENT_ID", "SPOTIFY_CLIENT_SECRET", "SPOTIFY_REFRESH_TOKEN"]
     },
     "test:ci": {
-      "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", "**/*.{ts,tsx,js,jsx}"],
+      "dependsOn": ["^build", "build"],
+      "inputs": ["$TURBO_DEFAULT$", "jest.config.*", "vitest.config.*"],
       "outputs": ["coverage/**"],
       "passThroughEnv": ["SPOTIFY_CLIENT_ID", "SPOTIFY_CLIENT_SECRET", "SPOTIFY_REFRESH_TOKEN"]
     },

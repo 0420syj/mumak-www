@@ -8,6 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json,js,jsx,mjs}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,md,json,js,jsx,mjs}\"",
     "check-types": "tsc --noEmit",
     "preview": "vite preview --port 3001",
     "preview:e2e": "vite preview --port 3001",
