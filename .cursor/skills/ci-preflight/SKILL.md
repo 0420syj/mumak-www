@@ -37,7 +37,12 @@ pnpm turbo run test:ci --filter=<app>
 
 # 5) Build (선택적 - PR 전 권장)
 pnpm turbo run build --filter=<app>
+
+# 6) E2E (선택적 - E2E workflow 대상 앱은 PR 전 권장)
+pnpm turbo run test:e2e --filter=<app>
 ```
+
+> 참고: `apps/blog`는 `output: standalone` 기반 E2E를 사용하므로, CI 모드에서는 build 산출물(`.next/standalone/...`)이 없으면 테스트가 시작되지 않도록 fail-fast 됩니다.
 
 ### 3. 빠른 전체 검증
 
@@ -109,6 +114,7 @@ pnpm turbo run format --filter=<app>
 - [ ] `format:check` 통과 (또는 `format` 실행)
 - [ ] `test:ci` 통과
 - [ ] (PR 전) `build` 통과
+- [ ] (E2E 대상 앱) `test:e2e` 통과
 
 ## 빠른 검증 스크립트
 
