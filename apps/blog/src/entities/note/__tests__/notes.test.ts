@@ -4,6 +4,8 @@ import {
   getAllNoteTags,
   getBacklinks,
   getExistingNoteSlugs,
+  getNoteAnchorIndex,
+  getNoteEmbedPreview,
   getLinkDirection,
   getMergedLinkedNotes,
   getNote,
@@ -11,6 +13,8 @@ import {
   getNotesByStatus,
   getNotesByTag,
   getOutgoingNotes,
+  hasBlockAnchor,
+  hasHeadingAnchor,
   type NoteMeta,
 } from '../api/notes';
 
@@ -432,5 +436,35 @@ describe('buildNoteTree', () => {
 
     // sirat은 루트에 있으면 안됨
     expect(tree.some(n => n.slug === 'sirat')).toBe(false);
+  });
+});
+
+describe('advanced anchor utilities', () => {
+  it('노트의 heading/block 앵커 인덱스를 만든다', () => {
+    const anchors = getNoteAnchorIndex('ko', 'movie');
+
+    expect(anchors).not.toBeNull();
+    expect(anchors?.headings.size ?? 0).toBeGreaterThan(0);
+    expect(anchors?.blocks).toBeInstanceOf(Set);
+  });
+
+  it('존재하는 heading 앵커를 찾는다', () => {
+    expect(hasHeadingAnchor('ko', 'what-is-digital-garden', '성장 단계')).toBe(true);
+  });
+
+  it('존재하지 않는 heading 앵커는 false다', () => {
+    expect(hasHeadingAnchor('ko', 'what-is-digital-garden', '없는 제목')).toBe(false);
+  });
+
+  it('노트 임베드 미리보기를 반환한다', () => {
+    const preview = getNoteEmbedPreview('ko', 'what-is-digital-garden');
+
+    expect(preview).not.toBeNull();
+    expect(preview?.title).toBe('디지털 가든이란 무엇인가');
+    expect((preview?.excerpt.length ?? 0) > 0).toBe(true);
+  });
+
+  it('존재하지 않는 블록 앵커는 false다', () => {
+    expect(hasBlockAnchor('ko', 'what-is-digital-garden', 'missing-block')).toBe(false);
   });
 });

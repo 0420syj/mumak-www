@@ -2,7 +2,7 @@ import fs from 'fs';
 import matter from 'gray-matter';
 import path from 'path';
 
-import { extractWikilinkSlugs } from '@/src/shared/lib/wikilink';
+import { extractWikilinkSlugs, normalizeHeadingToAnchor } from '@/src/shared/lib/wikilink';
 
 import type { Locale } from '@/src/shared/config/i18n';
 
@@ -30,11 +30,30 @@ export interface Note {
   content: string;
 }
 
+export interface NoteAnchorIndex {
+  headings: Set<string>;
+  blocks: Set<string>;
+}
+
+export interface NoteEmbedPreview {
+  title: string;
+  excerpt: string;
+}
+
 const GARDEN_DIR = 'garden';
 const CONTENT_DIR = path.join(process.cwd(), 'content');
 
 function getGardenPath(locale: Locale): string {
   return path.join(CONTENT_DIR, locale, GARDEN_DIR);
+}
+
+function cleanupInlineMarkdown(text: string): string {
+  return text
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/\*([^*]+)\*/g, '$1')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .trim();
 }
 
 function getMdxFiles(dirPath: string): string[] {
@@ -55,6 +74,90 @@ function getMdxFiles(dirPath: string): string[] {
   }
 
   return results;
+}
+
+const BLOCK_MARKER_REGEX = /(?:^|\s)\^([A-Za-z0-9][\w-]*)\s*$/;
+
+function extractHeadingLines(content: string): Array<{ index: number; level: number; text: string; anchor: string }> {
+  return content
+    .split('\n')
+    .map((line, index) => ({ line, index }))
+    .map(({ line, index }) => {
+      const match = line.match(/^(#{1,6})\s+(.+)$/);
+      if (!match) {
+        return null;
+      }
+
+      const level = match[1]?.length ?? 1;
+      const text = cleanupInlineMarkdown(match[2] ?? '');
+      return {
+        index,
+        level,
+        text,
+        anchor: normalizeHeadingToAnchor(text),
+      };
+    })
+    .filter((value): value is { index: number; level: number; text: string; anchor: string } => value !== null);
+}
+
+function extractBlockIds(content: string): Set<string> {
+  return new Set(
+    content
+      .split('\n')
+      .map(line => line.match(BLOCK_MARKER_REGEX)?.[1])
+      .filter((value): value is string => Boolean(value))
+  );
+}
+
+function extractFirstParagraph(content: string): string {
+  const lines = content.split('\n');
+  const paragraph: string[] = [];
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+
+    if (!line) {
+      if (paragraph.length > 0) {
+        break;
+      }
+      continue;
+    }
+
+    if (line.startsWith('#')) {
+      continue;
+    }
+
+    if (/^(- |\* |\d+\. )/.test(line)) {
+      continue;
+    }
+
+    if (line.startsWith('```') || line.startsWith('>')) {
+      continue;
+    }
+
+    paragraph.push(cleanupInlineMarkdown(line));
+  }
+
+  return paragraph.join(' ').trim();
+}
+
+function extractHeadingSectionExcerpt(content: string, heading: string): string | null {
+  const lines = content.split('\n');
+  const headings = extractHeadingLines(content);
+  const targetAnchor = normalizeHeadingToAnchor(heading);
+  const currentIndex = headings.findIndex(item => item.anchor === targetAnchor);
+
+  if (currentIndex < 0) {
+    return null;
+  }
+
+  const current = headings[currentIndex]!;
+  const nextSameOrHigher = headings.slice(currentIndex + 1).find(item => item.level <= current.level);
+  const endLine = nextSameOrHigher ? nextSameOrHigher.index : lines.length;
+  const sectionLines = lines.slice(current.index + 1, endLine);
+  const excerpt = extractFirstParagraph(sectionLines.join('\n'));
+
+  return excerpt || cleanupInlineMarkdown(current.text);
 }
 
 function parseNoteFile(filePath: string, slug: string, category: string = 'garden'): NoteMeta | null {
@@ -137,6 +240,74 @@ export function getNote(locale: Locale, slug: string): Note | null {
   } catch {
     return null;
   }
+}
+
+export function getNoteAnchorIndex(locale: Locale, slug: string): NoteAnchorIndex | null {
+  const note = getNote(locale, slug);
+  if (!note) {
+    return null;
+  }
+
+  const headingLines = extractHeadingLines(note.content);
+  return {
+    headings: new Set(headingLines.map(item => item.anchor).filter(Boolean)),
+    blocks: extractBlockIds(note.content),
+  };
+}
+
+export function hasHeadingAnchor(locale: Locale, slug: string, heading: string): boolean {
+  const normalized = normalizeHeadingToAnchor(heading);
+  const anchors = getNoteAnchorIndex(locale, slug);
+  return Boolean(anchors?.headings.has(normalized));
+}
+
+export function hasBlockAnchor(locale: Locale, slug: string, blockId: string): boolean {
+  const anchors = getNoteAnchorIndex(locale, slug);
+  return Boolean(anchors?.blocks.has(blockId));
+}
+
+export function getNoteEmbedPreview(
+  locale: Locale,
+  slug: string,
+  options?: { heading?: string; blockId?: string }
+): NoteEmbedPreview | null {
+  const note = getNote(locale, slug);
+  if (!note) {
+    return null;
+  }
+
+  if (options?.heading) {
+    const sectionExcerpt = extractHeadingSectionExcerpt(note.content, options.heading);
+    if (!sectionExcerpt) {
+      return null;
+    }
+
+    return {
+      title: note.meta.title,
+      excerpt: sectionExcerpt,
+    };
+  }
+
+  if (options?.blockId) {
+    const lines = note.content.split('\n');
+    const blockLineIndex = lines.findIndex(
+      line => BLOCK_MARKER_REGEX.test(line) && line.includes(`^${options.blockId}`)
+    );
+    if (blockLineIndex < 0) {
+      return null;
+    }
+
+    const sourceLine = lines[blockLineIndex]?.replace(BLOCK_MARKER_REGEX, '').trim() ?? '';
+    return {
+      title: note.meta.title,
+      excerpt: cleanupInlineMarkdown(sourceLine) || note.meta.title,
+    };
+  }
+
+  return {
+    title: note.meta.title,
+    excerpt: extractFirstParagraph(note.content) || note.meta.title,
+  };
 }
 
 export function getAllNoteSlugs(locale: Locale): string[] {

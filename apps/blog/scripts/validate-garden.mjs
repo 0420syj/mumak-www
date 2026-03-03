@@ -17,10 +17,70 @@ const OUTPUT_SUMMARY = process.argv.includes('--summary');
 const VALID_STATUSES = ['seedling', 'budding', 'evergreen'];
 const REQUIRED_FIELDS = ['title', 'created', 'status'];
 
-const WIKILINK_PATTERN = /\[\[([^\]|]+)(?:\|[^\]]+)?\]\]/g;
+const WIKILINK_PATTERN = /(!)?\[\[([^\]|]+)(?:\|[^\]]+)?\]\]/g;
+const BLOCK_MARKER_PATTERN = /(?:^|\s)\^([A-Za-z0-9][\w-]*)\s*$/;
 
-function extractWikilinkSlugs(content) {
-  return [...content.matchAll(WIKILINK_PATTERN)].map(match => match[1]);
+function normalizeHeadingToAnchor(heading) {
+  return heading
+    .trim()
+    .toLowerCase()
+    .replace(/[^\p{Letter}\p{Number}\s-]/gu, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
+}
+
+function parseWikilinkTarget(rawTarget) {
+  const target = rawTarget.trim();
+
+  if (target.startsWith('#')) {
+    return { slug: '', heading: target.slice(1).trim(), blockId: undefined, isInternal: true, target };
+  }
+
+  if (target.startsWith('^')) {
+    return { slug: '', heading: undefined, blockId: target.slice(1).trim(), isInternal: true, target };
+  }
+
+  if (target.includes('#')) {
+    const [slugPart, ...rest] = target.split('#');
+    const anchorPart = rest.join('#').trim();
+    if (anchorPart.startsWith('^')) {
+      return {
+        slug: slugPart.trim(),
+        heading: undefined,
+        blockId: anchorPart.slice(1).trim(),
+        isInternal: false,
+        target,
+      };
+    }
+    return { slug: slugPart.trim(), heading: anchorPart, blockId: undefined, isInternal: false, target };
+  }
+
+  if (target.includes('^')) {
+    const [slugPart, ...rest] = target.split('^');
+    return { slug: slugPart.trim(), heading: undefined, blockId: rest.join('^').trim(), isInternal: false, target };
+  }
+
+  return { slug: target, heading: undefined, blockId: undefined, isInternal: false, target };
+}
+
+function extractWikilinkEntries(content) {
+  return [...content.matchAll(WIKILINK_PATTERN)].map(match => {
+    const [, embedMarker, target] = match;
+    return { ...parseWikilinkTarget(target), isEmbed: Boolean(embedMarker) };
+  });
+}
+
+function extractAnchorIndex(content) {
+  const lines = content.split('\n');
+  const headings = new Set(
+    lines
+      .map(line => line.match(/^#{1,6}\s+(.+)$/)?.[1] ?? '')
+      .filter(Boolean)
+      .map(normalizeHeadingToAnchor)
+  );
+  const blocks = new Set(lines.map(line => line.match(BLOCK_MARKER_PATTERN)?.[1] ?? '').filter(Boolean));
+
+  return { headings, blocks };
 }
 
 function getMdxSlugsInDir(dir) {
@@ -196,10 +256,51 @@ function validateNote(lang, slug, existingSlugs) {
     }
   }
 
-  const wikilinks = extractWikilinkSlugs(content);
-  wikilinks
-    .filter(linkedSlug => !existingSlugs.has(linkedSlug))
-    .forEach(linkedSlug => errors.push(`[${lang}/${slug}] 깨진 위키링크: [[${linkedSlug}]] (존재하지 않는 노트)`));
+  const wikilinks = extractWikilinkEntries(content);
+  const anchorCache = new Map();
+  const getAnchorsForSlug = targetSlug => {
+    if (anchorCache.has(targetSlug)) {
+      return anchorCache.get(targetSlug);
+    }
+
+    const targetPath = findFilePath(baseDir, targetSlug);
+    if (!targetPath) {
+      anchorCache.set(targetSlug, null);
+      return null;
+    }
+
+    const target = parseNoteFile(targetPath);
+    const index = extractAnchorIndex(target.content);
+    anchorCache.set(targetSlug, index);
+    return index;
+  };
+
+  for (const link of wikilinks) {
+    const targetSlug = link.slug || slug;
+
+    if (!existingSlugs.has(targetSlug)) {
+      errors.push(`[${lang}/${slug}] 깨진 위키링크: [[${link.target}]] (존재하지 않는 노트)`);
+      continue;
+    }
+
+    if (!link.heading && !link.blockId) {
+      continue;
+    }
+
+    const anchors = getAnchorsForSlug(targetSlug);
+    if (!anchors) {
+      errors.push(`[${lang}/${slug}] 깨진 위키링크: [[${link.target}]] (대상 노트를 읽을 수 없음)`);
+      continue;
+    }
+
+    if (link.heading && !anchors.headings.has(normalizeHeadingToAnchor(link.heading))) {
+      errors.push(`[${lang}/${slug}] 깨진 헤딩 링크: [[${link.target}]] (헤딩 없음)`);
+    }
+
+    if (link.blockId && !anchors.blocks.has(link.blockId)) {
+      errors.push(`[${lang}/${slug}] 깨진 블록 링크: [[${link.target}]] (블록 없음)`);
+    }
+  }
 
   return { errors, linkCount: wikilinks.length };
 }

@@ -12,7 +12,10 @@ import { MDXContent, MDXContentSkeleton } from '@/src/widgets/mdx-content';
 import {
   getAllNoteSlugs,
   getBacklinks,
+  getNoteEmbedPreview,
   getExistingNoteSlugs,
+  hasBlockAnchor,
+  hasHeadingAnchor,
   getMergedLinkedNotes,
   getNote,
   getOutgoingNotes,
@@ -103,8 +106,17 @@ export default async function NotePage({ params }: NotePageProps) {
   const outgoingNotes = getOutgoingNotes(locale as Locale, note.meta.outgoingLinks);
   const linkedNotes = getMergedLinkedNotes(outgoingNotes, backlinks);
   const existingSlugs = getExistingNoteSlugs(locale as Locale);
-  const resolver = createGardenResolver(existingSlugs);
-  const transformedContent = transformWikilinks(note.content, { resolver });
+  const resolver = createGardenResolver({
+    existingSlugs,
+    hasHeadingAnchor: (noteSlug, heading) => hasHeadingAnchor(locale as Locale, noteSlug, heading),
+    hasBlockAnchor: (noteSlug, blockId) => hasBlockAnchor(locale as Locale, noteSlug, blockId),
+    getEmbedPreview: input =>
+      getNoteEmbedPreview(locale as Locale, input.slug, {
+        heading: input.heading,
+        blockId: input.blockId,
+      }),
+  });
+  const transformedContent = transformWikilinks(note.content, { resolver, currentSlug: slug });
 
   const breadcrumbJsonLd = generateBreadcrumbJsonLd({
     items: [
