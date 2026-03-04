@@ -112,7 +112,7 @@ jobs:
         run: pnpm turbo run test:e2e --filter=${{ matrix.app }} -- --project=${{ matrix.browser }}
 
       - name: Upload test results
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: playwright-report-${{ matrix.app }}-${{ matrix.browser }}
