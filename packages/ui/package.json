@@ -61,7 +61,7 @@
   "devDependencies": {
     "@mumak/eslint-config": "workspace:*",
     "@mumak/typescript-config": "workspace:*",
-    "@tailwindcss/postcss": "^4.1.18",
+    "@tailwindcss/postcss": "^4.2.1",
     "@turbo/gen": "^2.8.13",
     "@types/node": "^25.0.10",
     "@types/react": "^19.2.10",
@@ -69,7 +69,7 @@
     "eslint": "^9.39.2",
     "prettier": "^3.8.1",
     "shadcn": "^3.8.2",
-    "tailwindcss": "^4.1.18",
+    "tailwindcss": "^4.2.1",
     "typescript": "^5.9.3"
   },
   "exports": {
