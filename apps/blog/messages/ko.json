@@ -125,6 +125,9 @@
       "noteCount": "{count}개의 노트",
       "tagTitle": "#{tag}",
       "tagDescription": "{tag} 태그가 포함된 노트"
+    },
+    "sidebar": {
+      "openTree": "트리 열기"
     }
   },
   "graph": {
