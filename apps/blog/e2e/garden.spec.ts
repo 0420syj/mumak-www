@@ -13,14 +13,16 @@ test.describe('Garden Page (PARA Sidebar Navigation)', () => {
     await expect(sidebar.getByRole('button', { name: /Projects\s*\d+/ })).toBeVisible();
     await expect(sidebar.getByRole('button', { name: /Areas\s*\d+/ })).toBeVisible();
 
-    // 2. Expand 'Projects' and click a note
+    // 2. Expand 'Projects' when collapsed and click a note
     const projectsAccordion = sidebar.getByRole('button', { name: /Projects\s*\d+/ });
-    await projectsAccordion.click();
+    if ((await projectsAccordion.getAttribute('aria-expanded')) !== 'true') {
+      await projectsAccordion.click();
+    }
 
     // Verify that the link is visible and click it
     const noteLink = sidebar.getByRole('link', { name: '디지털 가든과 Second Brain' });
     await expect(noteLink).toBeVisible();
-    await noteLink.click();
+    await Promise.all([page.waitForURL(/\/ko\/garden\/digital-garden-and-pkm/), noteLink.click()]);
 
     // 3. Verify navigation to the note page
     await expect(page).toHaveURL(/\/ko\/garden\/digital-garden-and-pkm/);
