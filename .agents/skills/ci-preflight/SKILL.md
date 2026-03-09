@@ -7,6 +7,9 @@ description: 코드 작성 완료 후 CI 검증을 로컬에서 수행합니다.
 
 코드 변경 후 커밋/PR 전에 CI에서 실행되는 검증을 로컬에서 먼저 수행합니다.
 
+이 스킬의 역할은 **검증 절차를 실행하는 것**입니다.
+완료 주장과 실제 검증 범위 사이의 누락을 판단하는 역할은 `verifier` 서브에이전트가 맡습니다.
+
 ## 필수: 코드 변경 완료 시 검증
 
 코드 작성을 완료하면 **반드시** 아래 검증을 순서대로 실행합니다.
@@ -44,6 +47,17 @@ pnpm turbo run test:e2e --filter=<app>
 
 > 참고: `apps/blog`는 `output: standalone` 기반 E2E를 사용하므로, CI 모드에서는 build 산출물(`.next/standalone/...`)이 없으면 테스트가 시작되지 않도록 fail-fast 됩니다.
 
+## 언제 build / E2E까지 올릴 것인가
+
+아래에 해당하면 `build`와 `test:e2e`까지 적극적으로 실행합니다.
+
+- `app/`, `src/`, `components/`, `widgets/`, `features/` 변경
+- 라우팅, 레이아웃, 메타데이터, `playwright.config.*`, `e2e/**` 변경
+- `apps/blog`, `apps/mumak-next`, `apps/mumak-react`의 UI 동작 변경
+- 리팩토링이지만 동작 보존이 중요한 변경
+
+반대로 문서, 주석, 순수 설정 변경처럼 런타임 영향이 거의 없으면 `check-types -> lint -> format:check -> test:ci`까지만 우선 수행할 수 있습니다.
+
 ### 3. 빠른 전체 검증
 
 변경된 부분만 한번에 검증:
@@ -80,6 +94,20 @@ pnpm turbo run check-types --force
 # 전체 캐시 삭제
 pnpm turbo:clean && pnpm install
 ```
+
+### E2E가 로컬에서 이상할 때
+
+```bash
+# blog 등 Next 앱의 로컬 상태가 꼬였을 때
+rm -rf apps/blog/.next
+
+# 기존 서버 재사용/포트 충돌 의심 시
+lsof -nP -iTCP:3000 -sTCP:LISTEN
+lsof -nP -iTCP:3001 -sTCP:LISTEN
+lsof -nP -iTCP:3002 -sTCP:LISTEN
+```
+
+특히 `apps/blog`는 과거에 `.next` 상태나 기존 서버 재사용 때문에 로컬 E2E가 흔들린 적이 있으므로, 캐시보다 **로컬 산출물/서버 상태**를 먼저 의심합니다.
 
 ## 자주 발생하는 오류와 해결
 
@@ -121,7 +149,20 @@ pnpm turbo run format --filter=<app>
 전체 검증을 한번에 실행하려면:
 
 ```bash
-./scripts/preflight.sh [app-name]
+./scripts/preflight.sh [app-name] [--with-build] [--with-e2e]
+```
+
+예시:
+
+```bash
+# 변경된 부분만 기본 검증
+./scripts/preflight.sh
+
+# blog만 build 포함 검증
+./scripts/preflight.sh blog --with-build
+
+# blog만 build + e2e 포함 검증
+./scripts/preflight.sh blog --with-build --with-e2e
 ```
 
 스크립트 없이 한줄로:
@@ -129,3 +170,10 @@ pnpm turbo run format --filter=<app>
 ```bash
 pnpm turbo run check-types lint format:check test:ci --filter='[origin/develop...HEAD]'
 ```
+
+## 완료 보고 원칙
+
+- 어떤 앱/패키지를 대상으로 검증했는지 명시합니다.
+- 실행한 단계와 생략한 단계를 분리해서 보고합니다.
+- 실패 시, 첫 번째 실패 단계와 재현 명령을 함께 적습니다.
+- 필요하면 `verifier` 서브에이전트에게 후속 검증을 맡깁니다.
