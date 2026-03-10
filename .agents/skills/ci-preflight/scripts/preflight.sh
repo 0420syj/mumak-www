@@ -62,7 +62,7 @@ if [ "$WITH_E2E" = true ]; then
         echo "주의: --with-e2e는 보통 --with-build와 함께 사용하는 것이 안전합니다."
     fi
 
-    run_step "6/6 E2E" pnpm turbo run test:e2e --filter="$FILTER_VALUE"
+    E2E_INCLUDE_DRAFT=true run_step "6/6 E2E" pnpm turbo run test:e2e --filter="$FILTER_VALUE"
 fi
 
 echo ""

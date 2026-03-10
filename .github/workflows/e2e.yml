@@ -27,6 +27,7 @@ concurrency:
 env:
   TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
   TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+  E2E_INCLUDE_DRAFT: 'true'  # draft 노트(advanced-wikilink-playground 등)를 E2E 테스트용으로 포함
 
 jobs:
   # Step 1: Detect which apps have changed

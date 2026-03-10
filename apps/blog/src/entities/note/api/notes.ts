@@ -184,7 +184,9 @@ function parseNoteFile(filePath: string, slug: string, category: string = 'garde
 
 const isProduction = () => process.env.NODE_ENV === 'production';
 
-const isPublishable = (note: NoteMeta) => !isProduction() || !note.draft;
+const isE2eIncludeDraft = () => process.env.E2E_INCLUDE_DRAFT === 'true' || process.env.E2E_INCLUDE_DRAFT === '1';
+
+const isPublishable = (note: NoteMeta) => !isProduction() || isE2eIncludeDraft() || !note.draft;
 
 const byMostRecentFirst = (a: NoteMeta, b: NoteMeta) => {
   const dateA = new Date(a.updated || a.created);
