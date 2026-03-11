@@ -61,7 +61,7 @@ description: 에러와 테스트 실패의 근본 원인을 분석합니다. 버
 # TypeScript 타입 체크
 pnpm tsc --noEmit
 
-# ESLint 검사
+# Lint 검사
 pnpm lint
 
 # 특정 테스트 실행

@@ -111,7 +111,7 @@ jobs:
         run: pnpm turbo run lint
 
       - name: Format Check
-        run: pnpm turbo run format
+        run: pnpm turbo run format:check
 
   # Step 4: Validate each app (type-check, test, build)
   validate:

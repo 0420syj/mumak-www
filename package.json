@@ -10,7 +10,7 @@
     "format": "oxfmt --check .",
     "format:fix": "oxfmt .",
     "format:check": "oxfmt --check .",
-    "quality": "pnpm lint && pnpm format",
+    "quality": "pnpm lint && pnpm format:check",
     "quality:fix": "pnpm lint:fix && pnpm format:fix",
     "check-types": "turbo run check-types",
     "test": "turbo run test",
