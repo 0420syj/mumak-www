@@ -44,7 +44,6 @@ mumak-www/
 │ └── mumak-react/ # Vite + React 애플리케이션
 ├── packages/ # 공유 패키지들
 │ ├── ui/ # shadcn/ui 기반 UI 컴포넌트 라이브러리
-│ ├── eslint-config/ # ESLint 설정
 │ └── typescript-config/ # TypeScript 설정
 └── turbo.json # Turborepo 설정
 ```
@@ -53,8 +52,8 @@ mumak-www/
 
 ### 코드 품질
 
-- **ESLint**: 코드 린팅
-- **Prettier**: 코드 포맷팅
+- **Oxlint**: 코드 린팅
+- **Oxfmt**: 코드 포맷팅
 - **TypeScript**: 타입 체크
 - **Husky**: Git 훅
 - **lint-staged**: 스테이징된 파일만 린팅
@@ -104,8 +103,8 @@ pnpm --filter=mumak-react test:e2e:ui # Playwright UI 실행
 
 커밋 시 자동으로 다음 작업이 실행됩니다:
 
-- ESLint 검사 및 자동 수정
-- Prettier 포맷팅
+- Oxlint 검사 및 자동 수정
+- Oxfmt 포맷팅
 
 ## ⚡ Turborepo 최적화
 
@@ -225,6 +224,6 @@ import { Button } from '@mumak/ui/components/button';
 ```yaml
 apps:
   - app: new-app-name
-    type: next  # or vite, node
-    hasE2E: true  # E2E 테스트 포함 여부
+    type: next # or vite, node
+    hasE2E: true # E2E 테스트 포함 여부
 ```

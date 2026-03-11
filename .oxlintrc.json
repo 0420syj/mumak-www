@@ -1,0 +1,33 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "oxc", "unicorn", "react", "nextjs", "jest", "vitest"],
+  "categories": {
+    "correctness": "warn",
+    "suspicious": "warn"
+  },
+  "env": {
+    "browser": true,
+    "node": true,
+    "es2024": true
+  },
+  "ignorePatterns": [
+    "node_modules/**",
+    ".turbo/**",
+    ".next/**",
+    "dist/**",
+    "out/**",
+    "build/**",
+    "coverage/**",
+    "test-results/**",
+    "playwright-report/**",
+    "*.tsbuildinfo"
+  ],
+  "rules": {
+    "react/react-in-jsx-scope": "off",
+    "react/prop-types": "off",
+    "eslint/no-shadow": "off",
+    "jest/no-conditional-expect": "off",
+    "unicorn/consistent-function-scoping": "off",
+    "eslint/no-useless-constructor": "off"
+  }
+}
