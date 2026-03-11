@@ -196,6 +196,9 @@ jobs:
           if [ "${{ needs.quality.result }}" == "success" ] && [ "${{ needs.validate.result }}" == "success" ]; then
             echo "All validations passed"
             exit 0
+          elif [ "${{ needs.quality.result }}" == "success" ] && [ "${{ needs.validate.result }}" == "skipped" ]; then
+            echo "Quality passed, validations skipped (no apps to validate)"
+            exit 0
           elif [ "${{ needs.quality.result }}" == "skipped" ] && [ "${{ needs.validate.result }}" == "skipped" ]; then
             echo "Validations skipped (no apps to validate)"
             exit 0

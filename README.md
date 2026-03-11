@@ -77,14 +77,23 @@ pnpm lint
 # 타입 체크
 pnpm check-types
 
-# 코드 포맷팅
+# 포맷팅 체크
 pnpm format
 
-# 포맷팅 체크
+# 코드 포맷팅 적용
+pnpm format:fix
+
+# 포맷팅 체크 (별칭)
 pnpm format:check
 
 # 개발 서버
 pnpm dev
+
+# 루트 품질 검사
+pnpm quality
+
+# 루트 품질 자동 수정
+pnpm quality:fix
 
 # 테스트
 pnpm test              # 모든 앱의 단위 테스트 실행
@@ -97,6 +106,10 @@ pnpm --filter=mumak-next test
 pnpm --filter=mumak-react test
 pnpm --filter=mumak-react test:ui    # Vitest UI 실행
 pnpm --filter=mumak-react test:e2e:ui # Playwright UI 실행
+
+# 변경분 기준 검증
+pnpm affected
+pnpm affected:dry
 ```
 
 ### Pre-commit 훅
