@@ -1,6 +1,12 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["typescript", "oxc", "unicorn", "react", "nextjs", "jest", "vitest"],
+  "plugins": ["eslint", "typescript", "oxc", "unicorn", "react", "nextjs", "jest", "vitest"],
+  "jsPlugins": [
+    {
+      "name": "turbo",
+      "specifier": "eslint-plugin-turbo"
+    }
+  ],
   "categories": {
     "correctness": "warn",
     "suspicious": "warn"
@@ -28,6 +34,7 @@
     "eslint/no-shadow": "off",
     "jest/no-conditional-expect": "off",
     "unicorn/consistent-function-scoping": "off",
-    "eslint/no-useless-constructor": "off"
+    "eslint/no-useless-constructor": "off",
+    "turbo/no-undeclared-env-vars": "warn"
   }
 }
