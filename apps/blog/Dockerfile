@@ -7,10 +7,10 @@
 #     --build-arg NEXT_PUBLIC_BASE_URL=https://<host> \
 #     -t ghcr.io/wannysim/mumak-blog:latest .
 
-# ---- base: pin node + pnpm exactly (engines >=24.11.1, packageManager pnpm@11.5.1) ----
+# ---- base: pin node + pnpm exactly (engines >=24.11.1, packageManager pnpm@12.3.4) ----
 FROM node:24-slim AS base
 ENV PNPM_HOME=/pnpm PATH=/pnpm:$PATH
-RUN corepack enable && corepack prepare pnpm@11.5.1 --activate
+RUN npm install --global pnpm@12.3.4
 WORKDIR /app
 
 # ---- prune: native turbo prune produces a minimal monorepo subset for blog ----

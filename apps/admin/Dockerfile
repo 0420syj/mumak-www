@@ -3,7 +3,7 @@
 # so Next traces the same sharp native binary that the home server will execute.
 FROM node:24-slim AS base
 ENV PNPM_HOME=/pnpm PATH=/pnpm:$PATH
-RUN corepack enable && corepack prepare pnpm@11.18.0 --activate
+RUN npm install --global pnpm@12.3.4
 WORKDIR /app
 
 FROM base AS prune
