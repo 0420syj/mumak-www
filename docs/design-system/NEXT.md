@@ -5,7 +5,7 @@
 > 역할 분담: 이 파일은 **지금 할 일**, `apps/blog/plan.md`는 **왜 그 순서인지**, `decision-log.md`는 **정한 것과 정할 것**.
 > 액션 아이템을 끝내면 A에서 지우고 `plan.md` 진행 현황에 기록한다. 완료 사실은 아래 체크포인트에만 남기며, A에 남아 있는 건 전부 미완이다.
 
-마지막 갱신: 2026-09-08 · 현재 단계: **단계 0 (1주차)** · PR [#551](https://github.com/wannysim/mumak-www/pull/551) draft · [#549](https://github.com/wannysim/mumak-www/pull/549) 위에 stacked · stack #550
+마지막 갱신: 2026-09-08 · 현재 단계: **단계 0 (1주차)** · 작업 이력: PR [#547](https://github.com/wannysim/mumak-www/pull/547) → [#549](https://github.com/wannysim/mumak-www/pull/549) → [#551](https://github.com/wannysim/mumak-www/pull/551) · stack #550
 
 > **이 브랜치의 결과:** Q-004를 `decision-log.md` D-010으로 기록했다. 전역 기본 포커스, 근거 있는 자체 표시 예외, foundation·preset의 사전 검증을 계약으로 정했다. 구현과 가시성 검증은 후속 단계에 남아 있다.
 
