@@ -23,22 +23,22 @@
 > 이 절은 단계 단위 진행률 보드다. 단계가 끝날 때마다 여기서 체크하고 PR 번호를 적는다.
 > **지금 할 일은 `docs/design-system/NEXT.md`에 있다.** 상세 체크리스트는 §8·§9, 산출물은 `docs/design-system/`.
 
-| 단계                                            | 기간       | 상태                     | 산출물                                                 |
-| ----------------------------------------------- | ---------- | ------------------------ | ------------------------------------------------------ |
-| 단계 0 — 기준선과 문제 정의                     | 1주차      | **진행 중 — Q-003 완료** | `docs/design-system/` 6개 문서 + baselines 36장        |
-| 단계 1 — 최소 수직 절편                         | 2주차      | 대기                     | token schema, Figma Variables, Button/ContentCard 절편 |
-| 단계 2 — 시각·interaction 기준과 component 계약 | 3\~6주차   | 대기                     | 지원 6개 계약과 테스트                                 |
-| 단계 3 — 접근성·visual regression·migration     | 7\~10주차  | 대기                     | visual baseline 6\~10개, 대표 화면 4개 migration       |
-| 단계 4 — 문서, 외부 리뷰, 사례 연구 v1          | 11\~12주차 | 대기                     | 사례 연구, evidence matrix, 5분 발표                   |
-| 단계 5 — token 운영과 두 번째 소비자            | 4\~6개월   | 대기                     | 진입 조건 미충족                                       |
-| 단계 6 — 선택적 확장과 채용 대응                | 7\~12개월  | 대기                     | 진입 조건 미충족                                       |
+| 단계                                            | 기간       | 상태                          | 산출물                                                 |
+| ----------------------------------------------- | ---------- | ----------------------------- | ------------------------------------------------------ |
+| 단계 0 — 기준선과 문제 정의                     | 1주차      | **진행 중 — Q-004 결정 완료** | `docs/design-system/` 6개 문서 + baselines 36장        |
+| 단계 1 — 최소 수직 절편                         | 2주차      | 대기                          | token schema, Figma Variables, Button/ContentCard 절편 |
+| 단계 2 — 시각·interaction 기준과 component 계약 | 3\~6주차   | 대기                          | 지원 6개 계약과 테스트                                 |
+| 단계 3 — 접근성·visual regression·migration     | 7\~10주차  | 대기                          | visual baseline 6\~10개, 대표 화면 4개 migration       |
+| 단계 4 — 문서, 외부 리뷰, 사례 연구 v1          | 11\~12주차 | 대기                          | 사례 연구, evidence matrix, 5분 발표                   |
+| 단계 5 — token 운영과 두 번째 소비자            | 4\~6개월   | 대기                          | 진입 조건 미충족                                       |
+| 단계 6 — 선택적 확장과 채용 대응                | 7\~12개월  | 대기                          | 진입 조건 미충족                                       |
 
 ### 다음 액션 아이템
 
 **`docs/design-system/NEXT.md`를 본다.** 액션 아이템의 단일 소재지다.
 이 절은 단계 단위 진행률만 다루고, 오늘 할 일은 그쪽에서 관리한다.
 
-단계 0에서 기계적으로 끝낼 수 있는 항목과 Q-001 \~ Q-003의 조사·결정·검증은 닫혔다. 남은 것은 Q-004, 원칙 재작성, 문제 설명, 자기 비평처럼 본인 판단이 필요한 항목이다.
+단계 0에서 기계적으로 끝낼 수 있는 항목과 Q-001 \~ Q-004의 결정 기록은 닫혔다. Q-003과 Q-004의 후속 구현·실기기 및 가시성 검증은 완료를 뜻하지 않는다. 남은 것은 원칙 재작성, 문제 설명, 자기 비평처럼 본인 판단이 필요한 항목이다.
 
 ### 완료 기록
 
@@ -46,12 +46,14 @@
 - [x] **Q-001 — 카드 hover 제목 대비**: large-scale text 예외에 기대지 않고 `accent-foreground`를 선택했다. 검토 중 발견한 `GardenOverview`의 같은 결함도 함께 닫았다. 결정 근거와 되돌리는 조건은 `decision-log.md` D-007.
 - [x] **Q-002 — karaoke radius 차이**: 공유 component의 구현·동작 기반은 유지하고 접근성 요구사항은 공통 원칙으로 다루면서, 선형 모티브와 편집 도구·콘솔 같은 product theme를 위해 별도 radius를 유지한다. 검증되지 않은 읽기 효익은 근거에서 제외했고, wannysim 브랜드 범위가 확장되면 전체 시각 언어 기준으로 재검토한다. 결정은 `decision-log.md` D-008.
 - [x] **Q-003 — viewport 단위 계약**: 전체 화면 surface는 `dvh`, 자체 스크롤하는 보조 panel의 최대 높이는 안정성을 우선해 `svh`를 기본으로 한다. `post-toc`의 `vh` 교체와 상시 그래프 범례를 정보 버튼의 popover/bottom sheet로 바꾸는 구현은 단계 2로 넘겼다. 결정은 `decision-log.md` D-009.
+- [x] **Q-004 — 포커스 소유권 계약**: 공통 foundation이 전역 기본 표시를 제공하고, 가시성 보완이나 조작 범위 표현에 근거가 있는 자체 표시를 예외로 허용한다. foundation·preset을 Storybook으로 사전 검증하고 자동 a11y 검사에 실제 키보드·가시성 확인을 더한다. 결정은 `decision-log.md` D-010이며, 런타임 변경과 새 검증은 후속 단계에 남는다.
 
 ### 단계 0에서 나온 것 중 다음 단계로 넘어간 항목
 
 | 항목                                               | 성격                    | 갈 곳     |
 | -------------------------------------------------- | ----------------------- | --------- |
 | light `--ring` 2.82:1                              | WCAG 2.1 SC 1.4.11 미달 | 단계 1    |
+| foundation·preset 포커스 검증과 자체 표시 계약     | D-010 구현·검증 대기    | 단계 1\~2 |
 | 본문 표면에 `motion-reduce` 없음                   | 반응 축소 미대응        | 단계 1\~2 |
 | easing 4종 하드코딩, 공유 token 0개                | motion token 후보       | 단계 1    |
 | `note-card` → `post-card/ui/post-tags` 깊은 import | FSD 규칙 위반           | 단계 2    |
@@ -266,12 +268,13 @@ MVP는 다음 한 흐름으로 제한한다.
 - Figma Variables와 `Button`·`ContentCard`의 properties/state.
 - 대표 화면 6~10개의 안정적 visual baseline.
 - keyboard, focus-visible, ARIA, contrast, target size, reduced motion 검증.
+- D-010의 foundation·preset 포커스 검증용 최소 Storybook. 단계 1은 `Button`·`ContentCard`로 제한한다.
 - 실제 화면 4개의 점진 migration과 사례 연구 1개.
 
 제외:
 
 - 전체 56개 UI component 문서화.
-- 새로운 독립 docs app 또는 Storybook.
+- 새로운 독립 docs app 또는 전체 UI 카탈로그를 위한 Storybook. D-010의 포커스 검증 용도는 포함한다.
 - Figma 양방향 자동 sync.
 - 독립 npm 배포, Changesets, codemod, MCP.
 - React Native component 공통화.
@@ -424,6 +427,7 @@ MVP는 다음 한 흐름으로 제한한다.
 - [ ] Figma key와 코드 key의 대응표를 작성한다.
 - [ ] 기존 `packages/ui/src/styles/globals.css`를 깨지 않도록 alias 또는 prototype 경계를 정한다.
 - [ ] keyboard, focus-visible, disabled, loading, target size, reduced-motion을 검증한다.
+- [ ] D-010에 따라 공통 foundation과 지원 테마를 사용하는 최소 Storybook에서 `Button`·`ContentCard`의 preset·포커스 상태를 재현한다. 자동 a11y 검사와 실제 Tab 이동, 표시 대비·잘림·가림 확인을 결합하고 실제 소비 화면의 대표 배치도 확인한다.
 - [ ] light/dark × mobile/desktop의 최소 visual baseline 4개를 만든다.
 - [ ] 결정 3개와 기각 1개를 `decision-log.md`에 기록한다.
 
@@ -550,7 +554,7 @@ visual baseline 후보:
 작업:
 
 - [ ] 원칙, token, 지원 component, state, a11y, do/don’t를 한 진입점에서 탐색하게 한다.
-- [ ] 별도 Storybook 대신 Markdown 문서 또는 실제 `/design-system` showcase를 우선한다.
+- [ ] 제품 문서는 Markdown 문서 또는 실제 `/design-system` showcase를 우선한다. D-010의 Storybook은 foundation·preset·상태 검증 용도로 유지한다.
 - [ ] showcase가 필요하면 `apps/blog/app/[locale]/(main)/(content)/design-system/page.tsx`를 검토한다.
 - [ ] 외부 리뷰어 3명에게 5분 walkthrough를 진행한다.
 - [ ] 피드백을 수용·기각·보류하고 근거를 기록한다.
