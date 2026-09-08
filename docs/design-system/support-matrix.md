@@ -36,6 +36,7 @@
 - anatomy(구성 요소)와 variant 목록
 - 상태표: default / hover / pressed / focus-visible / disabled / loading / empty
 - 접근성 계약: semantic HTML, 키보드 조작, ARIA, 타깃 크기, 반응 축소
+- D-010 포커스 계약: 공통 foundation 사용, 기본/자체 표시 여부와 예외 이유, 대체 표시 없는 outline 제거 금지. Storybook 자동 a11y 검사와 실제 키보드·대비·잘림·가림 확인의 범위 및 미검증 항목을 기록한다. 단계 1의 `Button`·`ContentCard`부터 적용하며, 현재 구현의 통과를 선언하는 것은 아니다
 - do / don't와 탈출구(escape hatch) 사용 시 소비자 책임
 - 계약을 실제로 막는 테스트 (구조는 단위 테스트, 상태는 단계 3 visual baseline)
 
@@ -90,7 +91,7 @@ audit에서 반복이 확인됐지만 단계 1 범위에는 넣지 않는다.
 
 `plan.md` §6을 이 문서 수준으로 다시 적는다. 범위가 새면 여기부터 확인한다.
 
-- 새 독립 docs 앱 또는 Storybook
+- 새 독립 docs 앱 또는 전체 UI 카탈로그용 Storybook. D-010의 foundation·preset 포커스 검증용 최소 Storybook은 후속 구현 범위에 포함한다
 - Figma 양방향 자동 sync
 - 독립 npm 배포, Changesets, codemod, MCP
 - React Native component 공통화 (native는 의미 이름과 원칙만 공유)
