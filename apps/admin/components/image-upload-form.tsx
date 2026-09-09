@@ -8,45 +8,18 @@ import { Input } from '@mumak/ui/components/input';
 import { Label } from '@mumak/ui/components/label';
 import { Textarea } from '@mumak/ui/components/textarea';
 
-type UploadResult = {
-  assetId: string;
-  width: number;
-  height: number;
-  urls: { jpeg: string; webp: string };
-};
+import { createSnippet } from '@/src/entities/image/create-snippet';
+import { publishImage, SessionExpiredError } from '@/src/features/image-upload/api/publish-image';
 
-function createSnippet(result: UploadResult, alt: string, decorative: boolean) {
-  const escapedAlt = alt
-    .trim()
-    .replaceAll('&', '&amp;')
-    .replaceAll('"', '&quot;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;');
-  const accessibility = decorative ? 'alt=""\n    role="presentation"\n    aria-hidden="true"' : `alt="${escapedAlt}"`;
-
-  return `<picture>
-  <source type="image/webp" srcSet="${result.urls.webp}" />
-  <img
-    src="${result.urls.jpeg}"
-    ${accessibility}
-    width="${result.width}"
-    height="${result.height}"
-    loading="lazy"
-    decoding="async"
-  />
-</picture>`;
-}
-
-function ImageUploadForm() {
+function ImageUploadForm({ onSessionExpired }: { onSessionExpired: () => void }) {
   const [file, setFile] = React.useState<File>();
-  const [token, setToken] = React.useState('');
   const [alt, setAlt] = React.useState('');
   const [decorative, setDecorative] = React.useState(false);
   const [snippet, setSnippet] = React.useState('');
   const [message, setMessage] = React.useState('');
   const [uploading, setUploading] = React.useState(false);
 
-  const canUpload = Boolean(file && token && (decorative || alt.trim()));
+  const canUpload = Boolean(file && (decorative || alt.trim()));
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -57,21 +30,14 @@ function ImageUploadForm() {
     setSnippet('');
 
     try {
-      const response = await fetch('/api/images', {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/octet-stream',
-        },
-        body: file,
-      });
-      const body = (await response.json()) as UploadResult & { error?: string };
-
-      if (!response.ok) throw new Error(body.error || '이미지를 발행하지 못했습니다.');
-
-      setSnippet(createSnippet(body, alt, decorative));
+      const result = await publishImage(file, setMessage);
+      setSnippet(createSnippet(result, alt, decorative));
       setMessage('공개 URL 검증까지 완료했습니다.');
     } catch (error) {
+      if (error instanceof SessionExpiredError) {
+        onSessionExpired();
+        return;
+      }
       setMessage(error instanceof Error ? error.message : '이미지를 발행하지 못했습니다.');
     } finally {
       setUploading(false);
@@ -95,18 +61,6 @@ function ImageUploadForm() {
           onChange={event => setFile(event.target.files?.[0])}
         />
         <p className="text-xs text-muted-foreground">최대 32 MiB, 50 MP. 원본 metadata는 제거됩니다.</p>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="token">업로드 토큰</Label>
-        <Input
-          id="token"
-          type="password"
-          autoComplete="off"
-          required
-          value={token}
-          onChange={event => setToken(event.target.value)}
-        />
       </div>
 
       <div className="space-y-2">
@@ -147,4 +101,4 @@ function ImageUploadForm() {
   );
 }
 
-export { ImageUploadForm, createSnippet };
+export { ImageUploadForm };

@@ -1,7 +1,8 @@
 # Admin app instructions
 
 - `docs/architecture.md` is the single source of truth for image identity, publication, and serving.
-- Keep `apps/admin` home-server-only. Do not add a Vercel project or serverless storage workaround.
-- Never commit tokens, token digests, host paths, CIDRs, IP addresses, certificates, backup credentials, or deployed compose values.
-- Keep the admin writer private and the media origin read-only; neither service publishes a host port.
-- Changes to upload, auth, filesystem, or origin path handling require focused trust-boundary regression tests.
+- Deploy `apps/admin` independently on Vercel. Permanent image storage belongs exclusively in R2.
+- Use isolated temporary directories for conversion and remove them after success or failure.
+- Never commit tokens, token digests, host paths, certificates, or backup credentials.
+- Authenticate every upload admission and publication request. Public R2 storage contains fixed renditions only; credentials and canonical sources remain private.
+- Changes to upload, auth, temporary file handling, or R2 object keys require focused trust-boundary regression tests.

@@ -189,10 +189,6 @@ jobs:
           pnpm turbo run validate:garden --filter=blog
           pnpm turbo run validate:design --filter=blog
 
-      - name: Validate media origin (admin only)
-        if: matrix.app == 'admin'
-        run: pnpm --filter admin validate:media-origin
-
       - name: Build
         run: pnpm turbo run build --filter=${{ matrix.app }} $TURBO_CACHE_ARG
 

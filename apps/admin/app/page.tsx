@@ -1,6 +1,18 @@
-import { ImageUploadForm } from '@/components/image-upload-form';
+import { headers } from 'next/headers';
 
-export default function Page() {
+import { AdminSession } from '@/components/admin-session';
+import { readAdminAuthConfig } from '@/src/shared/lib/admin-auth-config';
+import { hasValidSession } from '@/src/shared/lib/admin-session';
+
+export const dynamic = 'force-dynamic';
+
+export default async function Page() {
+  let authenticated = false;
+  try {
+    authenticated = hasValidSession(await headers(), readAdminAuthConfig());
+  } catch {
+    authenticated = false;
+  }
   return (
     <main className="mx-auto flex min-h-svh w-full max-w-2xl flex-col justify-center gap-8 px-5 py-12">
       <header className="space-y-2">
@@ -10,7 +22,7 @@ export default function Page() {
           JPEG 한 장을 검증하고 불변 JPEG/WebP 주소와 MDX snippet을 만듭니다.
         </p>
       </header>
-      <ImageUploadForm />
+      <AdminSession initialAuthenticated={authenticated} />
     </main>
   );
 }
