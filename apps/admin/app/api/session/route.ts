@@ -1,12 +1,13 @@
+import { readAdminAuthConfig } from '@/src/shared/lib/admin-auth-config';
 import { createSession, sessionCookie } from '@/src/shared/lib/admin-session';
-import { authorizeLoginRequest, readUploadRuntimeConfig } from '@/src/shared/lib/upload-request';
+import { authorizeLoginRequest } from '@/src/shared/lib/upload-request';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function POST(request: Request) {
   try {
-    const config = readUploadRuntimeConfig();
+    const config = readAdminAuthConfig();
     const authorization = authorizeLoginRequest(request, config);
     if (!authorization.authorized) {
       return json({ error: '로그인 정보를 확인해주세요.' }, authorization.status);
@@ -19,7 +20,7 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
-    const config = readUploadRuntimeConfig();
+    const config = readAdminAuthConfig();
     if (request.headers.get('origin') !== config.expectedOrigin)
       return json({ error: '허용되지 않은 요청입니다.' }, 403);
     return json({ authenticated: false }, 200, sessionCookie('', config));

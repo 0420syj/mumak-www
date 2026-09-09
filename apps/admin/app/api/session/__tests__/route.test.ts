@@ -1,8 +1,8 @@
 /** @jest-environment node */
 import { createHash } from 'node:crypto';
 
+import { readAdminAuthConfig } from '@/src/shared/lib/admin-auth-config';
 import { hasValidSession } from '@/src/shared/lib/admin-session';
-import { readUploadRuntimeConfig } from '@/src/shared/lib/upload-request';
 
 import { DELETE, POST } from '../route';
 
@@ -29,7 +29,7 @@ it('exchanges the operator token for a session without echoing credentials', asy
   await expect(response.json()).resolves.toEqual({ authenticated: true });
   const cookie = response.headers.get('Set-Cookie')!;
   expect(cookie).not.toContain('test-token');
-  expect(hasValidSession(new Headers({ Cookie: cookie.split(';')[0]! }), readUploadRuntimeConfig())).toBe(true);
+  expect(hasValidSession(new Headers({ Cookie: cookie.split(';')[0]! }), readAdminAuthConfig())).toBe(true);
 });
 it.each([
   [{ Authorization: 'Bearer wrong' }, 401],

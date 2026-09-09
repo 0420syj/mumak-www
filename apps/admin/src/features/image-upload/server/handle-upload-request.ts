@@ -1,13 +1,14 @@
 import { ImageUploadError } from '@/src/entities/image/image-upload';
 import { createR2Uploader, R2UploadError } from '@/src/entities/image/r2-upload';
+import { readAdminAuthConfig } from '@/src/shared/lib/admin-auth-config';
 import { createR2Store } from '@/src/shared/lib/r2-store';
-import { authorizeUploadRequest, readUploadRuntimeConfig } from '@/src/shared/lib/upload-request';
+import { authorizeUploadRequest } from '@/src/shared/lib/upload-request';
 
 export async function handleR2Upload(request: Request, operation: 'issue' | 'publish') {
   const json = (body: unknown, status: number) =>
     Response.json(body, { status, headers: { 'Cache-Control': 'no-store' } });
   try {
-    const config = readUploadRuntimeConfig();
+    const config = readAdminAuthConfig();
     const authorization = authorizeUploadRequest(request, config);
     if (!authorization.authorized)
       return json(

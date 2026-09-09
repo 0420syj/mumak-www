@@ -26,6 +26,7 @@ pnpm --filter admin dev
 ## 배포
 
 `apps/admin`을 root directory로 하는 별도 Vercel 프로젝트를 사용한다.
+GitHub 저장소에 연결되어 main push는 운영 자동 배포, 나머지 브랜치·PR은 Preview 자동 배포다.
 R2 credential, 운영자 token digest와 session secret은 production 환경에 설정하고 preview에는 자동 제공하지 않는다.
 이미지는 private staging으로 직접 전송하고, 서버의 임시 디렉터리에서 변환한 뒤 R2에 저장한다.
 로컬 E2E는 standalone build를 사용한다. 영구 파일은 서버 디스크에 보관하지 않는다.

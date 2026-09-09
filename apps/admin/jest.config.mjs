@@ -17,6 +17,7 @@ export default createJestConfig({
   collectCoverageFrom: [
     'components/**/*.{ts,tsx}',
     'src/entities/image/**/*.{ts,tsx}',
+    'src/features/image-upload/api/**/*.{ts,tsx}',
     '!**/*.d.ts',
     '!**/__tests__/**',
   ],

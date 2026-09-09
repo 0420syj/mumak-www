@@ -1,9 +1,9 @@
 import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 
-import type { UploadRuntimeConfig } from '@/src/shared/lib/upload-request';
+import type { AdminAuthConfig } from '@/src/shared/lib/admin-auth-config';
 
 export const SESSION_MAX_AGE = 7 * 24 * 60 * 60;
-type SessionConfig = Pick<UploadRuntimeConfig, 'expectedOrigin' | 'tokenHash' | 'sessionSecret'>;
+type SessionConfig = Pick<AdminAuthConfig, 'expectedOrigin' | 'tokenHash' | 'sessionSecret'>;
 
 export function sessionCookieName(config: SessionConfig) {
   return config.expectedOrigin.startsWith('https:') ? '__Host-mumak-admin-session' : 'mumak-admin-session';

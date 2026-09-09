@@ -43,8 +43,9 @@ mumak-www-private                   Standard / APAC
 - 운영 URL: [Mumak Media Admin](https://admin.wannysim.com).
 - Vercel Hobby 프로젝트의 production 배포 상태는 READY다.
   배포 ID: `dpl_BY6AvCZUeQru1u7G5W55N8yVsvfS`.
-- 배포는 작업 브랜치의 소스 snapshot을 Vercel CLI로 올린 결과다.
-  admin Git 자동 배포는 아직 연결하지 않았다. PR 병합만으로 새 production 배포가 실행되지는 않는다.
+- 현재 운영 배포는 Vercel CLI 소스 snapshot이다. GitHub `wannysim/mumak-www` 연결을 완료했고,
+  이후 main push는 Production, 나머지 브랜치 push와 PR은 Preview로 자동 배포한다.
+  이 PR의 base인 develop 병합은 Preview이며, main 릴리즈 시 운영 도메인에 반영된다.
 - 재배포 시 로컬 build/cache 산출물을 제외한 소스만 업로드한다. Vercel에서는 adapter를
   사용하고, 로컬 E2E에서만 Next.js `output: standalone`을 사용한다.
 - 업로드 토큰으로 로그인한 뒤 JPEG와 대체 텍스트를 입력하고 이미지 발행을 누른다. 로그인은 7일간 유지된다. 성공하면 MDX snippet을
@@ -187,3 +188,14 @@ Next.js 16.3.3 / pnpm 12.3.4 기반 production 배포 `dpl_BY6AvCZUeQru1u7G5W55N
   결과·로그아웃을 검증했다. 동일한 192 × 108 asset ID를 반환하며 로그아웃 이후 admission은 `401`이다.
 - rebase 후 frozen lockfile 설치, type check, lint, format check, production build, 단위 테스트
   99개와 E2E 4개가 모두 통과했다.
+
+## 구조 리팩토링 검증
+
+- MDX 생성과 공개 이미지 타입을 image entity로 분리하고 브라우저의 admission → PUT → publication
+  통신을 feature API로 옮겼다. UI는 폼 상태와 세션 만료 처리를 담당한다.
+- 인증 설정을 `admin-auth-config`로 분리하고 도메인 HTTP handler를 feature/server로 이동했다.
+  shared 역방향 import와 signing → request 의존은 Oxlint로 금지한다.
+- Madge 순환 참조 0개, 단위 테스트 103개(11 suites), E2E 4개 통과.
+  coverage는 추출한 API까지 포함하며 statements 95.02%, branches 91.14%, lines 98.20%다.
+- React Doctor의 로컬 실행은 maintainability 분석 실패로 점수를 산출하지 못했다.
+  표시된 순차 인코딩·R2 조건부 기록 경고는 기존 서버 구현에 해당한다.

@@ -2,11 +2,11 @@
 import { createHash } from 'node:crypto';
 
 import { createR2Uploader, R2UploadError } from '@/src/entities/image/r2-upload';
+import { readAdminAuthConfig } from '@/src/shared/lib/admin-auth-config';
 import { createSession, sessionCookieName } from '@/src/shared/lib/admin-session';
 import { createR2Store } from '@/src/shared/lib/r2-store';
-import { readUploadRuntimeConfig } from '@/src/shared/lib/upload-request';
 
-import { handleR2Upload } from '../r2-upload-request';
+import { handleR2Upload } from '../handle-upload-request';
 
 jest.mock('@/src/entities/image/r2-upload', () => ({
   ...jest.requireActual('@/src/entities/image/r2-upload'),
@@ -14,7 +14,7 @@ jest.mock('@/src/entities/image/r2-upload', () => ({
 }));
 jest.mock('@/src/shared/lib/r2-store', () => ({ createR2Store: jest.fn() }));
 function testCookie() {
-  const config = readUploadRuntimeConfig();
+  const config = readAdminAuthConfig();
   return `${sessionCookieName(config)}=${createSession(config)}`;
 }
 const origin = 'https://admin.example.com';

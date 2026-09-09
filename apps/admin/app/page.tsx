@@ -1,15 +1,15 @@
 import { headers } from 'next/headers';
 
 import { AdminSession } from '@/components/admin-session';
+import { readAdminAuthConfig } from '@/src/shared/lib/admin-auth-config';
 import { hasValidSession } from '@/src/shared/lib/admin-session';
-import { readUploadRuntimeConfig } from '@/src/shared/lib/upload-request';
 
 export const dynamic = 'force-dynamic';
 
 export default async function Page() {
   let authenticated = false;
   try {
-    authenticated = hasValidSession(await headers(), readUploadRuntimeConfig());
+    authenticated = hasValidSession(await headers(), readAdminAuthConfig());
   } catch {
     authenticated = false;
   }

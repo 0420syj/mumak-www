@@ -8,34 +8,8 @@ import { Input } from '@mumak/ui/components/input';
 import { Label } from '@mumak/ui/components/label';
 import { Textarea } from '@mumak/ui/components/textarea';
 
-type UploadResult = {
-  assetId: string;
-  width: number;
-  height: number;
-  urls: { jpeg: string; webp: string };
-};
-
-function createSnippet(result: UploadResult, alt: string, decorative: boolean) {
-  const escapedAlt = alt
-    .trim()
-    .replaceAll('&', '&amp;')
-    .replaceAll('"', '&quot;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;');
-  const accessibility = decorative ? 'alt=""\n    role="presentation"\n    aria-hidden="true"' : `alt="${escapedAlt}"`;
-
-  return `<picture>
-  <source type="image/webp" srcSet="${result.urls.webp}" />
-  <img
-    src="${result.urls.jpeg}"
-    ${accessibility}
-    width="${result.width}"
-    height="${result.height}"
-    loading="lazy"
-    decoding="async"
-  />
-</picture>`;
-}
+import { createSnippet } from '@/src/entities/image/create-snippet';
+import { publishImage, SessionExpiredError } from '@/src/features/image-upload/api/publish-image';
 
 function ImageUploadForm({ onSessionExpired }: { onSessionExpired: () => void }) {
   const [file, setFile] = React.useState<File>();
@@ -56,52 +30,14 @@ function ImageUploadForm({ onSessionExpired }: { onSessionExpired: () => void })
     setSnippet('');
 
     try {
-      if (file.size > 32 * 1024 * 1024) throw new Error('파일이 32 MiB 제한을 넘었습니다.');
-      const admission = await fetch('/api/images/uploads', {
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bytes: file.size }),
-      });
-      if (admission.status === 401) {
-        onSessionExpired();
-        return;
-      }
-      const ticket = (await admission.json()) as {
-        ticketId: string;
-        uploadUrl: string;
-        headers: Record<string, string>;
-        error?: string;
-      };
-      if (!admission.ok) throw new Error(ticket.error || '업로드를 시작하지 못했습니다.');
-      setMessage('이미지 전송 중…');
-      const upload = await fetch(ticket.uploadUrl, {
-        method: 'PUT',
-        credentials: 'omit',
-        headers: ticket.headers,
-        body: file,
-      });
-      if (!upload.ok) throw new Error('이미지 전송에 실패했습니다. 다시 업로드하세요.');
-      setMessage('이미지 검증·변환 중…');
-      const response = await fetch('/api/images', {
-        method: 'POST',
-        credentials: 'same-origin',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ticketId: ticket.ticketId }),
-      });
-      if (response.status === 401) {
-        onSessionExpired();
-        return;
-      }
-      const body = (await response.json()) as UploadResult & { error?: string };
-
-      if (!response.ok) throw new Error(body.error || '이미지를 발행하지 못했습니다.');
-
-      setSnippet(createSnippet(body, alt, decorative));
+      const result = await publishImage(file, setMessage);
+      setSnippet(createSnippet(result, alt, decorative));
       setMessage('공개 URL 검증까지 완료했습니다.');
     } catch (error) {
+      if (error instanceof SessionExpiredError) {
+        onSessionExpired();
+        return;
+      }
       setMessage(error instanceof Error ? error.message : '이미지를 발행하지 못했습니다.');
     } finally {
       setUploading(false);
@@ -165,4 +101,4 @@ function ImageUploadForm({ onSessionExpired }: { onSessionExpired: () => void })
   );
 }
 
-export { ImageUploadForm, createSnippet };
+export { ImageUploadForm };

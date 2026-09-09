@@ -1,4 +1,4 @@
-import { handleR2Upload } from '@/src/shared/lib/r2-upload-request';
+import { handleR2Upload } from '@/src/features/image-upload/server/handle-upload-request';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';

@@ -1,6 +1,8 @@
 /** @jest-environment node */
 import { createHash } from 'node:crypto';
 
+import { readAdminAuthConfig } from '@/src/shared/lib/admin-auth-config';
+
 import {
   createSession,
   hasValidSession,
@@ -9,9 +11,9 @@ import {
   sessionCookieName,
   verifySession,
 } from '../admin-session';
-import { authorizeUploadRequest, readUploadRuntimeConfig } from '../upload-request';
+import { authorizeUploadRequest } from '../upload-request';
 
-const config = readUploadRuntimeConfig({
+const config = readAdminAuthConfig({
   MEDIA_ADMIN_ORIGIN: 'https://admin.example.com',
   MEDIA_ADMIN_TOKEN_SHA256: createHash('sha256').update('test-token').digest('hex'),
   MEDIA_ADMIN_SESSION_SECRET: 'a'.repeat(64),
