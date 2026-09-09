@@ -13,6 +13,7 @@ export default createJestConfig({
     '^@mumak/ui/(.*)$': '<rootDir>/../../packages/ui/src/$1',
   },
   testPathIgnorePatterns: ['<rootDir>/.next/', '<rootDir>/node_modules/', '<rootDir>/e2e/'],
+  modulePathIgnorePatterns: ['<rootDir>/.next/'],
   collectCoverageFrom: [
     'components/**/*.{ts,tsx}',
     'src/entities/image/**/*.{ts,tsx}',

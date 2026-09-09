@@ -37,16 +37,15 @@ function createSnippet(result: UploadResult, alt: string, decorative: boolean) {
 </picture>`;
 }
 
-function ImageUploadForm() {
+function ImageUploadForm({ onSessionExpired }: { onSessionExpired: () => void }) {
   const [file, setFile] = React.useState<File>();
-  const [token, setToken] = React.useState('');
   const [alt, setAlt] = React.useState('');
   const [decorative, setDecorative] = React.useState(false);
   const [snippet, setSnippet] = React.useState('');
   const [message, setMessage] = React.useState('');
   const [uploading, setUploading] = React.useState(false);
 
-  const canUpload = Boolean(file && token && (decorative || alt.trim()));
+  const canUpload = Boolean(file && (decorative || alt.trim()));
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -57,14 +56,45 @@ function ImageUploadForm() {
     setSnippet('');
 
     try {
-      const response = await fetch('/api/images', {
+      if (file.size > 32 * 1024 * 1024) throw new Error('파일이 32 MiB 제한을 넘었습니다.');
+      const admission = await fetch('/api/images/uploads', {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/octet-stream',
-        },
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bytes: file.size }),
+      });
+      if (admission.status === 401) {
+        onSessionExpired();
+        return;
+      }
+      const ticket = (await admission.json()) as {
+        ticketId: string;
+        uploadUrl: string;
+        headers: Record<string, string>;
+        error?: string;
+      };
+      if (!admission.ok) throw new Error(ticket.error || '업로드를 시작하지 못했습니다.');
+      setMessage('이미지 전송 중…');
+      const upload = await fetch(ticket.uploadUrl, {
+        method: 'PUT',
+        credentials: 'omit',
+        headers: ticket.headers,
         body: file,
       });
+      if (!upload.ok) throw new Error('이미지 전송에 실패했습니다. 다시 업로드하세요.');
+      setMessage('이미지 검증·변환 중…');
+      const response = await fetch('/api/images', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ticketId: ticket.ticketId }),
+      });
+      if (response.status === 401) {
+        onSessionExpired();
+        return;
+      }
       const body = (await response.json()) as UploadResult & { error?: string };
 
       if (!response.ok) throw new Error(body.error || '이미지를 발행하지 못했습니다.');
@@ -95,18 +125,6 @@ function ImageUploadForm() {
           onChange={event => setFile(event.target.files?.[0])}
         />
         <p className="text-xs text-muted-foreground">최대 32 MiB, 50 MP. 원본 metadata는 제거됩니다.</p>
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="token">업로드 토큰</Label>
-        <Input
-          id="token"
-          type="password"
-          autoComplete="off"
-          required
-          value={token}
-          onChange={event => setToken(event.target.value)}
-        />
       </div>
 
       <div className="space-y-2">

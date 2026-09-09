@@ -2,24 +2,19 @@
 
 import { createHash } from 'node:crypto';
 
-import { authorizeUploadRequest, readUploadRuntimeConfig } from '../upload-request';
+import { authorizeLoginRequest, readUploadRuntimeConfig } from '../upload-request';
 
 const token = 'correct-token';
 const validEnv = {
+  MEDIA_ADMIN_SESSION_SECRET: 'a'.repeat(64),
   MEDIA_ADMIN_ORIGIN: 'https://media-admin.example.com',
   MEDIA_ADMIN_TOKEN_SHA256: createHash('sha256').update(token).digest('hex'),
-  MEDIA_ROOT: '/data/images',
-  MEDIA_MIN_FREE_BYTES: '1024',
-  MEDIA_UPLOAD_TIMEOUT_MS: '120000',
 };
 
 describe('readUploadRuntimeConfig', () => {
-  it('accepts an HTTPS origin, hashed token, safe absolute root, and positive limits', () => {
+  it('accepts an HTTPS origin and hashed token without storage configuration', () => {
     expect(readUploadRuntimeConfig(validEnv)).toMatchObject({
       expectedOrigin: validEnv.MEDIA_ADMIN_ORIGIN,
-      storageRoot: '/data/images',
-      minFreeBytes: 1024,
-      timeoutMs: 120000,
     });
   });
 
@@ -36,16 +31,13 @@ describe('readUploadRuntimeConfig', () => {
     ['MEDIA_ADMIN_ORIGIN', 'http://media-admin.example.com'],
     ['MEDIA_ADMIN_ORIGIN', 'https://media-admin.example.com/path'],
     ['MEDIA_ADMIN_TOKEN_SHA256', token],
-    ['MEDIA_ROOT', '/'],
-    ['MEDIA_ROOT', 'relative/path'],
-    ['MEDIA_MIN_FREE_BYTES', '0'],
-    ['MEDIA_UPLOAD_TIMEOUT_MS', '1.5'],
+    ['MEDIA_ADMIN_SESSION_SECRET', 'short'],
   ])('rejects an unsafe %s value', (key, value) => {
     expect(() => readUploadRuntimeConfig({ ...validEnv, [key]: value })).toThrow(`Invalid ${key}`);
   });
 });
 
-describe('authorizeUploadRequest', () => {
+describe('authorizeLoginRequest', () => {
   const config = readUploadRuntimeConfig(validEnv);
 
   function request(origin: string | null, authorization: string | null) {
@@ -56,17 +48,17 @@ describe('authorizeUploadRequest', () => {
   }
 
   it('requires the exact configured Origin and valid bearer token hash', () => {
-    expect(authorizeUploadRequest(request(validEnv.MEDIA_ADMIN_ORIGIN, `Bearer ${token}`), config)).toEqual({
+    expect(authorizeLoginRequest(request(validEnv.MEDIA_ADMIN_ORIGIN, `Bearer ${token}`), config)).toEqual({
       authorized: true,
     });
   });
 
   it('rejects an absent or different Origin before authentication', () => {
-    expect(authorizeUploadRequest(request(null, `Bearer ${token}`), config)).toMatchObject({
+    expect(authorizeLoginRequest(request(null, `Bearer ${token}`), config)).toMatchObject({
       authorized: false,
       status: 403,
     });
-    expect(authorizeUploadRequest(request('https://attacker.example', `Bearer ${token}`), config)).toMatchObject({
+    expect(authorizeLoginRequest(request('https://attacker.example', `Bearer ${token}`), config)).toMatchObject({
       authorized: false,
       status: 403,
     });
@@ -75,7 +67,7 @@ describe('authorizeUploadRequest', () => {
   it.each([null, 'Basic abc', 'Bearer wrong', 'Bearer token with spaces', `Bearer ${'x'.repeat(513)}`])(
     'rejects malformed or invalid authorization %s',
     authorization => {
-      expect(authorizeUploadRequest(request(validEnv.MEDIA_ADMIN_ORIGIN, authorization), config)).toEqual({
+      expect(authorizeLoginRequest(request(validEnv.MEDIA_ADMIN_ORIGIN, authorization), config)).toEqual({
         authorized: false,
         status: 401,
         code: 'unauthorized',

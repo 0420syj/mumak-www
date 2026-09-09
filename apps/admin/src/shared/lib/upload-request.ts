@@ -1,12 +1,11 @@
 import { createHash, timingSafeEqual } from 'node:crypto';
-import { isAbsolute, normalize, parse } from 'node:path';
+
+import { hasValidSession } from '@/src/shared/lib/admin-session';
 
 type UploadRuntimeConfig = {
   expectedOrigin: string;
   tokenHash: Buffer;
-  storageRoot: string;
-  minFreeBytes: number;
-  timeoutMs: number;
+  sessionSecret: Buffer;
 };
 
 type AuthorizationResult =
@@ -21,15 +20,6 @@ function required(env: Environment, name: string) {
   return value;
 }
 
-function positiveInteger(env: Environment, name: string) {
-  const value = required(env, name);
-  if (!/^[1-9]\d*$/.test(value)) throw new Error(`Invalid ${name}`);
-
-  const parsed = Number(value);
-  if (!Number.isSafeInteger(parsed)) throw new Error(`Invalid ${name}`);
-  return parsed;
-}
-
 function readUploadRuntimeConfig(env: Environment = process.env): UploadRuntimeConfig {
   const expectedOrigin = required(env, 'MEDIA_ADMIN_ORIGIN');
   const originUrl = new URL(expectedOrigin);
@@ -42,22 +32,17 @@ function readUploadRuntimeConfig(env: Environment = process.env): UploadRuntimeC
   const tokenHashHex = required(env, 'MEDIA_ADMIN_TOKEN_SHA256');
   if (!/^[0-9a-f]{64}$/.test(tokenHashHex)) throw new Error('Invalid MEDIA_ADMIN_TOKEN_SHA256');
 
-  const configuredRoot = required(env, 'MEDIA_ROOT');
-  const storageRoot = normalize(configuredRoot);
-  if (!isAbsolute(storageRoot) || storageRoot === parse(storageRoot).root) {
-    throw new Error('Invalid MEDIA_ROOT');
-  }
+  const sessionSecretHex = required(env, 'MEDIA_ADMIN_SESSION_SECRET');
+  if (!/^[0-9a-f]{64}$/.test(sessionSecretHex)) throw new Error('Invalid MEDIA_ADMIN_SESSION_SECRET');
 
   return {
     expectedOrigin,
     tokenHash: Buffer.from(tokenHashHex, 'hex'),
-    storageRoot,
-    minFreeBytes: positiveInteger(env, 'MEDIA_MIN_FREE_BYTES'),
-    timeoutMs: positiveInteger(env, 'MEDIA_UPLOAD_TIMEOUT_MS'),
+    sessionSecret: Buffer.from(sessionSecretHex, 'hex'),
   };
 }
 
-function authorizeUploadRequest(
+function authorizeLoginRequest(
   request: Pick<Request, 'headers'>,
   config: Pick<UploadRuntimeConfig, 'expectedOrigin' | 'tokenHash'>
 ): AuthorizationResult {
@@ -81,5 +66,14 @@ function authorizeUploadRequest(
     : { authorized: false, status: 401, code: 'unauthorized' };
 }
 
-export { authorizeUploadRequest, readUploadRuntimeConfig };
+function authorizeUploadRequest(request: Pick<Request, 'headers'>, config: UploadRuntimeConfig): AuthorizationResult {
+  if (request.headers.get('origin') !== config.expectedOrigin) {
+    return { authorized: false, status: 403, code: 'invalid-origin' };
+  }
+  return hasValidSession(request.headers, config)
+    ? { authorized: true }
+    : { authorized: false, status: 401, code: 'unauthorized' };
+}
+
+export { authorizeUploadRequest, authorizeLoginRequest, readUploadRuntimeConfig };
 export type { AuthorizationResult, UploadRuntimeConfig };
