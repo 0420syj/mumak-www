@@ -162,8 +162,16 @@ describe('SongDrawer', () => {
     await user.click(screen.getByRole('button', { name: '재생목록 만들기' }));
     expect(screen.getByRole('alert')).toHaveTextContent('재생목록 이름');
 
+    await user.click(screen.getByRole('button', { name: '재생목록으로 돌아가기' }));
+    expect(screen.getByRole('button', { name: '재생목록 추가' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '재생목록 추가' }));
     await user.type(screen.getByLabelText('재생목록 이름'), 'Fujii Kaze');
     await user.click(screen.getByRole('button', { name: '재생목록 만들기' }));
+    expect(screen.getByText('아직 곡이 없습니다')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Fujii Kaze에 곡 추가' }));
+    await user.click(screen.getByRole('button', { name: 'Fujii Kaze 곡 목록으로 돌아가기' }));
     expect(screen.getByText('아직 곡이 없습니다')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Fujii Kaze에 곡 추가' }));
@@ -185,7 +193,13 @@ describe('SongDrawer', () => {
       titleJa: 'きらり',
       titleKo: '키라리',
     });
-    const confirm = vi.spyOn(window, 'confirm').mockReturnValueOnce(false).mockReturnValue(true);
+    // 순서대로 곡 제거 취소 / 곡 제거 / 재생목록 삭제 취소 / 재생목록 삭제.
+    const confirm = vi
+      .spyOn(window, 'confirm')
+      .mockReturnValueOnce(false)
+      .mockReturnValueOnce(true)
+      .mockReturnValueOnce(false)
+      .mockReturnValue(true);
     const user = userEvent.setup();
     render(
       <SongDrawerHarness
@@ -212,6 +226,10 @@ describe('SongDrawer', () => {
 
     await user.click(screen.getByRole('button', { name: '재생목록 보기' }));
     await user.click(screen.getByRole('button', { name: 'Fujii Kaze 재생목록 수정' }));
+    await user.click(screen.getByRole('button', { name: '재생목록으로 돌아가기' }));
+    expect(screen.getByRole('button', { name: 'Fujii Kaze 재생목록 열기' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Fujii Kaze 재생목록 수정' }));
     await user.clear(screen.getByLabelText('재생목록 이름'));
     await user.click(screen.getByRole('button', { name: '이름 저장' }));
     expect(screen.getByRole('alert')).toHaveTextContent('재생목록 이름');
@@ -220,8 +238,11 @@ describe('SongDrawer', () => {
 
     await user.click(screen.getByRole('button', { name: '후지이 카제 재생목록 수정' }));
     await user.click(screen.getByRole('button', { name: '재생목록 삭제' }));
+    expect(screen.getByLabelText('재생목록 이름')).toHaveValue('후지이 카제');
+
+    await user.click(screen.getByRole('button', { name: '재생목록 삭제' }));
     expect(screen.queryByRole('button', { name: '후지이 카제 재생목록 열기' })).not.toBeInTheDocument();
-    expect(confirm).toHaveBeenCalledTimes(3);
+    expect(confirm).toHaveBeenCalledTimes(4);
   });
 
   it('explains why the last playable song and playlist cannot be removed', async () => {

@@ -100,18 +100,17 @@ export default function App() {
     };
   }, []);
 
-  const install = async () => {
-    if (!installPrompt) return;
+  const install = async (prompt: InstallPromptEvent) => {
     try {
-      await installPrompt.prompt();
-      await installPrompt.userChoice;
+      await prompt.prompt();
+      await prompt.userChoice;
     } finally {
       setInstallPrompt(null);
     }
   };
 
   return accepted ? (
-    <KaraokeApp onInstall={installPrompt ? install : undefined} />
+    <KaraokeApp onInstall={installPrompt ? () => void install(installPrompt) : undefined} />
   ) : (
     <PrivacyConsent onAccept={() => setAccepted(true)} />
   );
@@ -148,9 +147,9 @@ function KaraokeApp({ onInstall }: { onInstall?: () => void }) {
 
   // 곡이 끝났을 때의 처리. seekTo는 플레이어 훅이 돌려주므로 ref로 건네받는다.
   // 다음 곡 전환은 loadVideoById가 곧바로 재생까지 이어 준다.
-  const seekRef = React.useRef<(seconds: number) => void>(() => {});
+  const seekRef = React.useRef<((seconds: number) => void) | null>(null);
   const handleEnded = React.useCallback(() => {
-    if (playbackMode === 'one') seekRef.current(0);
+    if (playbackMode === 'one') seekRef.current?.(0);
     else if (playbackMode === 'all') setSongSlug(songAt(orderedSongs, song, 1).slug);
   }, [orderedSongs, playbackMode, song, setSongSlug]);
 
