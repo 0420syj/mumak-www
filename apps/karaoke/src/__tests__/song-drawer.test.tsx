@@ -112,7 +112,10 @@ describe('SongDrawer', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /곡 목록 열기/ }));
     expect(await screen.findByText('테스트 목록')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '怪獣の花唄 (괴수의 꽃노래)' })).toHaveAttribute('aria-current', 'true');
+    expect(await screen.findByRole('button', { name: '怪獣の花唄 (괴수의 꽃노래)' })).toHaveAttribute(
+      'aria-current',
+      'true'
+    );
     expect(screen.getByRole('button', { name: '怪獣の花唄 순서 이동' })).toHaveAttribute('data-vaul-no-drag');
     expect(screen.getByRole('button', { name: '踊り子 순서 이동' })).toHaveClass('w-12');
 
@@ -159,8 +162,16 @@ describe('SongDrawer', () => {
     await user.click(screen.getByRole('button', { name: '재생목록 만들기' }));
     expect(screen.getByRole('alert')).toHaveTextContent('재생목록 이름');
 
+    await user.click(screen.getByRole('button', { name: '재생목록으로 돌아가기' }));
+    expect(screen.getByRole('button', { name: '재생목록 추가' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '재생목록 추가' }));
     await user.type(screen.getByLabelText('재생목록 이름'), 'Fujii Kaze');
     await user.click(screen.getByRole('button', { name: '재생목록 만들기' }));
+    expect(screen.getByText('아직 곡이 없습니다')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Fujii Kaze에 곡 추가' }));
+    await user.click(screen.getByRole('button', { name: 'Fujii Kaze 곡 목록으로 돌아가기' }));
     expect(screen.getByText('아직 곡이 없습니다')).toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: 'Fujii Kaze에 곡 추가' }));
@@ -182,7 +193,13 @@ describe('SongDrawer', () => {
       titleJa: 'きらり',
       titleKo: '키라리',
     });
-    const confirm = vi.spyOn(window, 'confirm').mockReturnValueOnce(false).mockReturnValue(true);
+    // 순서대로 곡 제거 취소 / 곡 제거 / 재생목록 삭제 취소 / 재생목록 삭제.
+    const confirm = vi
+      .spyOn(window, 'confirm')
+      .mockReturnValueOnce(false)
+      .mockReturnValueOnce(true)
+      .mockReturnValueOnce(false)
+      .mockReturnValue(true);
     const user = userEvent.setup();
     render(
       <SongDrawerHarness
@@ -193,7 +210,7 @@ describe('SongDrawer', () => {
     );
 
     await user.click(screen.getByRole('button', { name: /곡 목록 열기/ }));
-    await user.click(screen.getByRole('button', { name: 'きらり 곡 정보 수정' }));
+    await user.click(await screen.findByRole('button', { name: 'きらり 곡 정보 수정' }));
     await user.clear(screen.getByLabelText('원어 제목'));
     await user.type(screen.getByLabelText('원어 제목'), '満ちてゆく');
     await user.clear(screen.getByLabelText('한국어 표기'));
@@ -209,6 +226,10 @@ describe('SongDrawer', () => {
 
     await user.click(screen.getByRole('button', { name: '재생목록 보기' }));
     await user.click(screen.getByRole('button', { name: 'Fujii Kaze 재생목록 수정' }));
+    await user.click(screen.getByRole('button', { name: '재생목록으로 돌아가기' }));
+    expect(screen.getByRole('button', { name: 'Fujii Kaze 재생목록 열기' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Fujii Kaze 재생목록 수정' }));
     await user.clear(screen.getByLabelText('재생목록 이름'));
     await user.click(screen.getByRole('button', { name: '이름 저장' }));
     expect(screen.getByRole('alert')).toHaveTextContent('재생목록 이름');
@@ -217,8 +238,11 @@ describe('SongDrawer', () => {
 
     await user.click(screen.getByRole('button', { name: '후지이 카제 재생목록 수정' }));
     await user.click(screen.getByRole('button', { name: '재생목록 삭제' }));
+    expect(screen.getByLabelText('재생목록 이름')).toHaveValue('후지이 카제');
+
+    await user.click(screen.getByRole('button', { name: '재생목록 삭제' }));
     expect(screen.queryByRole('button', { name: '후지이 카제 재생목록 열기' })).not.toBeInTheDocument();
-    expect(confirm).toHaveBeenCalledTimes(3);
+    expect(confirm).toHaveBeenCalledTimes(4);
   });
 
   it('explains why the last playable song and playlist cannot be removed', async () => {
@@ -236,7 +260,7 @@ describe('SongDrawer', () => {
     );
 
     await user.click(screen.getByRole('button', { name: /곡 목록 열기/ }));
-    await user.click(screen.getByRole('button', { name: '怪獣の花唄 곡 정보 수정' }));
+    await user.click(await screen.findByRole('button', { name: '怪獣の花唄 곡 정보 수정' }));
     await user.click(screen.getByRole('button', { name: '이 재생목록에서 제거' }));
     expect(screen.getByRole('alert')).toHaveTextContent('재생할 곡이 하나 이상');
 
