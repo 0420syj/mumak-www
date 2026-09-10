@@ -10,6 +10,38 @@
         "jest/no-conditional-expect": "off",
         "jest/no-focused-tests": "error"
       }
+    },
+    {
+      "files": ["src/shared/**/*.{ts,tsx}"],
+      "rules": {
+        "eslint/no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "regex": "(^|/)(entities|features|components|app)(/|$)",
+                "message": "Shared modules must not import application or domain modules."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["src/shared/lib/admin-session.ts", "src/shared/lib/admin-auth-config.ts"],
+      "rules": {
+        "eslint/no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "regex": "(^|/)(entities|features|components|app)(/|$)|(^|/)(upload-request|admin-session)(\\.[^/]*)?$",
+                "message": "Session configuration and signing must not depend on request authorization."
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }

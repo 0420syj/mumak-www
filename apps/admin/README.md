@@ -1,28 +1,32 @@
 # Media Admin
 
-블로그 본문용 JPEG를 canonical source와 고정 JPEG/WebP rendition으로 발행하는 내부 운영 도구다.
-영구 계약과 go-live 조건은 [`docs/architecture.md`](docs/architecture.md)가 유일한 기준이다.
-홈 서버 구성은 [`docs/home-server-runbook.md`](docs/home-server-runbook.md)를 따른다.
+JPEG를 R2에 발행하고 블로그용 JPEG/WebP 주소와 MDX snippet을 만드는 내부 운영 도구다.
+인증·인코딩·불변성 계약은 [architecture.md](docs/architecture.md), 운영 설정은
+[r2-setup.md](docs/r2-setup.md)를 따른다.
+
+## 사용
+
+[관리자 페이지](https://admin.wannysim.com)에서 업로드 토큰으로 한 번 로그인한다.
+같은 브라우저에서 7일간 유지되며 새로고침해도 다시 입력하지 않는다. JPEG와 대체 텍스트를 입력해
+발행하고 MDX snippet을 블로그 본문에 붙인다. 사용을 마치면 로그아웃할 수 있다.
 
 ## 로컬 실행
 
-저장소 밖의 빈 디렉터리를 만든 뒤 `.env.local`에 `.env.example`의 값을 설정한다. bearer token
-원문은 브라우저 탭 메모리와 비밀번호 관리자에만 두고, 서버에는 SHA-256 digest만 전달한다.
+`.env.example`의 환경 변수를 Git에 포함되지 않는 `.env.local`에 설정한다.
+서버에는 운영자 토큰의 SHA-256 digest와 독립적인 `MEDIA_ADMIN_SESSION_SECRET`(64자리 hex)을
+설정한다. R2 키와 signing secret은 클라이언트에 노출하지 않는다.
 
 ```sh
-TOKEN="$(openssl rand -hex 32)"
-printf '%s\n' "$TOKEN"
-printf '%s' "$TOKEN" | shasum -a 256
-unset TOKEN
 pnpm --filter admin dev
 ```
 
-로컬 origin은 `http://admin.mumak.localhost:1355`를 쓴다. production origin은 public DNS가 없는
-private NPM hostname으로 정하고 Portainer에만 입력한다.
+로컬 origin은 `http://admin.mumak.localhost:1355`다. 직접 업로드를 테스트할 origin은 private
+버킷 CORS에도 등록해야 한다. 운영 credential과 테스트 저장소를 공유할 때는 용량 장부도 공유된다.
 
-## 배포 경계
+## 배포
 
-`Dockerfile`은 앱 이미지만 만든다. production 배포 전에는 SSOT §12와 §15의 host benchmark,
-read-only media origin, NPM/WireGuard allowlist, off-host backup, 빈 위치 복구 시험을 완료해야 한다.
-그 전에는 public URL 검증이 실패하므로 업로드도 성공으로 응답하지 않는다. secret, 실제 CIDR,
-인증서, 복구 키는 이 공개 저장소에 두지 않는다.
+`apps/admin`을 root directory로 하는 별도 Vercel 프로젝트를 사용한다.
+GitHub 저장소에 연결되어 main push는 운영 자동 배포, 나머지 브랜치·PR은 Preview 자동 배포다.
+R2 credential, 운영자 token digest와 session secret은 production 환경에 설정하고 preview에는 자동 제공하지 않는다.
+이미지는 private staging으로 직접 전송하고, 서버의 임시 디렉터리에서 변환한 뒤 R2에 저장한다.
+로컬 E2E는 standalone build를 사용한다. 영구 파일은 서버 디스크에 보관하지 않는다.
