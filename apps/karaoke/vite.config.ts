@@ -8,7 +8,7 @@ import { defineConfig, type Plugin } from 'vite';
 import { assertNoShippedLyrics, filesRecursively } from './scripts/no-shipped-lyrics.mjs';
 
 function localOnlyBuildGuard(): Plugin {
-  const appRoot = __dirname;
+  const appRoot = import.meta.dirname;
   const outputDirectory = path.join(appRoot, 'dist');
 
   return {
@@ -58,7 +58,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss(), localOnlyBuildGuard()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
+      '@': path.resolve(import.meta.dirname, './src'),
     },
   },
 });

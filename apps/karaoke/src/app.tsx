@@ -1,4 +1,4 @@
-import { driver, type Driver } from 'driver.js';
+import type { Driver } from 'driver.js';
 import { ChevronLeft, ChevronRight, Download, Info } from 'lucide-react';
 import * as React from 'react';
 
@@ -38,8 +38,13 @@ function KaraokeGuide({ replay, ready }: { replay: number; ready: boolean }) {
   React.useEffect(() => {
     if (!ready || (shownRef.current && replay === handledReplayRef.current)) return;
 
-    const frame = requestAnimationFrame(() => {
+    let cancelled = false;
+    // driver.js는 최초 온보딩 투어에서만 쓰이므로 초기 청크에서 빼 두고 이 시점에 받아온다.
+    const frame = requestAnimationFrame(async () => {
       if (guideRef.current?.isActive()) return;
+
+      const { driver } = await import('driver.js');
+      if (cancelled) return;
 
       const guide = driver({
         animate: !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
@@ -97,6 +102,7 @@ function KaraokeGuide({ replay, ready }: { replay: number; ready: boolean }) {
     });
 
     return () => {
+      cancelled = true;
       cancelAnimationFrame(frame);
       if (guideRef.current?.isActive()) guideRef.current.destroy();
     };

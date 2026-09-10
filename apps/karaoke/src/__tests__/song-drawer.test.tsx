@@ -112,7 +112,10 @@ describe('SongDrawer', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /곡 목록 열기/ }));
     expect(await screen.findByText('테스트 목록')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '怪獣の花唄 (괴수의 꽃노래)' })).toHaveAttribute('aria-current', 'true');
+    expect(await screen.findByRole('button', { name: '怪獣の花唄 (괴수의 꽃노래)' })).toHaveAttribute(
+      'aria-current',
+      'true'
+    );
     expect(screen.getByRole('button', { name: '怪獣の花唄 순서 이동' })).toHaveAttribute('data-vaul-no-drag');
     expect(screen.getByRole('button', { name: '踊り子 순서 이동' })).toHaveClass('w-12');
 
@@ -193,7 +196,7 @@ describe('SongDrawer', () => {
     );
 
     await user.click(screen.getByRole('button', { name: /곡 목록 열기/ }));
-    await user.click(screen.getByRole('button', { name: 'きらり 곡 정보 수정' }));
+    await user.click(await screen.findByRole('button', { name: 'きらり 곡 정보 수정' }));
     await user.clear(screen.getByLabelText('원어 제목'));
     await user.type(screen.getByLabelText('원어 제목'), '満ちてゆく');
     await user.clear(screen.getByLabelText('한국어 표기'));
@@ -236,7 +239,7 @@ describe('SongDrawer', () => {
     );
 
     await user.click(screen.getByRole('button', { name: /곡 목록 열기/ }));
-    await user.click(screen.getByRole('button', { name: '怪獣の花唄 곡 정보 수정' }));
+    await user.click(await screen.findByRole('button', { name: '怪獣の花唄 곡 정보 수정' }));
     await user.click(screen.getByRole('button', { name: '이 재생목록에서 제거' }));
     expect(screen.getByRole('alert')).toHaveTextContent('재생할 곡이 하나 이상');
 
